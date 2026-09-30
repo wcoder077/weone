@@ -8,9 +8,9 @@ export default function NotFound() {
       <Logo />
       <EmptyState
         icon={SearchX}
-        title="Page not found"
-        description="This page does not exist or was moved."
-        action={{ label: "Go home", href: "/" }}
+        title="Sahifa topilmadi"
+        description="Bu sahifa mavjud emas yoki ko'chirilgan."
+        action={{ label: "Bosh sahifaga o'tish", href: "/" }}
         className="w-full"
       />
     </main>

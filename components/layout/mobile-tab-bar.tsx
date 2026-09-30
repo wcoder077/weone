@@ -10,7 +10,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      aria-label="Main"
+      aria-label="Asosiy menyu"
       className="glass fixed inset-x-4 bottom-4 z-40 flex justify-between rounded-full p-1.5 lg:hidden"
     >
       {navItems.map(({ href, label, icon: Icon }) => {

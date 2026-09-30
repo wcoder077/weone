@@ -19,18 +19,18 @@ export function Navbar() {
         {/* Mobile: logo left, actions right. Desktop: search + links + actions. */}
         <form action="/find" role="search" className="hidden max-w-md flex-1 lg:block">
           <label className="relative block">
-            <span className="sr-only">Search people, skills, projects</span>
+            <span className="sr-only">{"Odamlar, ko'nikmalar va loyihalarni qidiring"}</span>
             <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />
             <input
               name="q"
               type="search"
-              placeholder="Search people, skills, projects"
+              placeholder="Odamlar, ko'nikmalar, loyihalar"
               className="bg-surface/60 border-border placeholder:text-muted focus-visible:ring-primary/50 h-11 w-full rounded-full border pr-4 pl-11 text-[15px] outline-none focus-visible:ring-3"
             />
           </label>
         </form>
 
-        <nav aria-label="Main" className="ml-auto hidden items-center gap-1 lg:flex">
+        <nav aria-label="Asosiy menyu" className="ml-auto hidden items-center gap-1 lg:flex">
           {desktopNavItems.map(({ href, label }) => {
             const active = isActive(pathname, href);
             return (

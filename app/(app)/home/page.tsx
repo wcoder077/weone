@@ -1,17 +1,17 @@
 import { House } from "lucide-react";
 import { EmptyState } from "@/components/shared/empty-state";
 
-export const metadata = { title: "Home" };
+export const metadata = { title: "Asosiy" };
 
 export default function HomePage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold lg:text-[32px]">Home</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">Asosiy</h1>
       <EmptyState
         icon={House}
-        title="Nothing here yet"
-        description="Your feed of people and projects will appear here."
-        action={{ label: "Find people", href: "/find" }}
+        title="Hozircha bo'sh"
+        description="Siz uchun odamlar va loyihalar shu yerda paydo bo'ladi."
+        action={{ label: "Odamlarni topish", href: "/find" }}
       />
     </div>
   );

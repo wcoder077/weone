@@ -8,18 +8,18 @@ export function HeaderActions() {
     <div className="flex items-center gap-1">
       <Link
         href="/notifications"
-        aria-label="Notifications"
+        aria-label="Bildirishnomalar"
         className="text-muted hover:text-text inline-flex size-11 items-center justify-center rounded-full transition-colors"
       >
         <Bell className="size-5" />
       </Link>
       <Link
         href="/profile"
-        aria-label="Your profile"
+        aria-label="Sizning profilingiz"
         className="inline-flex size-11 items-center justify-center rounded-full"
       >
         <Avatar>
-          <AvatarFallback>ME</AvatarFallback>
+          <AvatarFallback>MEN</AvatarFallback>
         </Avatar>
       </Link>
     </div>

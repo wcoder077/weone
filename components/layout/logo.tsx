@@ -5,7 +5,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
-      aria-label="we1 home"
+      aria-label="we1 bosh sahifa"
       className={cn(
         "inline-flex min-h-11 items-center text-2xl font-bold tracking-tight",
         className,

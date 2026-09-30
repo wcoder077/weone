@@ -62,7 +62,7 @@ export function CardGridSkeleton({
   return (
     <div
       role="status"
-      aria-label="Loading"
+      aria-label="Yuklanmoqda"
       className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {Array.from({ length: count }, (_, i) => (

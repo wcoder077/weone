@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: { default: "we1", template: "%s · we1" },
-  description: "Find people. Build things. Grow together.",
+  description: "Odamlarni toping. Birga yarating. Birga o'sing.",
 };
 
 export const viewport: Viewport = {
@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} antialiased`}>
+    <html lang="uz" className={`${inter.variable} antialiased`}>
       <body>
         {children}
         <Toaster />

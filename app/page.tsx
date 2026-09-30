@@ -8,10 +8,10 @@ export default function Welcome() {
     <main className="mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center gap-6 px-4 text-center">
       <Logo />
       <h1 className="text-2xl font-bold lg:text-[32px]">
-        Find people. Build things. Grow together.
+        {"Odamlarni toping. Birga yarating. Birga o'sing."}
       </h1>
       <Link href="/home" className={buttonVariants({ size: "lg" })}>
-        Get started
+        Boshlash
       </Link>
     </main>
   );

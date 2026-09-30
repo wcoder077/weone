@@ -12,8 +12,8 @@ type ErrorStateProps = {
 };
 
 export function ErrorState({
-  title = "Something went wrong",
-  description = "We could not load this. Check your connection and try again.",
+  title = "Nimadir xato ketdi",
+  description = "Yuklab bo'lmadi. Internet aloqasini tekshirib, qayta urinib ko'ring.",
   onRetry,
   className,
 }: ErrorStateProps) {
@@ -32,7 +32,7 @@ export function ErrorState({
       <p className="text-muted max-w-sm text-[15px]">{description}</p>
       {onRetry ? (
         <Button variant="outline" onClick={onRetry} className="mt-2">
-          Try again
+          Qayta urinish
         </Button>
       ) : null}
     </div>
