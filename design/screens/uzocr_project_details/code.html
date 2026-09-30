@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UzOCR - WeOne</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              bg: '#08070D',
+              surface: '#11101A',
+              card: '#171522',
+              cardBorder: '#26233A',
+              text: '#F4F5F8',
+              muted: '#8E8BA3',
+              accent: '#3D4BFF',
+              accentHover: '#3440e6',
+              chip: '#1c1a29',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #08070D;
+      color: #F4F5F8;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* Subtle radial glow matching specification */
+    .top-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 1440px;
+      height: 480px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(61, 75, 255, 0.15) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glass-nav {
+      background: rgba(17, 16, 26, 0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-[#3D4BFF] selection:text-white">
+<!-- Top Ambient Glow -->
+<div aria-hidden="true" class="top-glow"></div>
+<!-- BEGIN: MainHeader -->
+<header class="glass-nav sticky top-0 z-50 w-full" data-purpose="site-navigation">
+<div class="max-w-[1200px] mx-auto px-6 h-[72px] flex items-center justify-between gap-6">
+<!-- Brand Logo & Search Bar -->
+<div class="flex items-center gap-8 flex-1">
+<!-- Logo -->
+<a aria-label="WeOne Home" class="flex items-center text-[22px] tracking-tight font-bold select-none cursor-pointer" href="#">
+<span class="text-[#F4F5F8]">we</span><span class="text-[#3D4BFF]">1</span>
+</a>
+<!-- Global Search Input -->
+<div class="relative w-full max-w-[340px]">
+<input class="w-full h-10 pl-4 pr-4 bg-[#171522] border border-[#26233A] rounded-full text-[14px] text-[#F4F5F8] placeholder-[#8E8BA3] focus:outline-none focus:border-[#3D4BFF] transition-colors" placeholder="Search people, skills, projects" type="text"/>
+</div>
+</div>
+<!-- Navigation Links and User Controls -->
+<nav class="flex items-center gap-7">
+<ul class="flex items-center gap-6 text-[15px] font-medium">
+<li>
+<a class="text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Home</a>
+</li>
+<li>
+<a class="text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Discover</a>
+</li>
+<li>
+<!-- Active Tab -->
+<a class="text-[#F4F5F8] font-semibold transition-colors" href="#">Projects</a>
+</li>
+<li>
+<a class="text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Messages</a>
+</li>
+</ul>
+<!-- Notification Bell Icon -->
+<button aria-label="Notifications" class="text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors p-1" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- User Profile Avatar Pill -->
+<button aria-label="User Profile" class="w-9 h-9 rounded-full bg-[#26233A] text-[#F4F5F8] text-[13px] font-semibold flex items-center justify-center hover:ring-2 hover:ring-[#3D4BFF] transition-all" type="button">
+          BE
+        </button>
+</nav>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="relative z-10 max-w-[1200px] mx-auto px-6 pt-9 pb-20">
+<!-- BEGIN: ProjectHeroCard -->
+<section class="bg-[#171522] border border-[#26233A] rounded-[20px] p-7 md:p-8 mb-8" data-purpose="project-hero">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<!-- Left: Project Avatar & Info -->
+<div class="flex items-start md:items-center gap-5">
+<!-- Square Project Logo Placeholder -->
+<div aria-hidden="true" class="w-16 h-16 min-w-[64px] rounded-xl bg-[#222033] border border-[#2d2a45] flex items-center justify-center shadow-inner">
+<div class="w-8 h-8 rounded-lg bg-[#2e2a47]/60"></div>
+</div>
+<!-- Project Title, Status & Metadata -->
+<div class="flex flex-col">
+<div class="flex items-center gap-3">
+<h1 class="text-2xl font-bold text-[#F4F5F8] tracking-tight">UzOCR</h1>
+<!-- Status Pill -->
+<span class="inline-flex items-center px-3 py-0.5 rounded-full text-[13px] font-medium bg-[#1F1C2E] border border-[#26233A] text-[#8E8BA3]">
+                Building
+              </span>
+</div>
+<p class="text-[15px] text-[#8E8BA3] mt-1">Reads Uzbek text from photos</p>
+<!-- Metadata Links -->
+<div class="flex items-center gap-1.5 text-[14px] text-[#8E8BA3] mt-1">
+<span>by Bobur Shokirov</span>
+<span>·</span>
+<a class="hover:text-[#F4F5F8] transition-colors underline-offset-4 hover:underline" href="#">GitHub</a>
+<span>·</span>
+<a class="hover:text-[#F4F5F8] transition-colors underline-offset-4 hover:underline" href="#">Demo</a>
+</div>
+</div>
+</div>
+<!-- Right: Action Buttons -->
+<div class="flex items-center gap-3 self-start md:self-center">
+<button class="h-11 px-6 rounded-full bg-[#3D4BFF] hover:bg-[#3440e6] text-white text-[15px] font-medium shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-[#3D4BFF] focus:ring-offset-2 focus:ring-offset-[#171522]" type="button">
+            Ask to join
+          </button>
+<button class="h-11 px-6 rounded-full bg-transparent border border-[#26233A] hover:border-[#8E8BA3] text-[#F4F5F8] text-[15px] font-medium transition-colors focus:outline-none" type="button">
+            Message
+          </button>
+</div>
+</div>
+</section>
+<!-- END: ProjectHeroCard -->
+<!-- BEGIN: TwoColumnLayout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN (2/3 width -> col-span-8) -->
+<div class="lg:col-span-8 space-y-9" data-purpose="project-description-and-team">
+<!-- About Section -->
+<section aria-labelledby="about-heading">
+<h2 class="text-base font-semibold text-[#F4F5F8] mb-3" id="about-heading">About</h2>
+<p class="text-[15px] leading-relaxed text-[#8E8BA3]">
+            We turn photos of Uzbek documents into editable text. The model works with Latin and Cyrillic. Now building the web app.
+          </p>
+</section>
+<!-- Tech Stack Section -->
+<section aria-labelledby="tech-stack-heading">
+<h2 class="text-base font-semibold text-[#F4F5F8] mb-3" id="tech-stack-heading">Tech stack</h2>
+<div class="flex flex-wrap items-center gap-2.5">
+<span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-normal bg-[#171522] border border-[#26233A] text-[#F4F5F8]">
+              Python
+            </span>
+<span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-normal bg-[#171522] border border-[#26233A] text-[#F4F5F8]">
+              FastAPI
+            </span>
+<span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-normal bg-[#171522] border border-[#26233A] text-[#F4F5F8]">
+              PyTorch
+            </span>
+<span class="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-normal bg-[#171522] border border-[#26233A] text-[#F4F5F8]">
+              React
+            </span>
+</div>
+</section>
+<!-- Team Section -->
+<section aria-labelledby="team-heading">
+<h2 class="text-base font-semibold text-[#F4F5F8] mb-4" id="team-heading">Team</h2>
+<ul class="space-y-4 max-w-xl">
+<!-- Member 1 -->
+<li class="flex items-center justify-between py-1">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-[#26233A] text-[#8E8BA3] text-[13px] font-medium flex items-center justify-center">
+                  BS
+                </div>
+<span class="text-[15px] font-medium text-[#F4F5F8]">Bobur Shokirov</span>
+</div>
+<span class="text-[14px] text-[#8E8BA3]">Backend</span>
+</li>
+<!-- Member 2 -->
+<li class="flex items-center justify-between py-1">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-[#26233A] text-[#8E8BA3] text-[13px] font-medium flex items-center justify-center">
+                  DY
+                </div>
+<span class="text-[15px] font-medium text-[#F4F5F8]">Dilnoza Yusupova</span>
+</div>
+<span class="text-[14px] text-[#8E8BA3]">ML</span>
+</li>
+<!-- Member 3 -->
+<li class="flex items-center justify-between py-1">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-full bg-[#26233A] text-[#8E8BA3] text-[13px] font-medium flex items-center justify-center">
+                  SU
+                </div>
+<span class="text-[15px] font-medium text-[#F4F5F8]">Sardor Umarov</span>
+</div>
+<span class="text-[14px] text-[#8E8BA3]">Product</span>
+</li>
+</ul>
+</section>
+</div>
+<!-- RIGHT COLUMN (1/3 width -> col-span-4) -->
+<aside class="lg:col-span-4 space-y-7" data-purpose="sidebar-panels">
+<!-- Open Roles Card Section -->
+<section aria-labelledby="open-roles-heading">
+<h2 class="text-base font-semibold text-[#F4F5F8] mb-3" id="open-roles-heading">Open roles</h2>
+<div class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 shadow-sm">
+<h3 class="text-base font-semibold text-[#F4F5F8] mb-3.5">Frontend developer</h3>
+<!-- Skill requirements chips -->
+<div class="flex items-center gap-2 mb-6">
+<span class="inline-flex items-center px-3.5 py-1 rounded-full text-sm font-normal bg-[#1C1A2B] border border-[#26233A] text-[#8E8BA3]">
+                React
+              </span>
+<span class="inline-flex items-center px-3.5 py-1 rounded-full text-sm font-normal bg-[#1C1A2B] border border-[#26233A] text-[#8E8BA3]">
+                TypeScript
+              </span>
+</div>
+<!-- Apply Button -->
+<button class="w-full py-2.5 rounded-full border border-[#26233A] hover:border-[#8E8BA3] text-[#F4F5F8] text-[15px] font-medium transition-colors focus:outline-none" type="button">
+              Apply
+            </button>
+</div>
+</section>
+<!-- Details Card Section -->
+<section aria-labelledby="details-heading">
+<h2 class="text-base font-semibold text-[#F4F5F8] mb-3" id="details-heading">Details</h2>
+<div class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6">
+<dl class="space-y-3.5 text-[14px]">
+<!-- Category Row -->
+<div class="flex items-center justify-between">
+<dt class="text-[#8E8BA3]">Category</dt>
+<dd class="text-[#F4F5F8] font-medium">AI</dd>
+</div>
+<!-- Started Row -->
+<div class="flex items-center justify-between">
+<dt class="text-[#8E8BA3]">Started</dt>
+<dd class="text-[#F4F5F8] font-medium">Mar 2026</dd>
+</div>
+<!-- Location Row -->
+<div class="flex items-center justify-between">
+<dt class="text-[#8E8BA3]">Where</dt>
+<dd class="text-[#F4F5F8] font-medium">Tashkent / Online</dd>
+</div>
+</dl>
+</div>
+</section>
+</aside>
+</div>
+<!-- END: TwoColumnLayout -->
+</main>
+<!-- END: MainContent -->
+</body></html>

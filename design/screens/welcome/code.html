@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WeOne - Find people. Build things. Grow together.</title>
+<!-- Tailwind CSS v3 CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandBg: '#08070D',
+            brandSurface: '#11101A',
+            brandCard: '#171522',
+            brandBorder: '#26233A',
+            brandText: '#F4F5F8',
+            brandTextMuted: '#8E8BA3',
+            brandBlue: '#3D4BFF',
+            brandBlueHover: '#313ecc',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styles">
+    body {
+      background-color: #08070D;
+      color: #F4F5F8;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-brandBlue selection:text-white">
+<!-- BEGIN: MainHeader -->
+<header class="w-full border-b border-brandBorder/40 bg-brandBg/80 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-6 h-20 flex items-center justify-between">
+<!-- Logo -->
+<a class="flex items-center gap-2 group" data-purpose="logo" href="#">
+<span class="text-2xl font-bold tracking-tight text-brandText">we<span class="text-brandBlue">1</span></span>
+</a>
+<!-- Navigation Actions -->
+<div class="flex items-center gap-6" data-purpose="header-actions">
+<a class="text-sm font-medium text-brandText hover:text-brandTextMuted transition-colors" href="#">Log In</a>
+<a class="bg-brandBlue hover:bg-brandBlueHover text-white text-sm font-medium px-5 py-2.5 rounded-full transition-all shadow-lg shadow-brandBlue/20" href="#">Join WeOne</a>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow">
+<!-- BEGIN: HeroSection -->
+<section class="max-w-[1200px] mx-auto px-6 pt-16 pb-24">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- Left Column: Hero Text & Search -->
+<div class="lg:col-span-7 flex flex-col justify-center pt-4" data-purpose="hero-left">
+<h1 class="text-5xl lg:text-6xl font-bold tracking-tight text-brandText leading-[1.1] mb-6">
+            Find people.<br/>
+            Build things.<br/>
+            Grow together.
+          </h1>
+<p class="text-lg text-brandTextMuted mb-10 max-w-lg">
+            Find teammates for hackathons, startups and projects by real skills.
+          </p>
+<!-- Search Bar Container -->
+<div class="bg-brandCard border border-brandBorder rounded-full p-2 flex items-center shadow-2xl max-w-xl" data-purpose="search-container">
+<input class="bg-transparent border-none text-brandText placeholder-brandTextMuted text-sm px-4 focus:ring-0 w-full outline-none" placeholder="Search skills or needs..." type="text" value="I need a backend developer for a hackathon"/>
+<button class="bg-brandBlue hover:bg-brandBlueHover text-white text-sm font-medium px-6 py-3 rounded-full transition-all shrink-0">
+              Find people
+            </button>
+</div>
+</div>
+<!-- Right Column: Project Card & Person Cards -->
+<div class="lg:col-span-5 flex flex-col gap-4" data-purpose="hero-right">
+<!-- Project Card -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-6 relative shadow-xl" data-purpose="project-card">
+<div class="flex items-start justify-between mb-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-brandBorder flex items-center justify-center font-bold text-brandText">
+                  U
+                </div>
+<div>
+<h3 class="font-semibold text-brandText text-lg">UzOCR</h3>
+<p class="text-xs text-brandTextMuted">Reads Uzbek text from photos</p>
+</div>
+</div>
+<span class="text-xs px-2.5 py-1 rounded-full bg-brandBorder/50 text-brandTextMuted border border-brandBorder">Building</span>
+</div>
+<!-- Tags -->
+<div class="flex flex-wrap gap-2 my-4">
+<span class="text-xs px-3 py-1 rounded-full bg-brandBg border border-brandBorder text-brandTextMuted">Python</span>
+<span class="text-xs px-3 py-1 rounded-full bg-brandBg border border-brandBorder text-brandTextMuted">FastAPI</span>
+<span class="text-xs px-3 py-1 rounded-full bg-brandBg border border-brandBorder text-brandTextMuted">PyTorch</span>
+</div>
+<!-- Members & Needs Footer -->
+<div class="flex items-center justify-between pt-3 border-t border-brandBorder/40 mt-4">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-brandCard bg-brandBorder text-[10px] flex items-center justify-center font-medium text-brandText">BS</div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-brandCard bg-brandBorder text-[10px] flex items-center justify-center font-medium text-brandText">DY</div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-brandCard bg-brandBorder text-[10px] flex items-center justify-center font-medium text-brandText">SU</div>
+</div>
+<span class="text-xs text-brandTextMuted">3 members</span>
+</div>
+<div class="text-xs">
+<span class="text-brandTextMuted">Needs:</span> <span class="text-brandText font-medium">Frontend</span>
+</div>
+</div>
+</div>
+<!-- Person Card 1 -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-4 flex items-center gap-4 shadow-lg" data-purpose="person-card">
+<div class="w-10 h-10 rounded-full bg-brandBorder flex items-center justify-center font-semibold text-brandText shrink-0">
+              BS
+            </div>
+<div>
+<h4 class="font-semibold text-brandText text-sm">Bobur Shokirov</h4>
+<p class="text-xs text-brandTextMuted">Backend developer · Tashkent</p>
+</div>
+</div>
+<!-- Person Card 2 -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-4 flex items-center gap-4 shadow-lg" data-purpose="person-card">
+<div class="w-10 h-10 rounded-full bg-brandBorder flex items-center justify-center font-semibold text-brandText shrink-0">
+              MK
+            </div>
+<div>
+<h4 class="font-semibold text-brandText text-sm">Madina Karimova</h4>
+<p class="text-xs text-brandTextMuted">UI/UX designer · Samarkand</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: HowItWorksSection -->
+<section class="max-w-[1200px] mx-auto px-6 pb-28">
+<h2 class="text-xl font-semibold text-brandText mb-6">How it works</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6" data-purpose="steps-grid">
+<!-- Step 1 Card -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between h-48 shadow-lg">
+<div>
+<span class="text-xs font-medium text-brandTextMuted block mb-2">Step 1</span>
+<h3 class="text-lg font-semibold text-brandText mb-1">Show your skills</h3>
+</div>
+<p class="text-sm text-brandTextMuted">One short line about this step.</p>
+</div>
+<!-- Step 2 Card -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between h-48 shadow-lg">
+<div>
+<span class="text-xs font-medium text-brandTextMuted block mb-2">Step 2</span>
+<h3 class="text-lg font-semibold text-brandText mb-1">Find your people</h3>
+</div>
+<p class="text-sm text-brandTextMuted">One short line about this step.</p>
+</div>
+<!-- Step 3 Card -->
+<div class="bg-brandCard border border-brandBorder rounded-2xl p-6 flex flex-col justify-between h-48 shadow-lg">
+<div>
+<span class="text-xs font-medium text-brandTextMuted block mb-2">Step 3</span>
+<h3 class="text-lg font-semibold text-brandText mb-1">Build together</h3>
+</div>
+<p class="text-sm text-brandTextMuted">One short line about this step.</p>
+</div>
+</div>
+</section>
+<!-- END: HowItWorksSection -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: MainFooter -->
+<footer class="w-full border-t border-brandBorder/40 bg-brandBg py-8">
+<div class="max-w-[1200px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<!-- Footer Logo -->
+<a class="flex items-center gap-2" href="#">
+<span class="text-lg font-bold tracking-tight text-brandText">we<span class="text-brandBlue">1</span></span>
+</a>
+<!-- Footer Links -->
+<div class="flex items-center gap-6 text-sm text-brandTextMuted" data-purpose="footer-links">
+<a class="hover:text-brandText transition-colors" href="#">About</a>
+<a class="hover:text-brandText transition-colors" href="#">Help</a>
+<a class="hover:text-brandText transition-colors" href="#">Privacy</a>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

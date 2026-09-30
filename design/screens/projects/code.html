@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WeOne - Projects</title>
+<!-- Inter Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 with forms and container plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#3D4BFF',
+            canvas: '#08070D',
+            surface: '#11101A',
+            card: '#171522',
+            cardBorder: '#26233A',
+            heading: '#F4F5F8',
+            secondary: '#8E8BA3',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #08070D;
+      background-image: radial-gradient(50% 50% at 50% 0%, rgba(61, 75, 255, 0.12) 0%, rgba(8, 7, 13, 0) 100%);
+      background-repeat: no-repeat;
+      color: #F4F5F8;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="w-full flex flex-col items-center">
+<!-- BEGIN: MainNavbar -->
+<header class="w-full border-b border-[#26233A]/60 bg-[#08070D]/80 backdrop-blur-xl sticky top-0 z-50">
+<div class="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+<!-- Brand Logo & Search Bar -->
+<div class="flex items-center space-x-8 flex-1">
+<!-- Logo -->
+<a class="text-xl font-bold tracking-tight text-[#F4F5F8] select-none" href="#">
+          we<span class="text-[#3D4BFF]">1</span>
+</a>
+<!-- Center Search Input Pill -->
+<div class="relative w-full max-w-sm">
+<input class="w-full h-9 bg-[#11101A] border border-[#26233A] rounded-full text-[13px] text-[#F4F5F8] placeholder-[#8E8BA3] px-4 focus:outline-none focus:border-[#3D4BFF] transition-colors" placeholder="Search people, skills, projects" type="text"/>
+</div>
+</div>
+<!-- Navigation Links & User Profile -->
+<nav class="flex items-center space-x-7">
+<a class="text-[14px] text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Home</a>
+<a class="text-[14px] text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Discover</a>
+<a class="text-[14px] font-semibold text-[#F4F5F8]" href="#">Projects</a>
+<a class="text-[14px] text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">Messages</a>
+<!-- Notification Bell Icon -->
+<button aria-label="Notifications" class="text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors p-1" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- User Profile Avatar Pill -->
+<div class="w-8 h-8 rounded-full bg-[#1e1b30] border border-[#26233A] flex items-center justify-center text-[12px] font-medium text-[#F4F5F8] select-none cursor-pointer">
+          BE
+        </div>
+</nav>
+</div>
+</header>
+<!-- END: MainNavbar -->
+<!-- BEGIN: MainContent -->
+<main class="w-full max-w-[1200px] px-6 py-8 flex flex-col flex-1">
+<!-- Title & Create Project Button Row -->
+<div class="flex items-center justify-between mb-5">
+<h1 class="text-[32px] font-bold text-[#F4F5F8] tracking-tight">Projects</h1>
+<button class="bg-[#3D4BFF] hover:bg-[#323fd6] text-white text-[14px] font-medium px-[22px] py-[10px] rounded-full transition-colors select-none shadow-sm shadow-[#3D4BFF]/20" type="button">
+        Create project
+      </button>
+</div>
+<!-- Secondary Tabs -->
+<div class="border-b border-[#26233A]/60 flex space-x-6 text-[14px] mb-6">
+<div class="relative pb-2.5 font-semibold text-[#F4F5F8] cursor-pointer">
+        For you
+        <!-- Active Tab Underline Indicator -->
+<span class="absolute bottom-0 left-0 w-full h-[2px] bg-[#3D4BFF] rounded-full"></span>
+</div>
+<div class="pb-2.5 text-[#8E8BA3] hover:text-[#F4F5F8] cursor-pointer transition-colors font-medium">
+        Looking for members
+      </div>
+<div class="pb-2.5 text-[#8E8BA3] hover:text-[#F4F5F8] cursor-pointer transition-colors font-medium">
+        My projects
+      </div>
+</div>
+<!-- Filters Row -->
+<div class="flex items-center space-x-3 mb-6">
+<!-- Category Filter -->
+<button class="flex items-center space-x-2 bg-[#171522] border border-[#26233A] hover:border-[#3D4BFF]/50 text-[#8E8BA3] hover:text-[#F4F5F8] text-[13px] px-3.5 py-1.5 rounded-full transition-colors" type="button">
+<span>Category</span>
+<svg class="w-3 h-3 text-[#8E8BA3]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<!-- Stack Filter -->
+<button class="flex items-center space-x-2 bg-[#171522] border border-[#26233A] hover:border-[#3D4BFF]/50 text-[#8E8BA3] hover:text-[#F4F5F8] text-[13px] px-3.5 py-1.5 rounded-full transition-colors" type="button">
+<span>Stack</span>
+<svg class="w-3 h-3 text-[#8E8BA3]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+<!-- Status Filter -->
+<button class="flex items-center space-x-2 bg-[#171522] border border-[#26233A] hover:border-[#3D4BFF]/50 text-[#8E8BA3] hover:text-[#F4F5F8] text-[13px] px-3.5 py-1.5 rounded-full transition-colors" type="button">
+<span>Status</span>
+<svg class="w-3 h-3 text-[#8E8BA3]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</button>
+</div>
+<!-- BEGIN: ProjectsGrid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Card 1: UzOCR -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">UzOCR</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Building
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            Reads Uzbek text from photos
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Python</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">FastAPI</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">PyTorch</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">BS</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#2e2a47] text-[#8E8BA3] ring-2 ring-[#171522]">DY</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#373254] text-[#8E8BA3] ring-2 ring-[#171522]">SU</span>
+</div>
+<span class="text-[#8E8BA3]">3 members</span>
+</div>
+<div class="text-[#8E8BA3]">
+            Needs: <span class="font-semibold text-[#F4F5F8]">Frontend</span>
+</div>
+</div>
+</article>
+<!-- Card 2: EduBot -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">EduBot</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Looking for members
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            Telegram bot that helps students plan exams
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Python</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">aiogram</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">JA</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#2e2a47] text-[#8E8BA3] ring-2 ring-[#171522]">NR</span>
+</div>
+<span class="text-[#8E8BA3]">2 members</span>
+</div>
+<div class="text-[#8E8BA3]">
+            Needs: <span class="font-semibold text-[#F4F5F8]">Designer</span>
+</div>
+</div>
+</article>
+<!-- Card 3: WeOne -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">WeOne</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Building
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            Professional network for building together
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">React</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">TypeScript</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">PostgreSQL</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">BE</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#2e2a47] text-[#8E8BA3] ring-2 ring-[#171522]">AR</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#373254] text-[#8E8BA3] ring-2 ring-[#171522]">MK</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#403b61] text-[#8E8BA3] ring-2 ring-[#171522]">AL</span>
+</div>
+<span class="text-[#8E8BA3]">4 members</span>
+</div>
+<div class="text-[#8E8BA3]">
+            Needs: <span class="font-semibold text-[#F4F5F8]">Backend</span>
+</div>
+</div>
+</article>
+<!-- Card 4: Mentor Match -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">Mentor Match</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Looking for members
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            Connects juniors with mentors
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">React</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Node.js</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">SU</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#2e2a47] text-[#8E8BA3] ring-2 ring-[#171522]">DY</span>
+</div>
+<span class="text-[#8E8BA3]">2 members</span>
+</div>
+<div class="text-[#8E8BA3]">
+            Needs: <span class="font-semibold text-[#F4F5F8]">Frontend</span>
+</div>
+</div>
+</article>
+<!-- Card 5: Hackathon Finder -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">Hackathon Finder</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Idea
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            All hackathons in Uzbekistan in one place
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Next.js</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Supabase</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">NR</span>
+</div>
+<span class="text-[#8E8BA3]">1 members</span>
+</div>
+<div class="text-[#8E8BA3]">
+            Needs: <span class="font-semibold text-[#F4F5F8]">Backend</span>
+</div>
+</div>
+</article>
+<!-- Card 6: PayTrack -->
+<article class="bg-[#171522] border border-[#26233A] rounded-[20px] p-6 flex flex-col justify-between hover:border-[#3D4BFF]/40 transition-colors" data-purpose="project-card">
+<div>
+<!-- Header: Icon, Title, Status -->
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center space-x-3">
+<div class="w-9 h-9 rounded-xl bg-[#232038] border border-[#2e2a47]"></div>
+<h2 class="text-[16px] font-semibold text-[#F4F5F8]">PayTrack</h2>
+</div>
+<span class="text-[12px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-2.5 py-0.5 rounded-full">
+              Launched
+            </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-[#8E8BA3] leading-snug mb-5">
+            Expense tracker for students
+          </p>
+<!-- Tech Stack Tags -->
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Flutter</span>
+<span class="text-[13px] text-[#8E8BA3] bg-[#11101A] border border-[#26233A] px-3 py-1 rounded-full">Firebase</span>
+</div>
+</div>
+<!-- Card Footer: Members & Needs -->
+<div class="flex items-center justify-between text-[13px] pt-2 border-t border-[#26233A]/40">
+<div class="flex items-center space-x-2">
+<!-- Avatars Stack -->
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#26233A] text-[#8E8BA3] ring-2 ring-[#171522]">JA</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#2e2a47] text-[#8E8BA3] ring-2 ring-[#171522]">MK</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold bg-[#373254] text-[#8E8BA3] ring-2 ring-[#171522]">AR</span>
+</div>
+<span class="text-[#8E8BA3]">3 members</span>
+</div>
+<div></div>
+</div>
+</article>
+</div>
+<!-- END: ProjectsGrid -->
+</main>
+<!-- END: MainContent -->
+</body></html>

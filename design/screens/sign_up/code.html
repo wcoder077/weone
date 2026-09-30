@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Join WeOne</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              bg: '#08070D',
+              card: '#11101A',
+              border: '#26233A',
+              primary: '#3D4BFF',
+              text: '#F4F5F8',
+              muted: '#8E8BA3',
+            }
+          }
+        }
+      }
+    };
+  </script>
+<!-- Custom Styles for Ambient Glow & Button Transitions -->
+<style data-purpose="ambient-lighting">
+    .ambient-glow {
+      position: absolute;
+      width: 500px;
+      height: 350px;
+      left: 50%;
+      top: 35%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(61, 75, 255, 0.12) 0%, rgba(8, 7, 13, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="bg-[#08070D] font-sans antialiased text-[#F4F5F8] min-h-screen flex items-center justify-center p-4 selection:bg-[#3D4BFF] selection:text-white relative overflow-hidden">
+<!-- Soft Blue Glow Effect -->
+<div aria-hidden="true" class="ambient-glow"></div>
+<!-- BEGIN: SignupModal -->
+<main class="relative z-10 w-full max-w-[420px]" data-purpose="signup-card-container">
+<div class="bg-[#11101A] border border-[#26233A] rounded-[20px] px-8 py-10 sm:px-10 sm:py-11 text-center shadow-2xl backdrop-blur-sm" data-purpose="signup-card">
+<!-- Brand Logo -->
+<div class="flex items-center justify-center mb-6" data-purpose="brand-logo">
+<span class="text-[22px] font-bold tracking-tight text-[#F4F5F8]">we<span class="text-[#3D4BFF]">1</span></span>
+</div>
+<!-- Header Content -->
+<h1 class="text-2xl sm:text-[26px] font-bold text-[#F4F5F8] tracking-tight mb-2">Join WeOne</h1>
+<p class="text-[#8E8BA3] text-[15px] mb-8 font-normal">Find your people in 2 minutes</p>
+<!-- Action Buttons Stack -->
+<div class="flex flex-col space-y-3" data-purpose="auth-options">
+<!-- Continue with Google Button -->
+<button class="w-full rounded-full py-3.5 px-5 border border-[#26233A] bg-transparent text-[#F4F5F8] text-[15px] font-medium flex items-center justify-center hover:bg-[#1a1826] hover:border-[#3D4BFF]/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#3D4BFF]/40" type="button">
+          Continue with Google
+        </button>
+<!-- Continue with Telegram Button -->
+<button class="w-full rounded-full py-3.5 px-5 border border-[#26233A] bg-transparent text-[#F4F5F8] text-[15px] font-medium flex items-center justify-center hover:bg-[#1a1826] hover:border-[#3D4BFF]/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#3D4BFF]/40" type="button">
+          Continue with Telegram
+        </button>
+<!-- Continue with Email Button -->
+<button class="w-full rounded-full py-3.5 px-5 border border-[#26233A] bg-transparent text-[#F4F5F8] text-[15px] font-medium flex items-center justify-center hover:bg-[#1a1826] hover:border-[#3D4BFF]/50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#3D4BFF]/40" type="button">
+          Continue with email
+        </button>
+</div>
+<!-- Card Footer / Login Redirect -->
+<div class="mt-8 text-[14px] text-[#8E8BA3]" data-purpose="login-link">
+        Already have an account? 
+        <a class="text-[#F4F5F8] font-medium hover:text-[#3D4BFF] hover:underline transition-colors duration-150 ml-1" href="#login">Log in</a>
+</div>
+</div>
+</main>
+<!-- END: SignupModal -->
+</body></html>

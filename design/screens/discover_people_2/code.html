@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "inverse-surface": "#e3e1ef",
+          "on-secondary": "#003915",
+          "background": "#12131c",
+          "secondary": "#4ae176",
+          "on-primary-fixed": "#00046a",
+          "on-tertiary-fixed": "#1c192f",
+          "surface-tint": "#bec2ff",
+          "primary-fixed": "#e0e0ff",
+          "secondary-fixed-dim": "#4ae176",
+          "primary-fixed-dim": "#bec2ff",
+          "on-background": "#e3e1ef",
+          "outline": "#8f8fa2",
+          "on-secondary-container": "#004119",
+          "surface-dim": "#12131c",
+          "surface-container": "#1e1f29",
+          "surface-container-highest": "#34343f",
+          "tertiary-fixed-dim": "#c9c3e1",
+          "surface-bright": "#383843",
+          "tertiary-container": "#67637d",
+          "primary": "#bec2ff",
+          "on-surface": "#e3e1ef",
+          "secondary-container": "#00b954",
+          "on-error-container": "#ffdad6",
+          "on-primary": "#000aa6",
+          "primary-container": "#3d4bff",
+          "on-surface-variant": "#c5c5d9",
+          "on-tertiary": "#312d45",
+          "on-secondary-fixed": "#002109",
+          "tertiary-fixed": "#e5dffe",
+          "tertiary": "#c9c3e1",
+          "on-primary-fixed-variant": "#0819e2",
+          "outline-variant": "#454556",
+          "error-container": "#93000a",
+          "surface-container-lowest": "#0d0d17",
+          "error": "#ffb4ab",
+          "on-secondary-fixed-variant": "#005321",
+          "on-error": "#690005",
+          "surface-variant": "#34343f",
+          "inverse-primary": "#3341f7",
+          "on-tertiary-fixed-variant": "#47445d",
+          "on-primary-container": "#e2e2ff",
+          "surface": "#12131c",
+          "surface-container-low": "#1a1b25",
+          "surface-container-high": "#292934",
+          "on-tertiary-container": "#e7e1ff",
+          "secondary-fixed": "#6bff8f",
+          "inverse-on-surface": "#2f303a"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-lg": "1.5rem",
+          "space-md": "1rem",
+          "gutter": "1rem",
+          "margin": "1.5rem",
+          "space-sm": "0.5rem",
+          "space-xs": "0.25rem",
+          "space-xl": "2.5rem"
+        },
+        "fontFamily": {
+          "headline-sm": ["Inter"],
+          "headline-md": ["Inter"],
+          "headline-lg": ["Inter"],
+          "body-md": ["Inter"],
+          "label-md": ["Inter"],
+          "body-sm": ["Inter"],
+          "label-sm": ["Inter"],
+          "body-lg": ["Inter"],
+          "display-lg": ["Inter"]
+        },
+        "fontSize": {
+          "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+          "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+          "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+          "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+          "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+          "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+          "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+          "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+        }
+      }
+    }
+  }</script><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/></head><body class="bg-[#08070D] font-body text-on-surface"><header class="fixed top-0 w-full z-50 bg-white/[0.08] backdrop-blur-[24px] border-b border-white/[0.12]"><div class="h-16 max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between"><div class="flex items-center gap-8"><a class="font-headline-md font-bold tracking-tight text-on-surface flex items-center" data-path="home" href="#">we<span class="text-[#3D4BFF]">1</span></a><div class="relative hidden md:flex items-center"><span class="material-symbols-outlined absolute left-3 text-outline text-[18px]">search</span><input class="bg-surface-container/50 border border-outline-variant/30 rounded-full pl-10 pr-4 py-2 text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary w-64 transition-all" placeholder="Search people, skills, projects" type="text"/></div></div><nav class="hidden md:flex items-center gap-2" data-active-classes="bg-primary-container text-on-primary-container font-bold px-4 py-1.5 rounded-full"><a class="text-body-md text-on-surface-variant hover:text-on-surface px-4 py-1.5 transition-colors" data-path="home" href="#">Home</a><a aria-current="page" class="transition-colors bg-primary-container text-on-primary-container font-bold px-4 py-1.5 rounded-full" data-path="discover" href="#">Discover</a><a class="text-body-md text-on-surface-variant hover:text-on-surface px-4 py-1.5 transition-colors" data-path="projects" href="#">Projects</a><a class="text-body-md text-on-surface-variant hover:text-on-surface px-4 py-1.5 transition-colors" data-path="messages" href="#">Messages</a></nav><div class="flex items-center gap-4"><button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-[#08070D]"><div class="flex flex-col w-full items-center justify-center py-space-xl px-gutter">
+<div class="w-full max-w-[1200px] flex flex-col gap-space-xl">
+<!-- Page Header -->
+<div class="flex flex-col gap-space-xs">
+<h1 class="text-headline-lg font-headline-lg text-[#F4F5F8]">Find people</h1>
+<p class="text-body-lg text-[#8E8BA3]">Describe who you need and get explained matches</p>
+</div>
+<!-- Main Content: Two Columns Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg items-start">
+<!-- Left Column: Sticky Filter Card -->
+<div class="lg:col-span-1 sticky top-24 bg-[#171522] border border-[#26233A] rounded-[20px] p-space-lg flex flex-col gap-space-lg">
+<h2 class="text-headline-sm font-headline-sm text-[#F4F5F8]">I'm looking for</h2>
+<!-- Role Field -->
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm font-label-sm text-[#8E8BA3]">Role</label>
+<input class="bg-[#11101A] border border-[#26233A] rounded-xl px-space-md py-space-sm text-body-md text-[#F4F5F8] focus:outline-none focus:border-[#3D4BFF] transition-all" type="text" value="Backend developer"/>
+</div>
+<!-- For Pills -->
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm font-label-sm text-[#8E8BA3]">For</label>
+<div class="flex flex-wrap gap-space-xs">
+<button class="bg-[#3D4BFF] text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md transition-all">Hackathon</button>
+<button class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] hover:text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md transition-all">Startup</button>
+<button class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] hover:text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md transition-all">Project</button>
+<button class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] hover:text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md transition-all">Learning</button>
+</div>
+</div>
+<!-- Required Skills -->
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm font-label-sm text-[#8E8BA3]">Required skills</label>
+<div class="flex flex-wrap gap-space-xs">
+<span class="bg-[#11101A] border border-[#26233A] text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md flex items-center gap-space-xs">
+              Python
+              <span class="material-symbols-outlined text-[14px] text-[#8E8BA3] cursor-pointer">close</span>
+</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md flex items-center gap-space-xs">
+              FastAPI
+              <span class="material-symbols-outlined text-[14px] text-[#8E8BA3] cursor-pointer">close</span>
+</span>
+<span class="bg-[#3D4BFF] text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md flex items-center gap-space-xs">
+              PostgreSQL
+              <span class="material-symbols-outlined text-[14px] text-[#F4F5F8] cursor-pointer">close</span>
+</span>
+<button class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] hover:text-[#F4F5F8] px-space-md py-space-xs rounded-full text-label-md font-label-md flex items-center gap-space-xs transition-all">
+<span class="material-symbols-outlined text-[14px]">add</span>
+              Add skill
+            </button>
+</div>
+</div>
+<!-- Location Toggle -->
+<div class="flex flex-col gap-space-xs">
+<label class="text-label-sm font-label-sm text-[#8E8BA3]">Location</label>
+<div class="grid grid-cols-2 bg-[#11101A] border border-[#26233A] rounded-xl p-1">
+<button class="bg-[#3D4BFF] text-[#F4F5F8] py-space-sm rounded-lg text-label-md font-label-md transition-all">Tashkent</button>
+<button class="text-[#8E8BA3] hover:text-[#F4F5F8] py-space-sm rounded-lg text-label-md font-label-md transition-all">Online</button>
+</div>
+</div>
+<!-- Open to Collaboration Switch -->
+<div class="flex items-center justify-between pt-space-xs">
+<span class="text-body-md text-[#F4F5F8]">Open to collaboration only</span>
+<div class="w-12 h-6 bg-[#3D4BFF] rounded-full p-1 flex items-center justify-end cursor-pointer">
+<div class="w-4 h-4 bg-[#F4F5F8] rounded-full"></div>
+</div>
+</div>
+<!-- Update Results Button -->
+<button class="w-full bg-[#3D4BFF] text-[#F4F5F8] py-space-md rounded-full text-label-md font-label-md hover:opacity-90 transition-all text-center">Update results</button>
+</div>
+<!-- Right Column: Results -->
+<div class="lg:col-span-2 flex flex-col gap-space-md">
+<!-- Results Header -->
+<div class="flex items-center justify-between pb-space-sm">
+<span class="text-body-lg text-[#8E8BA3]">12 people match</span>
+<div class="flex items-center gap-space-xs bg-[#171522] border border-[#26233A] px-space-md py-space-xs rounded-xl cursor-pointer">
+<span class="text-body-md text-[#8E8BA3]">Sort:</span>
+<span class="text-body-md text-[#F4F5F8] font-label-md">Best fit</span>
+<span class="material-symbols-outlined text-[16px] text-[#8E8BA3]">expand_more</span>
+</div>
+</div>
+<!-- Match Cards List -->
+<div class="flex flex-col gap-space-md">
+<!-- Card 1: Temur Alimov -->
+<div class="bg-[#171522] border border-[#26233A] rounded-[20px] p-space-lg flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of a young male software developer with a friendly smile, short dark hair, wearing a dark hoodie, professional studio lighting, minimalist dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvx5eUxGqu3LOKXILb66NmckSeyCXRErtFjwnT4zHzBbzRkMykHCLI58SggYxYepMqwXdsEGmqN-o8cFBbwXH0UBCqz4SCX5AvhBpu8aF-rYjDHFBMnthJ0upfKiJeTb64ReeC6NyXjk4q1dp_Z_S2goF9cZyZCwaxMmzGpW__MbV-40alHWUdYetbOJ942u16-3s18K1oVWEzjdWXM8cfeLOimaEqV4rT7j8lliCXZjanW5BbsHfb"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#171522]"></div>
+</div>
+<div class="flex flex-col">
+<h3 class="text-headline-sm font-headline-sm text-[#F4F5F8]">Temur Alimov</h3>
+<p class="text-body-md text-[#8E8BA3]">Junior Backend Dev • Tashkent</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<a class="text-body-md text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">View profile</a>
+<button class="bg-[#11101A] border border-[#26233A] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:border-[#3D4BFF] transition-all">Connect</button>
+<button class="bg-[#3D4BFF] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:opacity-90 transition-all">Collaborate</button>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-space-xs">
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">Python</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">FastAPI</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">Docker</span>
+</div>
+<!-- Why this person matches -->
+<div class="bg-[#11101A] border border-[#26233A] rounded-xl p-space-md flex flex-col gap-space-xs">
+<span class="text-label-sm font-label-sm text-[#8E8BA3]">Why this person matches</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-space-xs gap-space-md">
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Python
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> FastAPI
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Hackathon experience
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Tashkent
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Open to collaboration
+                </div>
+</div>
+</div>
+</div>
+<!-- Card 2: Azizbek Saidov -->
+<div class="bg-[#171522] border border-[#26233A] rounded-[20px] p-space-lg flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of a young male student programmer with glasses, confident expression, casual dark attire, clean studio lighting against a dark neutral background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyOjyDJWAsEAaolVZcsgsWpozYiTCY-bFgV3SWlcABP8DvHorHxTLll4uMQJjDupZsTxdcBHm1DrPuITlV-X9PeKm0BRSWIlMdM_zBS3oAGh-GOSC1lSoRMRDvSVqp1WCGVwjKD9M2ENIs5WFYkhnNqO26ThYDjHFT0TxS-FGZ_ZjGbnbM2aJiebKhPUvlWMklkyzczqKZPaWDgZCeQxtbC-6QKeVuuhMEIqzu8cQ1s0-OK-vJacHy"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#171522]"></div>
+</div>
+<div class="flex flex-col">
+<h3 class="text-headline-sm font-headline-sm text-[#F4F5F8]">Azizbek Saidov</h3>
+<p class="text-body-md text-[#8E8BA3]">Fullstack Student • Samarkand</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<a class="text-body-md text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">View profile</a>
+<button class="bg-[#11101A] border border-[#26233A] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:border-[#3D4BFF] transition-all">Connect</button>
+<button class="bg-[#3D4BFF] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:opacity-90 transition-all">Collaborate</button>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-space-xs">
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">Python</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">Node.js</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">PostgreSQL</span>
+</div>
+<!-- Why this person matches -->
+<div class="bg-[#11101A] border border-[#26233A] rounded-xl p-space-md flex flex-col gap-space-xs">
+<span class="text-label-sm font-label-sm text-[#8E8BA3]">Why this person matches</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-space-xs gap-space-md">
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Python
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> PostgreSQL
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Startup experience
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Tashkent
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Open to collaboration
+                </div>
+</div>
+</div>
+</div>
+<!-- Card 3: Madina Karimova -->
+<div class="bg-[#171522] border border-[#26233A] rounded-[20px] p-space-lg flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Portrait of a young female developer with dark hair tied back, wearing a minimalist black top, focused expression, dark studio background with subtle ambient light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeTc9yNws8NzqsQiNLLz2118nxQM-nrhdEN5V6tjBQnthVSXIKyg_gBiYGnQ578dHr_CgrrYSfj8e6CFDemGt8axu3v4RXzN92zgQxLbYZkxAVhQxHmtBffkiSnnR7cIhNG0Zrw7Q56e9dTx_1_zrujXEL4d_uDfNrAdPbGKgZ-peWQqAETvFkkP0U2uUOnIbbKj78-AUsTl8NFskVobeJDZnm_geuudTuEL9bTfWwnEapud8ioux_"/>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#171522]"></div>
+</div>
+<div class="flex flex-col">
+<h3 class="text-headline-sm font-headline-sm text-[#F4F5F8]">Madina Karimova</h3>
+<p class="text-body-md text-[#8E8BA3]">Backend & DevOps learner • Tashkent</p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<a class="text-body-md text-[#8E8BA3] hover:text-[#F4F5F8] transition-colors" href="#">View profile</a>
+<button class="bg-[#11101A] border border-[#26233A] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:border-[#3D4BFF] transition-all">Connect</button>
+<button class="bg-[#3D4BFF] text-[#F4F5F8] px-space-md py-space-sm rounded-full text-label-md font-label-md hover:opacity-90 transition-all">Collaborate</button>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-space-xs">
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">FastAPI</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">Docker</span>
+<span class="bg-[#11101A] border border-[#26233A] text-[#8E8BA3] px-space-sm py-space-xs rounded-full text-label-sm font-label-sm">PostgreSQL</span>
+</div>
+<!-- Why this person matches -->
+<div class="bg-[#11101A] border border-[#26233A] rounded-xl p-space-md flex flex-col gap-space-xs">
+<span class="text-label-sm font-label-sm text-[#8E8BA3]">Why this person matches</span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-y-space-xs gap-space-md">
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> FastAPI
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> PostgreSQL
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Learning project
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Tashkent
+                </div>
+<div class="flex items-center gap-space-xs text-body-md text-[#F4F5F8]">
+<span class="material-symbols-outlined text-[16px] text-[#3D4BFF]">check</span> Open to collaboration
+                </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-12 border-t border-outline-variant/10"><div class="max-w-7xl mx-auto px-6 lg:px-12 text-center text-on-surface-variant text-body-sm">© 2024 WeOne. Built for Gen Z professionals.</div></footer></body></html>

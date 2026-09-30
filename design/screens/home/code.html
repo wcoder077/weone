@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WeOne - Hi, Begzod</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBg: '#08070D',
+            appSurface: '#11101A',
+            appCard: '#171522',
+            appBorder: '#26233A',
+            appPrimary: '#F4F5F8',
+            appSecondary: '#8E8BA3',
+            appBlue: '#3D4BFF',
+            appGreen: '#22C55E',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="base-typography">
+    body {
+      background-color: #08070D;
+      color: #F4F5F8;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style data-purpose="custom-elements">
+    /* Subtle glow at the top center of the page */
+    .top-radial-glow {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 760px;
+      height: 380px;
+      background: radial-gradient(circle at 50% 0%, rgba(61, 75, 255, 0.15) 0%, rgba(8, 7, 13, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Navbar translucent styling */
+    .glass-navbar {
+      background: rgba(17, 16, 26, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden selection:bg-appBlue selection:text-white">
+<!-- Top Ambient Glow -->
+<div class="top-radial-glow"></div>
+<!-- BEGIN: MainHeader -->
+<header class="glass-navbar sticky top-0 z-50 w-full px-6 py-3.5">
+<div class="max-w-[1200px] mx-auto flex items-center justify-between gap-4">
+<!-- Brand Logo -->
+<div class="flex items-center">
+<a class="text-[22px] font-bold tracking-tight text-white select-none" href="#">
+          we<span class="text-[#3D4BFF]">1</span>
+</a>
+</div>
+<!-- Search Bar -->
+<div class="flex-1 max-w-[440px] mx-4">
+<div class="relative w-full">
+<input class="w-full bg-[#171522] border border-[#26233A] rounded-full py-2 pl-5 pr-10 text-[14px] text-appPrimary placeholder-appSecondary focus:outline-none focus:border-appBlue focus:ring-1 focus:ring-appBlue transition-colors" placeholder="Search people, skills, projects" type="text"/>
+</div>
+</div>
+<!-- Navigation Links and Actions -->
+<nav class="flex items-center gap-7">
+<div class="flex items-center gap-6 text-[15px]">
+<a class="font-semibold text-white hover:text-white transition-colors" href="#">Home</a>
+<a class="text-appSecondary hover:text-appPrimary transition-colors" href="#">Discover</a>
+<a class="text-appSecondary hover:text-appPrimary transition-colors" href="#">Projects</a>
+<a class="text-appSecondary hover:text-appPrimary transition-colors" href="#">Messages</a>
+</div>
+<!-- Notification & Profile -->
+<div class="flex items-center gap-3 pl-2">
+<!-- Notification Bell Icon -->
+<button aria-label="Notifications" class="text-appSecondary hover:text-appPrimary transition-colors p-1" type="button">
+<svg class="w-5 h-5 stroke-current fill-none stroke-2" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+<path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+</svg>
+</button>
+<!-- Avatar Initials -->
+<div class="w-8 h-8 rounded-full bg-[#26233A] text-appPrimary text-[13px] font-semibold flex items-center justify-center cursor-pointer border border-white/10 hover:border-white/20">
+            BE
+          </div>
+</div>
+</nav>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="relative z-10 max-w-[1200px] mx-auto px-6 pt-9 pb-16">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- BEGIN: LeftColumn -->
+<div class="lg:col-span-8 flex flex-col gap-8">
+<!-- Greeting Section -->
+<section aria-label="Greeting">
+<h1 class="text-[32px] font-bold text-appPrimary tracking-tight leading-tight">Hi, Begzod</h1>
+<p class="text-[15px] text-appSecondary mt-1">People and projects that fit your skills</p>
+</section>
+<!-- BEGIN: PeopleForYouSection -->
+<section aria-label="People for you">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-[18px] font-semibold text-appPrimary">People for you</h2>
+<a class="text-[14px] text-appSecondary hover:text-appPrimary transition-colors" href="#">See all</a>
+</div>
+<!-- Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Person Card 1: Azizbek Rahimov -->
+<article class="bg-appCard border border-appBorder rounded-[20px] p-5 flex flex-col justify-between">
+<div>
+<!-- User Profile Header -->
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#26233A] text-appPrimary text-[14px] font-semibold flex items-center justify-center shrink-0">
+                    AR
+                  </div>
+<div>
+<h3 class="text-[16px] font-semibold text-appPrimary leading-snug">Azizbek Rahimov</h3>
+<p class="text-[14px] text-appSecondary mt-0.5">Frontend developer</p>
+<div class="flex items-center gap-1.5 mt-1.5 text-[13px] text-appSecondary">
+<span class="w-2 h-2 rounded-full bg-appGreen"></span>
+<span>Tashkent</span>
+</div>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-1.5 mt-5">
+<span class="px-3 py-1 rounded-full text-[13px] bg-appBlue text-white font-medium">React</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">TypeScript</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">Tailwind</span>
+</div>
+<!-- Match Reasons -->
+<div class="flex items-center gap-3 text-[13px] text-appSecondary mt-4">
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> React
+                  </span>
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> Tashkent
+                  </span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-5 py-2 px-4 rounded-full border border-appBorder bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] text-appPrimary text-[14px] font-medium transition-colors" type="button">
+                Connect
+              </button>
+</article>
+<!-- Person Card 2: Madina Karimova -->
+<article class="bg-appCard border border-appBorder rounded-[20px] p-5 flex flex-col justify-between">
+<div>
+<!-- User Profile Header -->
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#26233A] text-appPrimary text-[14px] font-semibold flex items-center justify-center shrink-0">
+                    MK
+                  </div>
+<div>
+<h3 class="text-[16px] font-semibold text-appPrimary leading-snug">Madina Karimova</h3>
+<p class="text-[14px] text-appSecondary mt-0.5">UI/UX designer</p>
+<div class="flex items-center gap-1.5 mt-1.5 text-[13px] text-appSecondary">
+<span class="w-2 h-2 rounded-full bg-appGreen"></span>
+<span>Samarkand</span>
+</div>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-1.5 mt-5">
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">Figma</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">UI/UX</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">Prototyping</span>
+</div>
+<!-- Match Reasons -->
+<div class="flex items-center gap-3 text-[13px] text-appSecondary mt-4">
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> Hackathon team
+                  </span>
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> Figma
+                  </span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-5 py-2 px-4 rounded-full border border-appBorder bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] text-appPrimary text-[14px] font-medium transition-colors" type="button">
+                Connect
+              </button>
+</article>
+<!-- Person Card 3: Bobur Shokirov -->
+<article class="bg-appCard border border-appBorder rounded-[20px] p-5 flex flex-col justify-between">
+<div>
+<!-- User Profile Header -->
+<div class="flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-[#26233A] text-appPrimary text-[14px] font-semibold flex items-center justify-center shrink-0">
+                    BS
+                  </div>
+<div>
+<h3 class="text-[16px] font-semibold text-appPrimary leading-snug">Bobur Shokirov</h3>
+<p class="text-[14px] text-appSecondary mt-0.5">Backend developer</p>
+<div class="flex items-center gap-1.5 mt-1.5 text-[13px] text-appSecondary">
+<span class="w-2 h-2 rounded-full bg-appGreen"></span>
+<span>Tashkent</span>
+</div>
+</div>
+</div>
+<!-- Skill Chips -->
+<div class="flex flex-wrap gap-1.5 mt-5">
+<span class="px-3 py-1 rounded-full text-[13px] bg-appBlue text-white font-medium">Python</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">FastAPI</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">PostgreSQL</span>
+</div>
+<!-- Match Reasons -->
+<div class="flex items-center gap-3 text-[13px] text-appSecondary mt-4">
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> Python
+                  </span>
+<span class="flex items-center gap-1">
+<span class="text-appBlue font-semibold">✓</span> Tashkent
+                  </span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full mt-5 py-2 px-4 rounded-full border border-appBorder bg-transparent hover:bg-white/[0.04] active:bg-white/[0.08] text-appPrimary text-[14px] font-medium transition-colors" type="button">
+                Connect
+              </button>
+</article>
+</div>
+</section>
+<!-- END: PeopleForYouSection -->
+<!-- BEGIN: ProjectsForYouSection -->
+<section aria-label="Projects for you">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-[18px] font-semibold text-appPrimary">Projects for you</h2>
+</div>
+<!-- Project Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Project Card 1: UzOCR -->
+<article class="bg-appCard border border-appBorder rounded-[20px] p-5 flex flex-col justify-between">
+<div>
+<!-- Top Row: Icon, Title, Status -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#26233A] border border-white/5 flex items-center justify-center">
+<div class="w-5 h-5 rounded-md bg-[#383353]/60"></div>
+</div>
+<h3 class="text-[16px] font-semibold text-appPrimary">UzOCR</h3>
+</div>
+<span class="px-3 py-0.5 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">
+                    Building
+                  </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-appSecondary mt-3.5 leading-relaxed">
+                  Reads Uzbek text from photos
+                </p>
+<!-- Tech Chips -->
+<div class="flex flex-wrap gap-1.5 mt-4">
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">Python</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">FastAPI</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">PyTorch</span>
+</div>
+</div>
+<!-- Footer: Members & Needs -->
+<div class="flex items-center justify-between pt-5 mt-4 border-t border-[#232034] text-[13px]">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5 overflow-hidden">
+<div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#26233A] border border-appCard text-[9px] font-medium text-appPrimary">BS</div>
+<div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#353150] border border-appCard text-[9px] font-medium text-appPrimary">DY</div>
+<div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#464166] border border-appCard text-[9px] font-medium text-appPrimary">SU</div>
+</div>
+<span class="text-appSecondary">3 members</span>
+</div>
+<div class="text-appSecondary">
+                  Needs: <span class="font-semibold text-appPrimary">Frontend</span>
+</div>
+</div>
+</article>
+<!-- Project Card 2: EduBot -->
+<article class="bg-appCard border border-appBorder rounded-[20px] p-5 flex flex-col justify-between">
+<div>
+<!-- Top Row: Icon, Title, Status -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-[#26233A] border border-white/5 flex items-center justify-center">
+<div class="w-5 h-5 rounded-md bg-[#383353]/60"></div>
+</div>
+<h3 class="text-[16px] font-semibold text-appPrimary">EduBot</h3>
+</div>
+<span class="px-3 py-0.5 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">
+                    Looking for members
+                  </span>
+</div>
+<!-- Description -->
+<p class="text-[15px] text-appSecondary mt-3.5 leading-relaxed">
+                  Telegram bot that helps students plan exams
+                </p>
+<!-- Tech Chips -->
+<div class="flex flex-wrap gap-1.5 mt-4">
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">Python</span>
+<span class="px-3 py-1 rounded-full text-[13px] bg-[#221f33] text-appSecondary border border-[#2e2a47]">aiogram</span>
+</div>
+</div>
+<!-- Footer: Members & Needs -->
+<div class="flex items-center justify-between pt-5 mt-4 border-t border-[#232034] text-[13px]">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-1.5 overflow-hidden">
+<div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#26233A] border border-appCard text-[9px] font-medium text-appPrimary">JA</div>
+<div class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#353150] border border-appCard text-[9px] font-medium text-appPrimary">NR</div>
+</div>
+<span class="text-appSecondary">2 members</span>
+</div>
+<div class="text-appSecondary">
+                  Needs: <span class="font-semibold text-appPrimary">Designer</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- END: ProjectsForYouSection -->
+</div>
+<!-- END: LeftColumn -->
+<!-- BEGIN: RightColumn -->
+<aside aria-label="Sidebar details" class="lg:col-span-4 flex flex-col gap-6">
+<!-- BEGIN: ProfileStrengthenCard -->
+<section aria-label="Make your profile stronger" class="bg-appCard border border-appBorder rounded-[20px] p-5">
+<h2 class="text-[16px] font-semibold text-appPrimary leading-tight">Make your profile stronger</h2>
+<ul class="flex flex-col gap-3 mt-4">
+<!-- Checklist Item 1 -->
+<li class="flex items-center gap-3">
+<span class="w-4 h-4 rounded border border-[#3b3659] inline-block shrink-0"></span>
+<span class="text-[14px] text-appSecondary">Add your latest project</span>
+</li>
+<!-- Checklist Item 2 -->
+<li class="flex items-center gap-3">
+<span class="w-4 h-4 rounded border border-[#3b3659] inline-block shrink-0"></span>
+<span class="text-[14px] text-appSecondary">Add education</span>
+</li>
+<!-- Checklist Item 3 -->
+<li class="flex items-center gap-3">
+<span class="w-4 h-4 rounded border border-[#3b3659] inline-block shrink-0"></span>
+<span class="text-[14px] text-appSecondary">Add proof for your React skill</span>
+</li>
+</ul>
+</section>
+<!-- END: ProfileStrengthenCard -->
+<!-- BEGIN: NetworkFeedCard -->
+<section aria-label="From your network" class="bg-appCard border border-appBorder rounded-[20px] p-5">
+<h2 class="text-[16px] font-semibold text-appPrimary leading-tight">From your network</h2>
+<div class="flex flex-col gap-4 mt-4">
+<!-- Feed Item 1: Madina Karimova -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#26233A] text-appPrimary text-[12px] font-semibold flex items-center justify-center shrink-0">
+                MK
+              </div>
+<div class="text-[14px] leading-snug">
+<p class="text-appSecondary">
+<span class="font-semibold text-appPrimary">Madina Karimova</span> joined AI Hackathon Tashkent
+                </p>
+<span class="text-[13px] text-appSecondary/80 inline-block mt-0.5">2h</span>
+</div>
+</div>
+<!-- Feed Item 2: Bobur Shokirov -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#26233A] text-appPrimary text-[12px] font-semibold flex items-center justify-center shrink-0">
+                BS
+              </div>
+<div class="text-[14px] leading-snug">
+<p class="text-appSecondary">
+<span class="font-semibold text-appPrimary">Bobur Shokirov</span> launched UzOCR
+                </p>
+<span class="text-[13px] text-appSecondary/80 inline-block mt-0.5">5h</span>
+</div>
+</div>
+<!-- Feed Item 3: Jasur Aliyev -->
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-[#26233A] text-appPrimary text-[12px] font-semibold flex items-center justify-center shrink-0">
+                JA
+              </div>
+<div class="text-[14px] leading-snug">
+<p class="text-appSecondary">
+<span class="font-semibold text-appPrimary">Jasur Aliyev</span> started an internship at Uzum
+                </p>
+<span class="text-[13px] text-appSecondary/80 inline-block mt-0.5">1d</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: NetworkFeedCard -->
+</aside>
+<!-- END: RightColumn -->
+</div>
+</main>
+<!-- END: MainContent -->
+</body></html>

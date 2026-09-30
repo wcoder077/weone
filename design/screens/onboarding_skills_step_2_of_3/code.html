@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onboarding - What are you good at?</title>
+<!-- Tailwind CSS v3 with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#08070D',
+              surface: '#171522',
+              border: '#26233A',
+              primary: '#3D4BFF',
+              textPrimary: '#F4F5F8',
+              textSecondary: '#8E8BA3'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles for Typography and Background Radial Glow -->
+<style data-purpose="custom-styling">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+      background-color: #08070D;
+      color: #F4F5F8;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Soft ambient top light effect */
+    .top-glow-effect {
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(61, 75, 255, 0.12) 0%, rgba(8, 7, 13, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+  </style>
+</head>
+<body class="bg-brand-bg antialiased selection:bg-brand-primary selection:text-white">
+<!-- Background top ambient glow -->
+<div aria-hidden="true" class="top-glow-effect"></div>
+<!-- BEGIN: SiteHeader -->
+<header class="relative z-10 w-full px-8 py-6 max-w-[1440px] mx-auto flex items-center justify-between" data-purpose="top-navigation-header">
+<!-- Brand Logo "we1" -->
+<a aria-label="we1 home" class="text-xl font-bold tracking-tight inline-flex items-baseline focus:outline-none" href="#">
+<span class="text-[#F4F5F8]">we</span><span class="text-brand-primary">1</span>
+</a>
+</header>
+<!-- END: SiteHeader -->
+<!-- BEGIN: MainContent -->
+<main class="relative z-10 max-w-[640px] mx-auto px-6 pt-2 pb-16 w-full" data-purpose="skills-onboarding-form">
+<!-- Top Progress Bar (Step 2 of 3: ~66%) -->
+<div class="w-full mb-8" data-purpose="progress-container">
+<div class="w-full h-[3px] bg-brand-border rounded-full overflow-hidden">
+<div class="h-full bg-brand-primary rounded-full transition-all duration-300" style="width: 66.6%;"></div>
+</div>
+</div>
+<!-- Step Label & Title Section -->
+<div class="mb-8" data-purpose="header-section">
+<span class="text-sm font-normal text-brand-textSecondary block mb-3">Step 2 of 3</span>
+<h1 class="text-[32px] leading-tight font-bold text-brand-textPrimary mb-3 tracking-[-0.01em]">What are you good at?</h1>
+<p class="text-[15px] leading-relaxed text-brand-textSecondary">Pick 3 to 10 skills. You can prove them later with projects and events.</p>
+</div>
+<!-- Search Input -->
+<div class="mb-9" data-purpose="skill-search-field">
+<div class="relative w-full">
+<input aria-label="Search skills" class="w-full bg-[#11101A] border border-brand-border rounded-xl px-4 py-3 text-[15px] text-brand-textPrimary placeholder:text-brand-textSecondary focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors" placeholder="Search skills" type="text"/>
+</div>
+</div>
+<!-- BEGIN: SkillsCategoriesSection -->
+<div class="space-y-7 mb-14" data-purpose="skill-chip-groups">
+<!-- Category 1: Programming -->
+<section data-purpose="category-programming">
+<h2 class="text-base font-semibold text-brand-textPrimary mb-3.5">Programming</h2>
+<div class="flex flex-wrap gap-2.5">
+<!-- Selected: React -->
+<button class="bg-brand-primary text-white text-sm font-medium px-4 py-1.5 rounded-full border border-brand-primary transition-colors hover:brightness-110" type="button">
+            React
+          </button>
+<!-- Selected: TypeScript -->
+<button class="bg-brand-primary text-white text-sm font-medium px-4 py-1.5 rounded-full border border-brand-primary transition-colors hover:brightness-110" type="button">
+            TypeScript
+          </button>
+<!-- Selected: Python -->
+<button class="bg-brand-primary text-white text-sm font-medium px-4 py-1.5 rounded-full border border-brand-primary transition-colors hover:brightness-110" type="button">
+            Python
+          </button>
+<!-- Unselected: Node.js -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Node.js
+          </button>
+<!-- Unselected: SQL -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            SQL
+          </button>
+</div>
+</section>
+<!-- Category 2: Design -->
+<section data-purpose="category-design">
+<h2 class="text-base font-semibold text-brand-textPrimary mb-3.5">Design</h2>
+<div class="flex flex-wrap gap-2.5">
+<!-- Selected: Figma -->
+<button class="bg-brand-primary text-white text-sm font-medium px-4 py-1.5 rounded-full border border-brand-primary transition-colors hover:brightness-110" type="button">
+            Figma
+          </button>
+<!-- Unselected: UI/UX -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            UI/UX
+          </button>
+<!-- Unselected: Prototyping -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Prototyping
+          </button>
+</div>
+</section>
+<!-- Category 3: Product -->
+<section data-purpose="category-product">
+<h2 class="text-base font-semibold text-brand-textPrimary mb-3.5">Product</h2>
+<div class="flex flex-wrap gap-2.5">
+<!-- Unselected: Research -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Research
+          </button>
+<!-- Unselected: Roadmaps -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Roadmaps
+          </button>
+</div>
+</section>
+<!-- Category 4: Tools -->
+<section data-purpose="category-tools">
+<h2 class="text-base font-semibold text-brand-textPrimary mb-3.5">Tools</h2>
+<div class="flex flex-wrap gap-2.5">
+<!-- Selected: Git -->
+<button class="bg-brand-primary text-white text-sm font-medium px-4 py-1.5 rounded-full border border-brand-primary transition-colors hover:brightness-110" type="button">
+            Git
+          </button>
+<!-- Unselected: Docker -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Docker
+          </button>
+<!-- Unselected: Notion -->
+<button class="bg-brand-surface text-brand-textSecondary text-sm font-medium px-4 py-1.5 rounded-full border border-brand-border transition-colors hover:border-brand-textSecondary hover:text-brand-textPrimary" type="button">
+            Notion
+          </button>
+</div>
+</section>
+</div>
+<!-- END: SkillsCategoriesSection -->
+<!-- BEGIN: NavigationFooter -->
+<div class="flex items-center justify-between pt-2" data-purpose="step-actions">
+<!-- Back Action -->
+<button class="text-sm font-medium text-brand-textSecondary hover:text-brand-textPrimary transition-colors py-2 px-1 focus:outline-none" type="button">
+        Back
+      </button>
+<!-- Next Action -->
+<button class="bg-brand-primary text-white text-sm font-medium px-7 py-2.5 rounded-full hover:bg-opacity-95 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary focus:ring-offset-brand-bg" type="button">
+        Next
+      </button>
+</div>
+<!-- END: NavigationFooter -->
+</main>
+<!-- END: MainContent -->
+</body></html>
