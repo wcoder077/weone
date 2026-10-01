@@ -10,9 +10,33 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const DESCRIPTION =
+  "Gen Z uchun professional tarmoq: ko'nikmalaringizni isbot bilan ko'rsating, maqsaddoshlarni toping va birga loyiha quring.";
+
+// Absolute URLs for link previews (Telegram, etc.). On Vercel the production domain is
+// provided at build time; NEXT_PUBLIC_SITE_URL overrides it for a custom domain.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "we1", template: "%s · we1" },
-  description: "Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
+  description: DESCRIPTION,
+  // Link previews always show the app (logo from app/opengraph-image.png), even for pages
+  // a signed-out preview bot is redirected away from.
+  openGraph: {
+    type: "website",
+    siteName: "we1",
+    title: "we1 — Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
+    description: DESCRIPTION,
+    locale: "uz_UZ",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "we1 — Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
+    description: DESCRIPTION,
+  },
   icons: { apple: "/icons/apple-touch-icon.png" },
   // Installed on iOS: full-screen, content draws under a translucent status bar
   // (bars pad themselves with env(safe-area-inset-top)).
