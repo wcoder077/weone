@@ -3,12 +3,12 @@
 import { useActionState, useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { saveSkills } from "@/lib/actions/onboarding";
-import { ONBOARDING_SKILLS, SKILL_CATEGORIES, SKILL_LEVELS, type SkillLevel } from "@/lib/constants";
+import { ONBOARDING_SKILLS, SKILL_CATEGORIES, type SkillLevel } from "@/lib/constants";
 import type { Skill } from "@/lib/queries/skills";
 import { FormMessage } from "@/components/shared/form-field";
+import { LevelPicker } from "@/components/shared/level-picker";
 import { ToggleChip } from "@/components/shared/skill-chip";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { StepFooter } from "./step-shell";
 
 type Picked = Map<string, SkillLevel>;
@@ -119,35 +119,5 @@ export function SkillsStep({
         <FormMessage error={state?.error} />
       </StepFooter>
     </form>
-  );
-}
-
-function LevelPicker({
-  skillName,
-  value,
-  onChange,
-}: {
-  skillName: string;
-  value: SkillLevel;
-  onChange: (level: SkillLevel) => void;
-}) {
-  return (
-    <div role="radiogroup" aria-label={`${skillName} darajasi`} className="bg-surface flex rounded-full p-1">
-      {SKILL_LEVELS.map((level) => (
-        <button
-          key={level.value}
-          type="button"
-          role="radio"
-          aria-checked={value === level.value}
-          onClick={() => onChange(level.value)}
-          className={cn(
-            "min-h-11 rounded-full px-3 text-[13px] font-medium transition-colors sm:min-h-9",
-            value === level.value ? "bg-card text-text" : "text-muted hover:text-text",
-          )}
-        >
-          {level.label}
-        </button>
-      ))}
-    </div>
   );
 }

@@ -20,3 +20,10 @@
 - Onboarding `?step=1|2|3`: avatar upload straight to `avatars/<uid>/` (browser client, storage RLS; action re-checks URL prefix), live username check, city datalist, 3–10 skills with level picker, looking-for chips + online switch. Finish requires ≥3 skills, sets `onboarded`.
 - Navbar avatar menu (profile, settings, sign out); `/profile` redirects to `/u/[username]`. `typecheck` now runs `next typegen` first.
 - Project settings to check: email confirmation is ON (sign-up shows "check your email"); Google provider is OFF in Supabase Auth — enable it and add `<site>/auth/callback` to redirect URLs. Signed-in flows not yet clicked through (no test account); verified via build + route checks.
+
+## Phase 4 — Profile (done)
+- `/u/[username]`: header (avatar + available dot, headline, city, looking for), left column (about, skills with computed evidence "N loyiha · N tadbir", education, looking for, languages, interests), URL tabs Journey (by year, Verified marks) · Projects · Highlights (journey items with result + launched projects).
+- Journey add/edit/delete in a responsive dialog (bottom sheet on mobile); "Tasdiqlash" shows on others' hackathon/competition items when the viewer has a matching event (TS mirror of the DB rule; RLS re-checks).
+- Add skill dialog: search or create (category Other), level, "Qayerda ishlatgansiz?" (owned projects + journey items) with live evidence preview; links synced exactly. Non-owned projects count but can't be edited.
+- `/settings/profile`: profile form (+ bio, languages/interests tag inputs, looking for, available/online switches), skill level/remove, education add/remove.
+- Connect / Message / Collaborate buttons on others' profiles come in Phase 7.

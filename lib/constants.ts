@@ -56,3 +56,43 @@ export function labelOf<T extends { value: string; label: string }>(
 ) {
   return options.find((o) => o.value === value)?.label ?? value;
 }
+
+export const JOURNEY_TYPES = [
+  { value: "hackathon", label: "Hackathon" },
+  { value: "competition", label: "Musobaqa" },
+  { value: "job", label: "Ish" },
+  { value: "internship", label: "Amaliyot" },
+  { value: "project", label: "Loyiha" },
+  { value: "open_source", label: "Open source" },
+  { value: "course", label: "Kurs" },
+  { value: "workshop", label: "Ustaxona" },
+  { value: "meetup", label: "Uchrashuv" },
+  { value: "conference", label: "Konferensiya" },
+  { value: "volunteer", label: "Volontyorlik" },
+  { value: "other", label: "Boshqa" },
+] as const;
+
+export type JourneyType = (typeof JOURNEY_TYPES)[number]["value"];
+export const JOURNEY_TYPE_VALUES = JOURNEY_TYPES.map((o) => o.value) as [JourneyType, ...JourneyType[]];
+// Only these can be confirmed by another participant.
+export const CONFIRMABLE_TYPES: readonly string[] = ["hackathon", "competition"];
+
+export const PROJECT_STATUSES = [
+  { value: "idea", label: "G'oya" },
+  { value: "building", label: "Ishlanmoqda" },
+  { value: "launched", label: "Ishga tushgan" },
+] as const;
+
+export type ProjectStatus = (typeof PROJECT_STATUSES)[number]["value"];
+export const PROJECT_STATUS_VALUES = PROJECT_STATUSES.map((o) => o.value) as [
+  ProjectStatus,
+  ...ProjectStatus[],
+];
+
+// "React · 4 loyiha · 2 tadbir"
+export function evidenceText(projects: number, events: number) {
+  const parts: string[] = [];
+  if (projects > 0) parts.push(`${projects} loyiha`);
+  if (events > 0) parts.push(`${events} tadbir`);
+  return parts.join(" · ");
+}
