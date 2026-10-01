@@ -212,4 +212,4 @@
 - Live without a migration: when a chat marks itself read, `markConversationRead` returns the new time and the chat broadcasts it on the chat's Realtime channel (re-sent on every join, so an early announce isn't lost); the other open chat turns ✓ into ✓✓ at once. `subscribeWithAuth` got an `onSubscribed` callback. Trade-off: broadcasts aren't verified, so a modified client could fake "read" for its own side only.
 
 ## Compact person cards (done)
-- `PersonCard` (Discover, Find): 16 px padding, 40 px avatar, name + one line "headline · city", at most 3 small skill chips (matched first, highlighted) and "+N", connect button bottom right at its own width. "Profilni ko'rish" button removed: the whole card opens the profile (stretched link), the action buttons sit above it.
+- `PersonCard` (Discover, Find): 16 px padding, 40 px avatar, name + one line "headline · city", 2 small skill chips (matched first, highlighted, never wrapping) and "+N" in the same row as the connect button (40 px), so a card is about half its old height. "Profilni ko'rish" button removed: the whole card opens the profile (stretched link), the action buttons sit above it.
