@@ -431,6 +431,7 @@ export type Database = {
           image_path: string | null
           kind: string
           project_id: string | null
+          reply_to: string | null
           sender_id: string
         }
         Insert: {
@@ -446,6 +447,7 @@ export type Database = {
           image_path?: string | null
           kind?: string
           project_id?: string | null
+          reply_to?: string | null
           sender_id: string
         }
         Update: {
@@ -461,6 +463,7 @@ export type Database = {
           image_path?: string | null
           kind?: string
           project_id?: string | null
+          reply_to?: string | null
           sender_id?: string
         }
         Relationships: [

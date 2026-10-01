@@ -16,15 +16,23 @@ const SIGNED_URL_SECONDS = 60 * 60;
 type SendResult = { message: ChatMessage } | { error: string };
 
 // RLS checks the sender is a member of the conversation.
-export async function sendMessage(conversationId: string, body: string): Promise<SendResult> {
+// `replyTo`: the quoted message (RLS checks it belongs to the same chat).
+export async function sendMessage(conversationId: string, body: string, replyTo?: string): Promise<SendResult> {
   const userId = await requireUserId();
-  const parsed = z.object({ conversationId: idSchema, body: bodySchema }).safeParse({ conversationId, body });
+  const parsed = z
+    .object({ conversationId: idSchema, body: bodySchema, replyTo: idSchema.optional() })
+    .safeParse({ conversationId, body, replyTo });
   if (!parsed.success) return { error: "Xabar bo'sh yoki juda uzun." };
 
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("messages")
-    .insert({ conversation_id: parsed.data.conversationId, sender_id: userId, body: parsed.data.body })
+    .insert({
+      conversation_id: parsed.data.conversationId,
+      sender_id: userId,
+      body: parsed.data.body,
+      reply_to: parsed.data.replyTo ?? null,
+    })
     .select(MESSAGE_FIELDS)
     .single();
   if (error) return { error: "Xabarni yuborib bo'lmadi." };
@@ -37,6 +45,7 @@ export async function sendAttachment(
   conversationId: string,
   file: { path: string; name: string; kind: string; size: number },
   caption: string,
+  replyTo?: string,
 ): Promise<SendResult> {
   const userId = await requireUserId();
   const parsed = z
@@ -47,8 +56,9 @@ export async function sendAttachment(
       kind: z.enum(ATTACHMENT_KINDS),
       size: z.number().int().positive().max(ATTACHMENT_MAX_BYTES),
       caption: z.string().trim().max(4000),
+      replyTo: idSchema.optional(),
     })
-    .safeParse({ conversationId, ...file, caption });
+    .safeParse({ conversationId, ...file, caption, replyTo });
   if (!parsed.success) return { error: "Faylni yuborib bo'lmadi." };
 
   const supabase = await createClient();
@@ -62,6 +72,7 @@ export async function sendAttachment(
       attachment_name: parsed.data.name,
       attachment_type: parsed.data.kind,
       attachment_size: parsed.data.size,
+      reply_to: parsed.data.replyTo ?? null,
     })
     .select(ATTACHMENT_FIELDS)
     .single();

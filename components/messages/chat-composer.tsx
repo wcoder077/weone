@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from "react";
-import { FileText, Loader2, Send, Video, X } from "lucide-react";
+import { FileText, Loader2, Reply, Send, Video, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   ATTACHMENT_BUCKET,
@@ -12,7 +12,7 @@ import {
   type AttachmentKind,
 } from "@/lib/attachments";
 import { sendAttachment, sendMessage } from "@/lib/actions/messages";
-import type { ChatMessage } from "@/lib/queries/messages";
+import type { ChatMessage, ChatReply } from "@/lib/queries/messages";
 import { createClient } from "@/lib/supabase/client";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
@@ -21,20 +21,31 @@ import { AttachMenu } from "./attach-menu";
 type Staged = { file: File; kind: AttachmentKind; previewUrl: string | null };
 
 // Text + emoji, plus one photo / video / file at a time (with an optional caption).
-// Enter sends, Shift+Enter adds a line.
+// `replyTo` quotes a message (Esc or ✕ cancels). Enter sends, Shift+Enter adds a line.
 export function ChatComposer({
   conversationId,
   meId,
   onSent,
+  replyTo,
+  replyName,
+  onCancelReply,
 }: {
   conversationId: string;
   meId: string;
   onSent: (message: ChatMessage) => void;
+  replyTo: ChatReply | null;
+  replyName: string;
+  onCancelReply: () => void;
 }) {
   const [draft, setDraft] = useState("");
   const [staged, setStaged] = useState<Staged | null>(null);
   const [sending, startSending] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
+
+  // Choosing "Javob berish" puts the cursor in the field.
+  useEffect(() => {
+    if (replyTo) fieldRef.current?.focus();
+  }, [replyTo]);
 
   // Free the thumbnail's object URL when it is replaced, removed or the chat closes.
   useEffect(() => {
@@ -59,7 +70,9 @@ export function ChatComposer({
     const body = draft.trim();
     if ((!body && !staged) || sending) return;
     startSending(async () => {
-      const result = staged ? await uploadAndSend(staged, body) : await sendMessage(conversationId, body);
+      const result = staged
+        ? await uploadAndSend(staged, body)
+        : await sendMessage(conversationId, body, replyTo?.id);
       if ("error" in result) {
         toast.error(result.error);
         return;
@@ -77,10 +90,20 @@ export function ChatComposer({
       .storage.from(ATTACHMENT_BUCKET)
       .upload(path, item.file, { contentType: item.file.type });
     if (error) return { error: "Faylni yuklab bo'lmadi. Qayta urinib ko'ring." };
-    return sendAttachment(conversationId, { path, name: item.file.name, kind: item.kind, size: item.file.size }, caption);
+    return sendAttachment(
+      conversationId,
+      { path, name: item.file.name, kind: item.kind, size: item.file.size },
+      caption,
+      replyTo?.id,
+    );
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Escape" && replyTo) {
+      e.preventDefault();
+      onCancelReply();
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       send();
@@ -95,6 +118,23 @@ export function ChatComposer({
       }}
       className="border-border bg-card flex shrink-0 flex-col gap-2 border-t p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
+      {replyTo ? (
+        <div className="bg-surface/60 flex items-center gap-2 rounded-2xl py-1 pr-1 pl-3">
+          <Reply className="text-primary size-4 shrink-0" aria-hidden />
+          <span className="border-primary min-w-0 flex-1 border-l-[3px] pl-2">
+            <span className="text-primary block truncate text-[12px] font-semibold">{replyName} ga javob</span>
+            <span className="text-muted block truncate text-[13px]">{replyTo.preview}</span>
+          </span>
+          <button
+            type="button"
+            onClick={onCancelReply}
+            aria-label="Javobni bekor qilish"
+            className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+      ) : null}
       {staged ? <StagedPreview staged={staged} sending={sending} onRemove={() => setStaged(null)} /> : null}
       <div className="flex items-end gap-2">
         {/* Telegram-style pill: emoji on the left, text in the middle, paperclip on the right. */}

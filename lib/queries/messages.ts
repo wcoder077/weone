@@ -1,4 +1,5 @@
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
+import { messagePreview } from "@/lib/message-preview";
 import { readStatus } from "@/lib/read-status";
 import { createClient } from "@/lib/supabase/server";
 
@@ -85,7 +86,7 @@ export async function getConversations(userId: string) {
 export type ConversationSummary = Awaited<ReturnType<typeof getConversations>>[number];
 
 const MESSAGE_FIELDS =
-  "id, sender_id, body, kind, project_id, image_path, edited_at, created_at, attachment_path, attachment_name, attachment_type, attachment_size, projects(name, slug, tagline, logo_url)";
+  "id, sender_id, body, kind, project_id, image_path, edited_at, created_at, reply_to, attachment_path, attachment_name, attachment_type, attachment_size, projects(name, slug, tagline, logo_url)";
 
 // Null when the conversation does not exist or the user is not a member (RLS).
 export async function getConversation(conversationId: string, userId: string) {
@@ -130,6 +131,20 @@ export async function getConversation(conversationId: string, userId: string) {
     signedAttachments.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])),
   );
 
+  // Quoted messages for replies; older ones outside the loaded page are fetched once.
+  const loaded = new Map(visible.map((m) => [m.id, m]));
+  const missing = [...new Set(visible.flatMap((m) => (m.reply_to && !loaded.has(m.reply_to) ? [m.reply_to] : [])))];
+  const quotedRows = missing.length
+    ? ((await supabase.from("messages").select("id, sender_id, body, kind, attachment_type, image_path").in("id", missing)).data ?? [])
+    : [];
+  const quoted = new Map<string, { id: string; sender_id: string; body: string; kind: string; attachment_type: string | null; image_path: string | null }>(
+    [...visible, ...quotedRows].map((m) => [m.id, m]),
+  );
+  const replyOf = (id: string | null): ChatReply | null => {
+    const q = id ? quoted.get(id) : undefined;
+    return q ? { id: q.id, senderId: q.sender_id, preview: messagePreview(q) } : null;
+  };
+
   const connection = conversation.data?.connections ?? null;
   const other = members.data.find((m) => m.user_id !== userId);
   return {
@@ -142,7 +157,7 @@ export async function getConversation(conversationId: string, userId: string) {
     messages: visible
       .reverse()
       .map((m) => ({
-        ...toChatMessage(m, m.attachment_path ? attachmentUrls.get(m.attachment_path) : undefined),
+        ...toChatMessage(m, m.attachment_path ? attachmentUrls.get(m.attachment_path) : undefined, replyOf(m.reply_to)),
         imageUrl: m.image_path ? (imageUrls.get(m.image_path) ?? null) : null,
       })),
   };
@@ -166,8 +181,11 @@ type MessageRow = {
 
 export type ChatAttachment = { url: string; name: string; kind: AttachmentKind; size: number };
 
+// The message a reply quotes: who wrote it and a one-line preview.
+export type ChatReply = { id: string; senderId: string; preview: string };
+
 // `attachmentUrl` is the signed URL of the row's attachment (callers sign it, see getConversation).
-export function toChatMessage(row: MessageRow, attachmentUrl?: string) {
+export function toChatMessage(row: MessageRow, attachmentUrl?: string, replyTo: ChatReply | null = null) {
   const attachment: ChatAttachment | null =
     row.attachment_path && row.attachment_name && row.attachment_type && row.attachment_size && attachmentUrl
       ? { url: attachmentUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
@@ -183,6 +201,7 @@ export function toChatMessage(row: MessageRow, attachmentUrl?: string) {
     editedAt: row.edited_at ?? null,
     imageUrl: null as string | null,
     attachment,
+    replyTo,
   };
 }
 
