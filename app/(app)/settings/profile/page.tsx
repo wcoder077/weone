@@ -3,6 +3,7 @@ import { SectionCard } from "@/components/profile/profile-sections";
 import { EducationManager } from "@/components/settings/education-manager";
 import { SettingsForm } from "@/components/settings/settings-form";
 import { SkillsManager } from "@/components/settings/skills-manager";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import type { SkillLevel } from "@/lib/constants";
 import { getProfilePage } from "@/lib/queries/profile-page";
 import { getMyProfile } from "@/lib/queries/profiles";
@@ -32,6 +33,12 @@ export default async function SettingsProfilePage() {
       </SectionCard>
       <SectionCard title="Ta'lim">
         <EducationManager education={page.education} />
+      </SectionCard>
+      <SectionCard title="Ko'rinish">
+        <div className="flex flex-col gap-3">
+          <p className="text-muted text-[14px]">Mavzu. «Tizim» qurilmangiz sozlamasiga qarab o&apos;zgaradi.</p>
+          <ThemeToggle />
+        </div>
       </SectionCard>
     </div>
   );

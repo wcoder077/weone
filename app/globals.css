@@ -4,9 +4,10 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-/* WeOne tokens (spec section 2). Dark only for now; light mode comes later by
-   redefining these same variables under a class. */
-:root {
+/* WeOne tokens (spec section 2). Dark is the default; [data-theme] on <html>
+   (set before first paint by the script in app/layout.tsx) switches theme. */
+:root,
+[data-theme="dark"] {
   --bg: #08070d;
   --surface: #11101a;
   --card: #171522;
@@ -14,16 +15,48 @@
   --text: #f4f5f8;
   --muted: #8e8ba3;
   --primary: #3d4bff;
+  --primary-hover: #5561ff;
   --success: #22c55e;
   --danger: #f05252;
+  --on-accent: #ffffff;
 
+  --glass-fill: rgb(17 16 26 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.1);
+  --glow: rgb(61 75 255 / 0.16);
+  --chat-tint: rgb(61 75 255 / 0.06);
+  --bubble-mine: #262b6b;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f6f6fa;
+  --surface: #eeedf4;
+  --card: #ffffff;
+  --border: #dddbe7;
+  --text: #15131f;
+  --muted: #5d5a70;
+  --primary: #3d4bff;
+  --primary-hover: #2f3cf0;
+  --success: #136c35;
+  --danger: #c81e1e;
+  --on-accent: #ffffff;
+
+  --glass-fill: rgb(255 255 255 / 0.75);
+  --glass-border: rgb(21 19 31 / 0.08);
+  --glow: rgb(61 75 255 / 0.1);
+  --chat-tint: rgb(61 75 255 / 0.05);
+  --bubble-mine: #e3e5ff;
+  color-scheme: light;
+}
+
+:root {
   /* shadcn names mapped onto the tokens above */
   --background: var(--bg);
   --foreground: var(--text);
   --card-foreground: var(--text);
   --popover: var(--card);
   --popover-foreground: var(--text);
-  --primary-foreground: #ffffff;
+  --primary-foreground: var(--on-accent);
   --secondary: var(--surface);
   --secondary-foreground: var(--text);
   --muted-foreground: var(--muted);
@@ -34,8 +67,6 @@
   --ring: var(--primary);
 
   --radius: 1.25rem;
-  --glass-fill: rgb(255 255 255 / 0.08);
-  --glass-border: rgb(255 255 255 / 0.12);
 }
 
 @theme inline {
@@ -48,6 +79,9 @@
   --color-primary: var(--primary);
   --color-success: var(--success);
   --color-danger: var(--danger);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-accent: var(--on-accent);
+  --color-bubble-mine: var(--bubble-mine);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -83,13 +117,12 @@
   }
   html {
     @apply font-sans;
-    color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground min-h-dvh text-[15px];
     background-image: radial-gradient(
       60rem 22rem at 50% -8rem,
-      rgb(61 75 255 / 0.16),
+      var(--glow),
       transparent 70%
     );
     background-repeat: no-repeat;

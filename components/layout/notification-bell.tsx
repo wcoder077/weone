@@ -43,7 +43,7 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
     >
       <Bell className="size-5" />
       {count > 0 && !onPage ? (
-        <span className="bg-danger absolute top-1.5 right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[11px] font-semibold text-white">
+        <span className="bg-danger absolute top-1.5 right-1.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-[11px] font-semibold text-on-accent">
           {count > 9 ? "9+" : count}
         </span>
       ) : null}

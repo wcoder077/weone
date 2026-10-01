@@ -73,3 +73,8 @@
 - Migration 13 (pushed): connections SELECT = accepted for every signed-in viewer, pending/rejected only for their two sides (was: only the two sides for everything).
 - Profile tab "Bog'lanishlar": one row per pair (avatar, name, headline, link); badges "Jarayonda" / "Rad etildi" / "Muvaffaqiyatli" shown only when the viewer is one of the two people (or the profile owner); skeleton, empty ("Hali bog'lanishlar yo'q") and retryable error states. Reusable `Badge`, `RetryErrorState`.
 - Verified per viewer: owner sees all with badges; a third party sees accepted only; the rejected sender sees only their own row with "Rad etildi".
+
+## Milestone 3 — Light / dark theme (done)
+- Tokens per theme under `[data-theme="dark"|"light"]` (bg, surface, card, border, text, muted, primary(+hover), success, danger, on-accent, glass, glow, chat tint, own-bubble). All text pairs ≥ 4.5:1 (WCAG AA), checked with a contrast script.
+- Inline head script (`THEME_SCRIPT`, lib/theme.ts) applies localStorage `weone-theme` or prefers-color-scheme before first paint and follows OS changes while on "Tizim"; `<html suppressHydrationWarning>`. Settings → "Ko'rinish": Tizim / Yorug' / Qorong'i radio group (`useSyncExternalStore`). Toasts follow the theme; `themeColor` per scheme.
+- Fixed: shadcn `hover:bg-muted` / skeleton `bg-muted` used our *text* grey as a background (washed-out hover); remapped to accent/surface/border. Last hard-coded colours replaced with tokens.
