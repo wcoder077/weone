@@ -300,3 +300,43 @@ export async function saveSettings(_prev: ActionState, formData: FormData): Prom
   refresh();
   return SAVED;
 }
+
+// ---------------------------------------------------------------------------
+// Banner
+// ---------------------------------------------------------------------------
+
+const bannerSchema = z.object({
+  path: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.webp$/).nullable(),
+  position: z.number().int().min(0).max(100),
+});
+
+// Saves the banner path (already uploaded to banners/<uid>/) and its visible area.
+// The DB check constraint also rejects paths outside the owner's folder.
+export async function saveBanner(path: string | null, position: number): Promise<ActionState> {
+  const userId = await requireUserId();
+  const parsed = bannerSchema.safeParse({ path, position });
+  if (!parsed.success || (parsed.data.path && !parsed.data.path.startsWith(`${userId}/`))) {
+    return { error: "Muqovani qayta yuklang." };
+  }
+
+  const supabase = await createClient();
+  if (parsed.data.path) {
+    const [folder, name] = parsed.data.path.split("/");
+    const { data: found } = await supabase.storage.from("banners").list(folder, { search: name });
+    if (!found?.some((f) => f.name === name)) return { error: "Muqovani qayta yuklang." };
+  }
+
+  const { data: before } = await supabase.from("profiles").select("banner_path").eq("id", userId).single();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ banner_path: parsed.data.path, banner_position: parsed.data.position })
+    .eq("id", userId);
+  if (error) return { error: SAVE_FAILED };
+
+  // The replaced (or removed) image is no longer referenced.
+  if (before?.banner_path && before.banner_path !== parsed.data.path) {
+    await supabase.storage.from("banners").remove([before.banner_path]);
+  }
+  refresh();
+  return { message: parsed.data.path ? "Muqova saqlandi" : "Muqova olib tashlandi" };
+}

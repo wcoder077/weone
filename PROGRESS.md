@@ -107,3 +107,8 @@
 
 ## Round 3 / 2 — Bar shape (done)
 - Header: floating glass bar inset 8–12 px from the edges, 20 px bottom radius (`rounded-b-bar`), border without top edge, soft themed shadow (`--bar-shadow`). Mobile tab bar: docked to the bottom, 20 px top radius, upward shadow, safe-area padding (`viewport-fit=cover`). Verified in both themes at 390 and 1440 px.
+
+## Round 3 / 3 — Profile banner (IN PROGRESS, not pushed)
+- Done: migration 15 (applied locally only, NOT pushed): `profiles.banner_path` (check: own folder only) + `banner_position` 0–100, public `banners` bucket (5 MB, jpg/png/webp, owner-folder writes) — SQL-tested. `saveBanner()` server action (path regex, file exists, old file deleted). `lib/image.ts` client validate + downscale/WebP compression (reusable for post images).
+- Left: banner display in `ProfileHeader` (image or brand gradient, bottom fade, avatar overlapping), owner editor dialog (upload / position slider / remove), push migration 15 + `pnpm db:types`.
+- Then: milestone 4 (post images + feed as /home), milestone 5 (recommendations with `calculateMatchScore` + tests, /find default list).
