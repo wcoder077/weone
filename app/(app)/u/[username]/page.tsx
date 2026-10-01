@@ -2,7 +2,7 @@ import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FolderKanban, Newspaper, Pencil, Plus, Route, Trophy } from "lucide-react";
+import { FolderKanban, Newspaper, Pencil, Plus, Repeat2, Route, Trophy } from "lucide-react";
 import { AddSkillDialog } from "@/components/profile/add-skill-dialog";
 import { JourneyDialog } from "@/components/profile/journey-dialog";
 import { ConfirmJourneyButton, DeleteJourneyButton } from "@/components/profile/journey-actions";
@@ -42,6 +42,7 @@ import { getAllSkills } from "@/lib/queries/skills";
 const TABS = [
   { value: "journey", label: "Yo'l" },
   { value: "posts", label: "Postlar" },
+  { value: "reposts", label: "Repostlar" },
   { value: "projects", label: "Loyihalar" },
   { value: "highlights", label: "Yutuqlar" },
   { value: "connections", label: "Bog'lanishlar" },
@@ -156,9 +157,9 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           {tab === "journey" ? (
             <JourneyTab page={page} isMe={isMe} viewerId={viewerId} mySkillOptions={mySkillOptions} />
           ) : null}
-          {tab === "posts" ? (
-            <Suspense fallback={<PostsSkeleton />}>
-              <PostsTab authorId={page.profile.id} viewerId={viewerId} isMe={isMe} />
+          {tab === "posts" || tab === "reposts" ? (
+            <Suspense key={tab} fallback={<PostsSkeleton />}>
+              <PostsTab authorId={page.profile.id} viewerId={viewerId} isMe={isMe} kind={tab} />
             </Suspense>
           ) : null}
           {tab === "projects" ? <ProjectsTab projects={page.projects} isMe={isMe} viewerId={viewerId} /> : null}
@@ -252,20 +253,38 @@ async function JourneyTab({
   );
 }
 
-async function PostsTab({ authorId, viewerId, isMe }: { authorId: string; viewerId: string; isMe: boolean }) {
+async function PostsTab({
+  authorId,
+  viewerId,
+  isMe,
+  kind,
+}: {
+  authorId: string;
+  viewerId: string;
+  isMe: boolean;
+  kind: "posts" | "reposts";
+}) {
   let posts;
   try {
-    posts = await getUserPosts(authorId, viewerId);
+    posts = await getUserPosts(authorId, viewerId, kind);
   } catch {
     return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
   }
   if (posts.length === 0) {
-    return (
+    return kind === "posts" ? (
       <EmptyState
         icon={Newspaper}
         title="Hali postlar yo'q"
         description={isMe ? "Nima ustida ishlayotganingizni yozing." : "Bu maqsaddosh hali post joylamagan."}
         action={isMe ? { label: "Post yozish", href: "/posts" } : undefined}
+      />
+    ) : (
+      <EmptyState
+        icon={Repeat2}
+        title="Hali repostlar yo'q"
+        description={
+          isMe ? "Yoqqan postni «…» menyusidan repost qiling." : "Bu maqsaddosh hali hech narsani repost qilmagan."
+        }
       />
     );
   }
@@ -275,7 +294,7 @@ async function PostsTab({ authorId, viewerId, isMe }: { authorId: string; viewer
         <PostCard key={post.id} post={post} isMine={isMe} />
       ))}
       {posts.length === PROFILE_POSTS_LIMIT ? (
-        <p className="text-muted text-center text-[13px]">Oxirgi {PROFILE_POSTS_LIMIT} ta post ko&apos;rsatilgan.</p>
+        <p className="text-muted text-center text-[13px]">Oxirgi {PROFILE_POSTS_LIMIT} tasi ko&apos;rsatilgan.</p>
       ) : null}
     </div>
   );

@@ -184,3 +184,6 @@
 
 ## Link previews (done)
 - `app/opengraph-image.png` (1200×630, the app icon on the brand background, rendered with headless Chromium) + alt text; root metadata now has `metadataBase` (NEXT_PUBLIC_SITE_URL, else Vercel's production domain), openGraph and twitter title ("we1 — Maqsaddoshlarni toping") and description ("Maqsaddoshlar tarmog'i: toping, bog'laning, birga quring."). Every shared link, including posts that redirect signed-out bots to /login, now previews with the logo and the short description. Telegram caches old previews; new links (or @WebpageBot) refresh them.
+
+## Profile reposts (done)
+- Sidebar stats are now Post · Repost · Bog'lanish · Loyiha (4 compact boxes). "Post" counts only the person's own posts, "Repost" their reposts; each opens its tab. New "Repostlar" tab (latest 50, full cards with the embedded original); "Postlar" tab now lists own posts only. Own empty state hints at the "…" menu.
