@@ -11,6 +11,7 @@ const inter = Inter({
 });
 
 const DESCRIPTION = "Maqsaddoshlar tarmog'i: toping, bog'laning, birga quring.";
+const SHARE_TITLE = "we1 — Maqsaddoshlarni toping";
 
 // Absolute URLs for link previews (Telegram, etc.). On Vercel the production domain is
 // provided at build time; NEXT_PUBLIC_SITE_URL overrides it for a custom domain.
@@ -27,13 +28,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "we1",
-    title: "we1 — Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
+    title: SHARE_TITLE,
     description: DESCRIPTION,
     locale: "uz_UZ",
   },
   twitter: {
     card: "summary_large_image",
-    title: "we1 — Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
+    title: SHARE_TITLE,
     description: DESCRIPTION,
   },
   icons: { apple: "/icons/apple-touch-icon.png" },
