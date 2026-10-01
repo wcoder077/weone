@@ -16,7 +16,8 @@ const PROTECTED_PREFIXES = [
   "/settings",
   "/onboarding",
 ];
-const AUTH_PAGES = ["/login", "/signup"];
+// Signed-in users skip these. /reset-password is NOT here: the recovery link signs the user in.
+const AUTH_PAGES = ["/login", "/signup", "/forgot-password"];
 
 function matches(pathname: string, prefixes: string[]) {
   return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));

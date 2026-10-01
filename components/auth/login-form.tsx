@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { signIn } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
@@ -18,6 +19,7 @@ export function LoginForm({ next }: { next?: string }) {
           name="email"
           type="email"
           autoComplete="email"
+          defaultValue={state?.values?.email}
           required
           aria-describedby="email-desc"
           aria-invalid={Boolean(state?.fieldErrors?.email)}
@@ -34,8 +36,14 @@ export function LoginForm({ next }: { next?: string }) {
           aria-invalid={Boolean(state?.fieldErrors?.password)}
         />
       </FormField>
+      <Link
+        href="/forgot-password"
+        className="text-muted hover:text-text -mt-2 self-end py-2 text-[14px] underline-offset-4 hover:underline"
+      >
+        Parolni unutdingizmi?
+      </Link>
       <FormMessage error={state?.error} />
-      <Button type="submit" size="lg" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending} aria-busy={pending}>
         {pending ? "Kirilmoqda…" : "Kirish"}
       </Button>
     </form>

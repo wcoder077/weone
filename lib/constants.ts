@@ -121,3 +121,7 @@ export const COLLAB_REASONS = [
 
 export type CollabReason = (typeof COLLAB_REASONS)[number]["value"];
 export const COLLAB_REASON_VALUES = COLLAB_REASONS.map((o) => o.value) as [CollabReason, ...CollabReason[]];
+
+// Google sign-in is wired up (action + /auth/callback) but hidden until the
+// provider is enabled in Supabase.
+export const ENABLE_GOOGLE_AUTH = false;

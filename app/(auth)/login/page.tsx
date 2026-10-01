@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GoogleButton, OrDivider } from "@/components/auth/google-button";
+import { ENABLE_GOOGLE_AUTH } from "@/lib/constants";
 import { LoginForm } from "@/components/auth/login-form";
 import { FormMessage } from "@/components/shared/form-field";
 import { safeNextPath } from "@/lib/validation/auth";
@@ -23,8 +24,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <p className="text-muted">Hisobingizga kiring</p>
       </header>
       <FormMessage error={error} />
-      <GoogleButton next={next} />
-      <OrDivider />
+      {ENABLE_GOOGLE_AUTH ? (
+        <>
+          <GoogleButton next={next} />
+          <OrDivider />
+        </>
+      ) : null}
       <LoginForm next={next} />
       <p className="text-muted text-center text-[14px]">
         Hisobingiz yo&apos;qmi?{" "}

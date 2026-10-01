@@ -18,6 +18,7 @@ export function SignupForm() {
           id="full_name"
           name="full_name"
           autoComplete="name"
+          defaultValue={state?.values?.full_name}
           required
           aria-describedby="full_name-desc"
           aria-invalid={Boolean(state?.fieldErrors?.full_name)}
@@ -29,6 +30,7 @@ export function SignupForm() {
           name="email"
           type="email"
           autoComplete="email"
+          defaultValue={state?.values?.email}
           required
           aria-describedby="email-desc"
           aria-invalid={Boolean(state?.fieldErrors?.email)}
@@ -51,7 +53,7 @@ export function SignupForm() {
         />
       </FormField>
       <FormMessage error={state?.error} />
-      <Button type="submit" size="lg" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending} aria-busy={pending}>
         {pending ? "Yaratilmoqda…" : "Hisob yaratish"}
       </Button>
     </form>

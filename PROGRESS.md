@@ -112,3 +112,10 @@
 - Done: migration 15 (applied locally only, NOT pushed): `profiles.banner_path` (check: own folder only) + `banner_position` 0–100, public `banners` bucket (5 MB, jpg/png/webp, owner-folder writes) — SQL-tested. `saveBanner()` server action (path regex, file exists, old file deleted). `lib/image.ts` client validate + downscale/WebP compression (reusable for post images).
 - Left: banner display in `ProfileHeader` (image or brand gradient, bottom fade, avatar overlapping), owner editor dialog (upload / position slider / remove), push migration 15 + `pnpm db:types`.
 - Then: milestone 4 (post images + feed as /home), milestone 5 (recommendations with `calculateMatchScore` + tests, /find default list).
+
+## Fixes P1 — Auth (done, see docs/FIXES.md)
+- Cause of "Juda ko'p urinish": Supabase's built-in email sender limit (`429 over_email_send_rate_limit` on `POST /signup` in auth logs), not our code (we have no rate limiting). Each signup sent a confirmation email; links pointed at localhost and PKCE links only worked in the same browser, so people retried → repeated accounts. No proxy redirect loop found; submit buttons were already disabled while pending.
+- Email confirmation is now off: `signUp` returns a session → straight to `/onboarding`. Rate-limit, network, invalid-email, existing-account, unconfirmed-account errors each get their own Uzbek message; email/name stay filled after an error.
+- Google button + "yoki" hidden behind `ENABLE_GOOGLE_AUTH` (lib/constants.ts); action + callback kept.
+- `/forgot-password` → `resetPasswordForEmail` (redirectTo `<origin>/auth/callback?next=/reset-password`); `/reset-password` sets the new password → `/home`. `/auth/callback` accepts `code` (default template, same browser) and `token_hash`+`type` (custom template, any device); failed recovery links → `/forgot-password?error=link`.
+- Note: reset emails still go through Supabase's built-in SMTP (a few emails/hour per project). Custom SMTP is needed for real traffic.

@@ -11,6 +11,20 @@ export const signUpSchema = z.object({
   password: z.string().min(8, "Kamida 8 ta belgi").max(72, "Juda uzun"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.email("Email manzilini to'g'ri kiriting"),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "Kamida 8 ta belgi").max(72, "Juda uzun"),
+    confirm: z.string(),
+  })
+  .refine((v) => v.password === v.confirm, {
+    path: ["confirm"],
+    message: "Parollar bir xil emas",
+  });
+
 // Only same-site relative paths are allowed after sign-in.
 export function safeNextPath(value: unknown, fallback = "/home") {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
