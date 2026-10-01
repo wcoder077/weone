@@ -212,7 +212,7 @@ function ProjectsTab({ projects, isMe }: { projects: ProfilePage["projects"]; is
     );
   }
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {projects.map((p) => (
         <ProjectCard key={p.id} project={p} meta={memberRoleLabel(p.role)} />
       ))}
@@ -242,7 +242,7 @@ function HighlightsTab({ page }: { page: ProfilePage }) {
         </div>
       ) : null}
       {launched.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {launched.map((p) => (
             <ProjectCard key={p.id} project={p} meta={memberRoleLabel(p.role)} />
           ))}

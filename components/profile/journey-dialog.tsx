@@ -107,7 +107,7 @@ function JourneyForm({ mySkills, item, onSaved }: Props & { onSaved: () => void 
       >
         <Input id="organization" name="organization" maxLength={120} defaultValue={item?.organization ?? ""} aria-describedby="organization-desc" />
       </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField id="role" label="Rolingiz" errors={errors?.role}>
           <Input id="role" name="role" maxLength={80} defaultValue={item?.role ?? ""} />
         </FormField>
@@ -115,7 +115,7 @@ function JourneyForm({ mySkills, item, onSaved }: Props & { onSaved: () => void 
           <Input id="result" name="result" maxLength={80} defaultValue={item?.result ?? ""} aria-describedby="result-desc" />
         </FormField>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField id="start_date" label="Boshlanish" errors={errors?.start_date}>
           <Input id="start_date" name="start_date" type="month" defaultValue={item?.start_date?.slice(0, 7) ?? ""} />
         </FormField>

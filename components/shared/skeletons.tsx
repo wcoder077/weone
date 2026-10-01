@@ -63,7 +63,7 @@ export function CardGridSkeleton({
     <div
       role="status"
       aria-label="Yuklanmoqda"
-      className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {Array.from({ length: count }, (_, i) => (
         <Card key={i} />

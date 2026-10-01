@@ -211,7 +211,7 @@ async function PeopleResults({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-muted text-[14px]">{total} kishi</p>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {people.map((p) => (
           <PersonCard
             key={p.id}
@@ -245,7 +245,7 @@ async function ProjectResults({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-muted text-[14px]">{total} ta loyiha</p>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => (
           <ProjectCard
             key={p.id}

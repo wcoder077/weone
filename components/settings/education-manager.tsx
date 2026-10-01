@@ -41,7 +41,7 @@ export function EducationManager({ education }: { education: Education[] }) {
         <FormField id="institution" label="Muassasa" errors={errors?.institution}>
           <Input id="institution" name="institution" maxLength={120} aria-describedby="institution-desc" />
         </FormField>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <FormField id="degree" label="Daraja" errors={errors?.degree}>
             <Input id="degree" name="degree" maxLength={80} placeholder="Bakalavr" />
           </FormField>

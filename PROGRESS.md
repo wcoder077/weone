@@ -45,3 +45,9 @@
 - Collaborate dialog: reason pills, optional project (my projects), message. Accept goes through new SQL `accept_collab_request()` (migration 10, pushed): marks accepted, opens the chat via `start_conversation`, posts the request text as the first message *from the sender*, returns the chat id.
 - `/notifications` (All · Requests): readable Uzbek sentences per type with entity lookups, inline accept/decline for still-pending connection/collab/join requests; marked read on visit. Bell shows a live unread badge (Realtime INSERT on own notifications).
 - E2E (two users, local stack): connect → collaborate → bell count → accept connection → accept join request (member added by trigger) → accept collab → redirected to the chat → sender now sees "Xabar".
+
+## Phase 8 — Messages (done)
+- `/messages` list (other person, last message, unread = others' messages after my `last_read_at`, newest first) + `/messages/[id]` chat; two panes on desktop, list or chat alone on mobile.
+- Realtime INSERT subscription per chat (RLS: members only); own sends appended from the action result, Realtime duplicates dropped by id; chat marks itself read on open and on incoming messages, then refreshes the list counts.
+- "Loyihaga taklif" sends a `project_invite` (RLS: sender must be a project member) rendered as a card with "Loyihani ko'rish" / "Qo'shilish". Join = join request (only owners can add members), so the owner accepts it in one tap.
+- Chat list unread counts update on navigation/refresh, not live (only the open chat and the bell are live). Fixed 390px horizontal overflow on grids (`grid-cols-1` = minmax(0,1fr)); all main pages scanned at 390px.
