@@ -142,3 +142,7 @@
 - Migration 17 `my_unread_counts()` → red 9+ badge on Xabarlar (navbar + tab bar) and exact per-chat counts; desktop chat "Orqaga"; minimal PWA (manifest, icons, iOS tags, no service worker) + `BackLink` on every inner page.
 - E2E with two UI-created accounts passed: signup → onboarding → /home, login, request + accept, notification badge, send/edit/delete live, unread badges, mobile long-press + full-screen chat, banner upload/position; signed-in crawl at 390/1440 clean.
 - Fixed on the way: Realtime channels joined as anon (no live updates anywhere; `subscribeWithAuth`), open redirect via `/\` in `next`, missing security headers, `/posts` missing from the proxy guard, Base UI default-value warning on auth forms.
+
+## Optional username (done)
+- Username is no longer forced: onboarding and settings show an empty field (placeholder "Foydalanuvchi nomi") while the profile still has the generated `<prefix>_<6 hex>` handle; leaving it empty keeps the current one (`optionalUsernameSchema`). Typing one validates, checks uniqueness and replaces it.
+- The DB column stays `not null unique` because `/u/<username>` links depend on it; generated handles are hidden in the profile header (`isGeneratedUsername`). No migration.

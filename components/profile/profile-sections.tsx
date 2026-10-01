@@ -5,6 +5,7 @@ import type { ProfilePage } from "@/lib/queries/profile-page";
 import { SkillChip } from "@/components/shared/skill-chip";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { bannerUrl } from "@/lib/url";
+import { isGeneratedUsername } from "@/lib/validation/profile";
 
 export function SectionCard({
   title,
@@ -57,7 +58,7 @@ export function ProfileHeader({
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:pt-4">
           <h1 className="text-2xl font-bold lg:text-[28px]">{profile.full_name || profile.username}</h1>
-          <p className="text-muted">@{profile.username}</p>
+          {isGeneratedUsername(profile.username) ? null : <p className="text-muted">@{profile.username}</p>}
           {profile.headline ? <p className="text-[15px]">{profile.headline}</p> : null}
           <div className="text-muted flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
             {profile.city ? (

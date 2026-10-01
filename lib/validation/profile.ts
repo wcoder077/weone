@@ -12,6 +12,17 @@ export const usernameSchema = z
   .toLowerCase()
   .regex(/^[a-z0-9_]{3,30}$/, "3–30 ta belgi: kichik lotin harflari, raqamlar va _");
 
+// Empty means "keep the current one": every profile already has an internal username
+// (set by handle_new_user, used in /u/<username> links) until the user picks their own.
+export const optionalUsernameSchema = z
+  .union([z.literal(""), usernameSchema])
+  .transform((v) => v || undefined);
+
+// handle_new_user() generates "<email prefix>_<6 hex chars>"; a chosen name is shown, a generated one is not.
+export function isGeneratedUsername(username: string) {
+  return /_[0-9a-f]{6}$/.test(username);
+}
+
 const optionalText = (max: number) =>
   z
     .string()
@@ -21,7 +32,7 @@ const optionalText = (max: number) =>
 
 export const aboutSchema = z.object({
   full_name: z.string().trim().min(2, "Ismingizni kiriting").max(80, "Juda uzun"),
-  username: usernameSchema,
+  username: optionalUsernameSchema,
   city: optionalText(60),
   headline: optionalText(120),
   avatar_url: z.union([z.literal(""), z.url()]).transform((v) => v || null),
