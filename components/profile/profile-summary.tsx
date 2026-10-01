@@ -8,7 +8,7 @@ import { SectionCard } from "./profile-sections";
 
 const TITLE = "Bog'lanishlar va faoliyat";
 
-// Compact sidebar card: posts / connections / projects counts (each opens its tab) + latest activities.
+// Compact sidebar card: posts / reposts / connections / projects counts (each opens its tab) + latest activities.
 export async function ProfileSummary({
   profileId,
   path,
@@ -36,8 +36,9 @@ export async function ProfileSummary({
 
   return (
     <SectionCard title={TITLE}>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-4 gap-1.5">
         <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label="Post" />
+        <Stat href={`${path}?tab=reposts#profile-tabs`} value={summary.reposts} label="Repost" />
         <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label="Bog'lanish" />
         <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label="Loyiha" />
       </div>
@@ -63,7 +64,7 @@ function Stat({ href, value, label }: { href: string; value: number; label: stri
   return (
     <Link
       href={href}
-      className="bg-surface hover:border-primary/40 border-border focus-visible:ring-ring/50 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-1.5 text-center transition-colors outline-none focus-visible:ring-3"
+      className="bg-surface hover:border-primary/40 border-border focus-visible:ring-ring/50 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition-colors outline-none focus-visible:ring-3"
     >
       <span className="text-[17px] leading-tight font-bold tabular-nums">{formatCount(value)}</span>
       <span className="text-muted truncate text-[12px]">{label}</span>
@@ -75,7 +76,8 @@ export function ProfileSummarySkeleton() {
   return (
     <SectionCard title={TITLE}>
       <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-3">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
+          <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />

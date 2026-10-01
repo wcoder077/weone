@@ -47,16 +47,21 @@ export async function resolveActivities(supabase: Supabase, rows: ActivityRowDat
   });
 }
 
-// Profile sidebar: accepted connections and posts counts + the person's latest activities.
+// Profile sidebar: own posts, reposts and accepted connections counts + the person's latest activities.
 export async function getProfileSummary(profileId: string, limit = 4) {
   const supabase = await createClient();
-  const [connections, posts, activities] = await Promise.all([
+  const [connections, posts, reposts, activities] = await Promise.all([
     supabase
       .from("connections")
       .select("id", { count: "exact", head: true })
       .eq("status", "accepted")
       .or(`requester_id.eq.${profileId},addressee_id.eq.${profileId}`),
-    supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", profileId),
+    supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", profileId).is("repost_of", null),
+    supabase
+      .from("posts")
+      .select("id", { count: "exact", head: true })
+      .eq("author_id", profileId)
+      .not("repost_of", "is", null),
     supabase
       .from("activities")
       .select(ACTIVITY_FIELDS)
@@ -66,11 +71,13 @@ export async function getProfileSummary(profileId: string, limit = 4) {
   ]);
   if (connections.error) throw connections.error;
   if (posts.error) throw posts.error;
+  if (reposts.error) throw reposts.error;
   if (activities.error) throw activities.error;
 
   return {
     connections: connections.count ?? 0,
     posts: posts.count ?? 0,
+    reposts: reposts.count ?? 0,
     activity: await resolveActivities(supabase, activities.data),
   };
 }
