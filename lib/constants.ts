@@ -96,3 +96,8 @@ export function evidenceText(projects: number, events: number) {
   if (events > 0) parts.push(`${events} tadbir`);
   return parts.join(" · ");
 }
+
+// Project creators are stored with role "Owner" (spec); show it in Uzbek.
+export function memberRoleLabel(role: string) {
+  return role === "Owner" ? "Asoschi" : role;
+}

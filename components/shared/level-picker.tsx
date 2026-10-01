@@ -23,7 +23,7 @@ export function LevelPicker({
           onClick={() => onChange(level.value)}
           className={cn(
             "min-h-11 rounded-full px-3 text-[13px] font-medium transition-colors sm:min-h-9",
-            value === level.value ? "bg-card text-text" : "text-muted hover:text-text",
+            value === level.value ? "bg-primary text-primary-foreground" : "text-muted hover:text-text",
           )}
         >
           {level.label}

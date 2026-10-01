@@ -18,7 +18,7 @@ import { LinkTabs } from "@/components/shared/link-tabs";
 import { ProjectCard } from "@/components/shared/project-card";
 import { buttonVariants } from "@/components/ui/button";
 import { requireUserId } from "@/lib/auth";
-import { CONFIRMABLE_TYPES, LOOKING_FOR, labelOf, type SkillLevel } from "@/lib/constants";
+import { CONFIRMABLE_TYPES, LOOKING_FOR, labelOf, memberRoleLabel, type SkillLevel } from "@/lib/constants";
 import {
   getMyEventItems,
   getProfilePage,
@@ -210,7 +210,7 @@ function ProjectsTab({ projects, isMe }: { projects: ProfilePage["projects"]; is
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {projects.map((p) => (
-        <ProjectCard key={p.id} project={p} meta={p.role} />
+        <ProjectCard key={p.id} project={p} meta={memberRoleLabel(p.role)} />
       ))}
     </div>
   );
@@ -240,7 +240,7 @@ function HighlightsTab({ page }: { page: ProfilePage }) {
       {launched.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2">
           {launched.map((p) => (
-            <ProjectCard key={p.id} project={p} meta={p.role} />
+            <ProjectCard key={p.id} project={p} meta={memberRoleLabel(p.role)} />
           ))}
         </div>
       ) : null}

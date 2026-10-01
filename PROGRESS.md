@@ -27,3 +27,9 @@
 - Add skill dialog: search or create (category Other), level, "Qayerda ishlatgansiz?" (owned projects + journey items) with live evidence preview; links synced exactly. Non-owned projects count but can't be edited.
 - `/settings/profile`: profile form (+ bio, languages/interests tag inputs, looking for, available/online switches), skill level/remove, education add/remove.
 - Connect / Message / Collaborate buttons on others' profiles come in Phase 7.
+
+## Phase 5 — Projects (done)
+- `/projects` tabs For you (open roles matching my skills, best match first; excludes my projects) · Looking for members · Mine; URL filters category / stack / status; cards show members + "Kerak: <roles>".
+- `/projects/[slug]`: header (logo, status, owner, links), about, stack, team, open roles with my matched skills highlighted, details. Join dialog (role + message); owner accepts/declines (trigger adds member), removes members, closes/reopens roles (keeps `is_looking` in sync); members can leave; two-step delete.
+- `/projects/new` + `/edit`: stack picker, roles editor (title, skills, open), logo upload on edit only (storage folder needs the project id). Slugs = name + 4-char suffix. Creator role stored as "Owner", shown as "Asoschi".
+- Verification: local Supabase stack (`supabase/config.toml`, ports +100 to avoid another local project) + headless Playwright click-through of signup → onboarding → journey → skill → project → settings at 390px. Dialog/sheet glass made opaque (`glass-panel`) after screenshots showed text bleeding through.
