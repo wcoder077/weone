@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   cancelJoinRequest,
@@ -81,22 +82,46 @@ export function RoleToggleButton({ roleId, isOpen }: { roleId: string; isOpen: b
   );
 }
 
-// Two-step: the first click asks, the second deletes.
-export function DeleteProjectButton({ projectId }: { projectId: string }) {
+// Two-step: the first click asks, the second deletes. `redirectTo` leaves a page
+// that no longer exists (the project's own page).
+export function DeleteProjectButton({
+  projectId,
+  redirectTo,
+  size = "default",
+}: {
+  projectId: string;
+  redirectTo?: string;
+  size?: "sm" | "default";
+}) {
+  const router = useRouter();
   const [confirming, setConfirming] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  function remove() {
+    startTransition(async () => {
+      const result = await deleteProject(projectId);
+      if (result?.error) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(result?.message ?? "");
+      if (redirectTo) router.push(redirectTo);
+    });
+  }
+
   if (!confirming) {
     return (
-      <Button variant="destructive" onClick={() => setConfirming(true)}>
+      <Button variant="destructive" size={size} onClick={() => setConfirming(true)}>
         O&apos;chirish
       </Button>
     );
   }
   return (
     <span className="flex flex-wrap items-center gap-2">
-      <ActionButton variant="destructive" size="default" onRun={() => deleteProject(projectId)}>
-        Ha, butunlay o&apos;chirish
-      </ActionButton>
-      <Button variant="ghost" onClick={() => setConfirming(false)}>
+      <Button variant="destructive" size={size} disabled={pending} onClick={remove}>
+        {pending ? "O'chirilmoqda…" : "Ha, o'chirish"}
+      </Button>
+      <Button variant="ghost" size={size} onClick={() => setConfirming(false)}>
         Bekor qilish
       </Button>
     </span>

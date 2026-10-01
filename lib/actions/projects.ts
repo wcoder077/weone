@@ -158,9 +158,11 @@ export async function deleteProject(projectId: string): Promise<ActionState> {
   if (!idSchema.safeParse(projectId).success) return { error: SAVE_FAILED };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("projects").delete().eq("id", projectId).eq("owner_id", userId);
-  if (error) return { error: "O'chirib bo'lmadi." };
-  redirect("/projects?tab=mine");
+  const { data, error } = await supabase.from("projects").delete().eq("id", projectId).eq("owner_id", userId).select("id");
+  if (error || data.length === 0) return { error: "O'chirib bo'lmadi." };
+
+  refresh();
+  return { message: "Loyiha o'chirildi" };
 }
 
 // ---------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FolderKanban, Route, Trophy } from "lucide-react";
+import { FolderKanban, Pencil, Plus, Route, Trophy } from "lucide-react";
 import { AddSkillDialog } from "@/components/profile/add-skill-dialog";
 import { JourneyDialog } from "@/components/profile/journey-dialog";
 import { ConfirmJourneyButton, DeleteJourneyButton } from "@/components/profile/journey-actions";
@@ -14,6 +14,7 @@ import {
 } from "@/components/profile/profile-sections";
 import { ConnectionsTab } from "@/components/profile/connections-tab";
 import { ShareButton } from "@/components/profile/share-button";
+import { DeleteProjectButton } from "@/components/projects/team-actions";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { PersonActions } from "@/components/social/person-actions";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -114,11 +115,17 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
               tabs={TABS.map((t) => ({ ...t, href: `${path}?tab=${t.value}` }))}
             />
             {isMe && tab === "journey" ? <JourneyDialog mySkills={mySkillOptions} /> : null}
+            {isMe && tab === "projects" ? (
+              <Link href="/projects/new" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                <Plus data-icon="inline-start" />
+                Loyiha qo&apos;shish
+              </Link>
+            ) : null}
           </div>
           {tab === "journey" ? (
             <JourneyTab page={page} isMe={isMe} viewerId={viewerId} mySkillOptions={mySkillOptions} />
           ) : null}
-          {tab === "projects" ? <ProjectsTab projects={page.projects} isMe={isMe} /> : null}
+          {tab === "projects" ? <ProjectsTab projects={page.projects} isMe={isMe} viewerId={viewerId} /> : null}
           {tab === "highlights" ? <HighlightsTab page={page} /> : null}
           {tab === "connections" ? (
             <Suspense fallback={<ConnectionsSkeleton />}>
@@ -209,7 +216,15 @@ async function JourneyTab({
   );
 }
 
-function ProjectsTab({ projects, isMe }: { projects: ProfilePage["projects"]; isMe: boolean }) {
+function ProjectsTab({
+  projects,
+  isMe,
+  viewerId,
+}: {
+  projects: ProfilePage["projects"];
+  isMe: boolean;
+  viewerId: string;
+}) {
   if (projects.length === 0) {
     return (
       <EmptyState
@@ -223,7 +238,22 @@ function ProjectsTab({ projects, isMe }: { projects: ProfilePage["projects"]; is
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {projects.map((p) => (
-        <ProjectCard key={p.id} project={p} meta={memberRoleLabel(p.role)} />
+        <ProjectCard
+          key={p.id}
+          project={p}
+          meta={memberRoleLabel(p.role)}
+          footer={
+            isMe && p.owner_id === viewerId ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <Link href={`/projects/${p.slug}/edit`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <Pencil data-icon="inline-start" />
+                  Tahrirlash
+                </Link>
+                <DeleteProjectButton projectId={p.id} size="sm" />
+              </div>
+            ) : undefined
+          }
+        />
       ))}
     </div>
   );

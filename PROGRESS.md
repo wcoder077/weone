@@ -89,3 +89,8 @@
 - `useHideOnScroll`: hides the sticky header on scroll down (8 px threshold, never in the top 64 px), shows on scroll up; stays visible while focused / a menu is open; keyboard focus reveals it; with prefers-reduced-motion it never hides.
 - Glass = semi-opaque token fill (dark 72 %, light 75 %) + working `backdrop-filter: blur(24px)` on navbar and mobile tab bar; modals/sheets/popovers opaque.
 - Motion defaults set once: every transition 180 ms ease-out; global reduced-motion rule disables animations/transitions.
+
+## Milestone 6 — Posts; projects move into the profile (done)
+- Migration 14 (pushed): `posts` (body 1–500 graphemes via `grapheme_length`, server zod too), RLS read for signed-in users, author-only insert/update/delete, column grants (author_id, body), `edited_at` set by trigger.
+- `/posts` feed (navbar "Loyihalar" → "Postlar"): composer with emoji + live "x/500", newest first, 20 per page with "Oldingi postlar", skeleton / empty / retryable error; author menu → edit (dialog) / delete (confirmation). Body = 16 px, line-height 1.6, max 65ch, `whitespace-pre-wrap`, plain text (React-escaped; `<img onerror>` test stays text).
+- Projects: profile "Loyihalar" tab gets "Loyiha qo'shish", and Tahrirlash / O'chirish on owned projects (`deleteProject` now returns a result; project page redirects to the owner's profile). Existing project pages, roles, join requests, Discover tab and Home suggestions keep working (no data migration needed).

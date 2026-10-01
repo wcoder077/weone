@@ -55,7 +55,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             <Link href={`/projects/${project.slug}/edit`} className={buttonVariants()}>
               Tahrirlash
             </Link>
-            <DeleteProjectButton projectId={project.id} />
+            <DeleteProjectButton projectId={project.id} redirectTo={`/u/${project.owner?.username ?? ""}?tab=projects`} />
           </>
         ) : null}
         {!isOwner && isMember ? <LeaveProjectButton projectId={project.id} userId={userId} /> : null}
