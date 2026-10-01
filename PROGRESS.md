@@ -151,4 +151,4 @@
 - Bars never hid on phones/desktops with `prefers-reduced-motion` (Android "remove animations", battery saver): the hook returned early. Now they always hide on scroll down; reduced motion only removes the slide animation. Hidden bars also drop their shadow so no edge line stays visible.
 
 ## Profile banner fade (done)
-- Banner bottom now fades into the card colour (`from-card via-card/70 to-transparent`, 60 % of the height), so it blends in both light and dark themes. Editor button stays on top and clickable.
+- Banner bottom now fades into the card colour (`from-card via-card/60 to-transparent`, bottom 20 % only; top 80 % stays fully clear), so it blends in both light and dark themes. Editor button stays on top and clickable.

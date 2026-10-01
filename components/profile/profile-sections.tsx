@@ -53,7 +53,7 @@ export function ProfileHeader({
         {/* Bottom of the banner melts into the card colour, so it follows light/dark. */}
         <div
           aria-hidden
-          className="from-card via-card/70 pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t to-transparent"
+          className="from-card via-card/60 pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-linear-to-t to-transparent"
         />
         {bannerEditor ? <div className="absolute top-3 right-3">{bannerEditor}</div> : null}
       </div>
