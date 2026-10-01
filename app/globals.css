@@ -24,6 +24,7 @@
   --glass-border: rgb(255 255 255 / 0.1);
   --glow: rgb(61 75 255 / 0.16);
   --chat-tint: rgb(61 75 255 / 0.06);
+  --chat-pattern: url("/patterns/chat-dark.svg");
   --bubble-mine: #262b6b;
   --bar-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
   --bar-shadow-up: 0 -10px 30px rgb(0 0 0 / 0.35);
@@ -47,6 +48,7 @@
   --glass-border: rgb(21 19 31 / 0.08);
   --glow: rgb(61 75 255 / 0.1);
   --chat-tint: rgb(61 75 255 / 0.05);
+  --chat-pattern: url("/patterns/chat-light.svg");
   --bubble-mine: #e3e5ff;
   --bar-shadow: 0 8px 24px rgb(21 19 31 / 0.08);
   --bar-shadow-up: 0 -8px 24px rgb(21 19 31 / 0.08);
@@ -174,14 +176,15 @@
 
 /* Chat background: a soft tint fading down plus a faint dot grid; token-based,
    so it adapts to both themes without competing with message text. */
+/* Chat background: soft top tint + a faint doodle pattern; each theme has its own pattern file. */
 @utility chat-surface {
   background-color: var(--surface);
   background-image:
     linear-gradient(to bottom, var(--chat-tint), transparent 45%),
-    radial-gradient(color-mix(in srgb, var(--text) 7%, transparent) 1px, transparent 1.2px);
+    var(--chat-pattern);
   background-size:
     100% 100%,
-    22px 22px;
+    240px 240px;
 }
 
 /* Respect reduced motion everywhere: no slides, fades or smooth scrolling. */

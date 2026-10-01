@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Copy, MoreHorizontal, Pencil, Reply, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteMessage, editMessage } from "@/lib/actions/messages";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
@@ -14,19 +14,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type Props = {
-  messageId: string;
-  body: string;
+// Edit/delete handlers, passed only for my own messages.
+export type OwnMessageHandlers = {
   canEdit: boolean;
-  menuOpen: boolean;
-  onMenuOpenChange: (open: boolean) => void;
   onEdited: (body: string, editedAt: string) => void;
   onDeleted: () => void;
 };
 
-// Own-message menu: copy, edit (sheet), delete (confirmation). Opened from the
-// hover button on desktop or by long-press on the bubble (see useLongPress).
-export function MessageActions({ messageId, body, canEdit, menuOpen, onMenuOpenChange, onEdited, onDeleted }: Props) {
+type Props = {
+  messageId: string;
+  body: string;
+  menuOpen: boolean;
+  onMenuOpenChange: (open: boolean) => void;
+  onReply?: () => void;
+  own?: OwnMessageHandlers;
+};
+
+// Message menu: reply, copy, and for my own messages edit (sheet) and delete (confirmation).
+// Opened from the hover button on desktop or by long-press on the bubble (see useLongPress).
+export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, onReply, own }: Props) {
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [deleting, startDelete] = useTransition();
 
@@ -45,7 +51,7 @@ export function MessageActions({ messageId, body, canEdit, menuOpen, onMenuOpenC
         return;
       }
       setDialog(null);
-      onDeleted();
+      own?.onDeleted();
     });
   }
 
@@ -59,22 +65,30 @@ export function MessageActions({ messageId, body, canEdit, menuOpen, onMenuOpenC
           <MoreHorizontal className="size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
+          {onReply ? (
+            <DropdownMenuItem onClick={onReply}>
+              <Reply aria-hidden />
+              Javob berish
+            </DropdownMenuItem>
+          ) : null}
           {body ? (
             <DropdownMenuItem onClick={copy}>
               <Copy aria-hidden />
               Nusxa olish
             </DropdownMenuItem>
           ) : null}
-          {canEdit ? (
+          {own?.canEdit ? (
             <DropdownMenuItem onClick={() => setDialog("edit")}>
               <Pencil aria-hidden />
               Tahrirlash
             </DropdownMenuItem>
           ) : null}
-          <DropdownMenuItem variant="destructive" onClick={() => setDialog("delete")}>
-            <Trash2 aria-hidden />
-            O&apos;chirish
-          </DropdownMenuItem>
+          {own ? (
+            <DropdownMenuItem variant="destructive" onClick={() => setDialog("delete")}>
+              <Trash2 aria-hidden />
+              O&apos;chirish
+            </DropdownMenuItem>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -85,7 +99,7 @@ export function MessageActions({ messageId, body, canEdit, menuOpen, onMenuOpenC
             initial={body}
             onSaved={(next, editedAt) => {
               setDialog(null);
-              onEdited(next, editedAt);
+              own?.onEdited(next, editedAt);
             }}
             onCancel={() => setDialog(null)}
           />

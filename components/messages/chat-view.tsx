@@ -8,7 +8,8 @@ import { ArrowLeft } from "lucide-react";
 import { markConversationRead } from "@/lib/actions/messages";
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { MESSAGES_READ_EVENT } from "@/components/layout/unread-messages";
-import type { ChatMessage } from "@/lib/queries/messages";
+import type { ChatMessage, ChatReply } from "@/lib/queries/messages";
+import { messagePreview } from "@/lib/message-preview";
 import type { ConnectionState } from "@/lib/queries/social";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 import { formatDay } from "@/lib/format";
@@ -30,6 +31,7 @@ type MessageInsert = {
   kind: string;
   project_id: string | null;
   created_at: string;
+  reply_to: string | null;
   attachment_path: string | null;
   attachment_name: string | null;
   attachment_type: string | null;
@@ -39,6 +41,15 @@ type MessageInsert = {
 type MessageUpdate = { id: string; body: string; edited_at: string | null };
 
 type Connection = { id: string; status: string; requestedByMe: boolean } | null;
+
+// Quote data for a reply to `m`.
+function replyFrom(m: ChatMessage): ChatReply {
+  return {
+    id: m.id,
+    senderId: m.senderId,
+    preview: messagePreview({ body: m.body, kind: m.kind, attachment_type: m.attachment?.kind, image_path: m.imageUrl }),
+  };
+}
 
 // Pending chats hold only the request's first message; the footer then shows the
 // request actions instead of a composer (RLS rejects messages until accepted).
@@ -71,6 +82,8 @@ export function ChatView({
   // When the other person last read this chat; drives ✓ / ✓✓ on my messages.
   const [otherReadAt, setOtherReadAt] = useState(initialOtherReadAt);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const [replyingTo, setReplyingTo] = useState<ChatReply | null>(null);
+  const nameOf = (senderId: string) => (senderId === meId ? "Siz" : (other?.full_name ?? "Suhbatdosh"));
   const myReadAtRef = useRef<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -144,7 +157,7 @@ export function ChatView({
             const signedUrl = row.attachment_path
               ? (await supabase.storage.from(ATTACHMENT_BUCKET).createSignedUrl(row.attachment_path, 60 * 60)).data?.signedUrl
               : undefined;
-            append({
+            const message: ChatMessage = {
               id: row.id,
               senderId: row.sender_id,
               body: row.body,
@@ -158,6 +171,18 @@ export function ChatView({
                 signedUrl && row.attachment_name && row.attachment_type && row.attachment_size
                   ? { url: signedUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
                   : null,
+              replyTo: null,
+            };
+            // The quoted message is usually already on screen; otherwise a generic quote.
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === message.id)) return prev;
+              const quoted = row.reply_to ? prev.find((m) => m.id === row.reply_to) : undefined;
+              const replyTo = row.reply_to
+                ? quoted
+                  ? replyFrom(quoted)
+                  : { id: row.reply_to, senderId: "", preview: "Xabar" }
+                : null;
+              return [...prev, { ...message, replyTo }];
             });
             if (row.sender_id !== meId) markRead();
           },
@@ -175,7 +200,11 @@ export function ChatView({
           "postgres_changes",
           { event: "DELETE", schema: "public", table: "messages" },
           ({ old }) => {
-            if (old.id) setMessages((prev) => prev.filter((m) => m.id !== old.id));
+            // Replies to a deleted message keep their text but lose the quote (reply_to → null).
+            if (old.id)
+              setMessages((prev) =>
+                prev.filter((m) => m.id !== old.id).map((m) => (m.replyTo?.id === old.id ? { ...m, replyTo: null } : m)),
+              );
           },
         ),
       // Joined (or re-joined): repeat my read time in case the first announce went out too early.
@@ -243,6 +272,8 @@ export function ChatView({
                     mine={mine}
                     editing={open && mine && !m.imageUrl ? editing : undefined}
                     status={mine ? readStatus(m.createdAt, otherReadAt) : undefined}
+                    onReply={open ? () => setReplyingTo(replyFrom(m)) : undefined}
+                    replyName={m.replyTo ? nameOf(m.replyTo.senderId) : undefined}
                   />
                 )}
               </Fragment>
@@ -253,7 +284,17 @@ export function ChatView({
       </div>
 
       {open ? (
-        <ChatComposer conversationId={conversationId} meId={meId} onSent={append} />
+        <ChatComposer
+          conversationId={conversationId}
+          meId={meId}
+          replyTo={replyingTo}
+          replyName={replyingTo ? nameOf(replyingTo.senderId) : ""}
+          onCancelReply={() => setReplyingTo(null)}
+          onSent={(message) => {
+            append({ ...message, replyTo: replyingTo });
+            setReplyingTo(null);
+          }}
+        />
       ) : (
         <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
           <p className="text-muted text-[14px]">
