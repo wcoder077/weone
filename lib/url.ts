@@ -31,7 +31,7 @@ export function hrefWith(
 }
 
 // Shown until the user uploads their own (files in public/defaults).
-export const DEFAULT_BANNER = "/defaults/banner.jpg";
+export const DEFAULT_BANNER = { dark: "/defaults/banner.jpg", light: "/defaults/banner-light.jpg" };
 export const DEFAULT_AVATAR = "/defaults/avatar.svg";
 
 // Public URL of a profile banner in the public `banners` bucket.
