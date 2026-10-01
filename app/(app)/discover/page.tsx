@@ -1,6 +1,9 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Search, Users, X, FolderKanban } from "lucide-react";
+import { Users, X, FolderKanban } from "lucide-react";
+import { FiltersSheet } from "@/components/discover/filters-sheet";
+import { UrlSearchInput } from "@/components/discover/url-search-input";
+import { PeopleCarousel } from "@/components/home/people-carousel";
 import { ProjectCardFooter } from "@/components/projects/project-card-footer";
 import { EmptyState } from "@/components/shared/empty-state";
 import { LinkTabs } from "@/components/shared/link-tabs";
@@ -11,7 +14,6 @@ import { CardGridSkeleton } from "@/components/shared/skeletons";
 import { UrlFilterSelect } from "@/components/shared/url-filter-select";
 import { ConnectButton } from "@/components/social/connect-button";
 import { buttonVariants } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { requireUserId } from "@/lib/auth";
 import { CITIES, PROJECT_STATUSES, labelOf } from "@/lib/constants";
 import {
@@ -22,6 +24,8 @@ import {
   type PeopleFilters,
   type ProjectSearchFilters,
 } from "@/lib/queries/discover";
+import { getPeopleForYou } from "@/lib/queries/home";
+import { getMyProfile } from "@/lib/queries/profiles";
 import { getAllSkills } from "@/lib/queries/skills";
 import { getRelationships } from "@/lib/queries/social";
 import { hrefWith, many, pageOf, single } from "@/lib/url";
@@ -57,30 +61,53 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
       : []),
   ];
 
-  return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold lg:text-[32px]">Kashf etish</h1>
+  const filterCount =
+    selectedSkills.length +
+    (tab === "people"
+      ? (["city", "role", "lang", "available", "online"] as const).filter((k) => single(params[k])).length
+      : single(params.status)
+        ? 1
+        : 0);
 
-      <form action="/discover" role="search" className="flex flex-col gap-2 sm:flex-row">
-        <input type="hidden" name="tab" value={tab} />
-        {selectedSkills.map((id) => (
-          <input key={id} type="hidden" name="s" value={id} />
-        ))}
-        {(["city", "lang", "available", "online", "status"] as const).map((key) =>
-          single(params[key]) ? <input key={key} type="hidden" name={key} value={single(params[key])} /> : null,
-        )}
-        <label className="relative flex-1">
-          <span className="sr-only">Qidirish</span>
-          <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />
-          <Input name="q" type="search" defaultValue={q} placeholder="Ism, ko'nikma yoki loyiha" className="bg-card h-12 pl-11" />
-        </label>
-        {tab === "people" ? (
-          <Input name="role" defaultValue={single(params.role)} placeholder="Rol, masalan backend" aria-label="Rol bo'yicha" className="bg-card h-12 sm:max-w-56" />
-        ) : null}
-        <button type="submit" className={cn(buttonVariants({ size: "lg" }))}>
-          Qidirish
-        </button>
-      </form>
+  return (
+    <div className="flex flex-col gap-4">
+      <h1 className="sr-only">Kashf etish</h1>
+
+      {/* Search + filters stay compact so the results start near the top. */}
+      <div className="flex gap-2">
+        <UrlSearchInput
+          param="q"
+          label="Qidirish"
+          placeholder={tab === "people" ? "Ism, ko'nikma yoki rol" : "Loyiha nomi yoki ko'nikma"}
+          className="min-w-0 flex-1"
+        />
+        <FiltersSheet count={filterCount}>
+          {tab === "people" ? (
+            <UrlSearchInput param="role" label="Rol bo'yicha" placeholder="Rol, masalan backend" />
+          ) : null}
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <UrlFilterSelect multi param="s" label="Ko'nikma" options={skills.map((s) => ({ value: s.id, label: s.name }))} />
+            {tab === "people" ? (
+              <>
+                <UrlFilterSelect param="city" label="Shahar" options={CITIES.map((c) => ({ value: c, label: c }))} />
+                <UrlFilterSelect param="lang" label="Til" options={languages.map((l) => ({ value: l, label: l }))} />
+              </>
+            ) : (
+              <UrlFilterSelect param="status" label="Holat" options={[...PROJECT_STATUSES]} />
+            )}
+          </div>
+          {tab === "people" ? (
+            <div className="flex flex-wrap gap-2">
+              <FilterToggle href={toggleHref("available")} active={Boolean(single(params.available))}>
+                Hamkorlikka ochiq
+              </FilterToggle>
+              <FilterToggle href={toggleHref("online")} active={Boolean(single(params.online))}>
+                Onlayn
+              </FilterToggle>
+            </div>
+          ) : null}
+        </FiltersSheet>
+      </div>
 
       <LinkTabs
         label="Kashf etish bo'limlari"
@@ -90,24 +117,6 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
           { value: "projects", label: "Loyihalar", href: hrefWith("/discover", { q }, { tab: "projects" }) },
         ]}
       />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <UrlFilterSelect multi param="s" label="Ko'nikma" options={skills.map((s) => ({ value: s.id, label: s.name }))} />
-        {tab === "people" ? (
-          <>
-            <UrlFilterSelect param="city" label="Shahar" options={CITIES.map((c) => ({ value: c, label: c }))} />
-            <UrlFilterSelect param="lang" label="Til" options={languages.map((l) => ({ value: l, label: l }))} />
-            <FilterToggle href={toggleHref("available")} active={Boolean(single(params.available))}>
-              Hamkorlikka ochiq
-            </FilterToggle>
-            <FilterToggle href={toggleHref("online")} active={Boolean(single(params.online))}>
-              Onlayn
-            </FilterToggle>
-          </>
-        ) : (
-          <UrlFilterSelect param="status" label="Holat" options={[...PROJECT_STATUSES]} />
-        )}
-      </div>
 
       {active.length > 0 ? (
         <ul className="flex flex-wrap gap-2" aria-label="Faol filtrlar">
@@ -126,19 +135,8 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
         </ul>
       ) : null}
 
-      {tab === "people" ? (
-        <div className="bg-card border-border rounded-card flex flex-col gap-3 border p-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[15px]">
-            <span className="font-semibold">Loyiha yoki hackathon uchun maqsaddosh kerakmi?</span>{" "}
-            <span className="text-muted">Kimni qidirayotganingizni yozing.</span>
-          </p>
-          <Link href="/find" className={buttonVariants()}>
-            Maqsaddosh topish
-          </Link>
-        </div>
-      ) : null}
-
-      <Suspense key={JSON.stringify(params)} fallback={<CardGridSkeleton count={6} variant={tab === "people" ? "person" : "project"} />}>
+      {/* No key: while a new search loads, the current results stay instead of a skeleton flash. */}
+      <Suspense fallback={<CardGridSkeleton count={6} variant={tab === "people" ? "person" : "project"} />}>
         {tab === "people" ? (
           <PeopleResults
             params={params}
@@ -153,6 +151,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
               page: pageOf(params.page),
             }}
             selectedSkillNames={selectedSkills.map((id) => skillName.get(id) ?? "")}
+            showPicks={!q && filterCount === 0 && pageOf(params.page) === 1}
           />
         ) : (
           <ProjectResults
@@ -162,6 +161,18 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
           />
         )}
       </Suspense>
+
+      {tab === "people" ? (
+        <div className="bg-card border-border rounded-card flex flex-col gap-3 border p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[15px]">
+            <span className="font-semibold">Aniq talablar bo&apos;yicha qidiryapsizmi?</span>{" "}
+            <span className="text-muted">Rol, maqsad va ko&apos;nikmalarni yozing.</span>
+          </p>
+          <Link href="/find" className={buttonVariants({ variant: "outline" })}>
+            Maqsaddosh topish
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -186,16 +197,21 @@ async function PeopleResults({
   params,
   filters,
   selectedSkillNames,
+  showPicks,
 }: {
   params: Params;
   filters: PeopleFilters;
   selectedSkillNames: string[];
+  showPicks: boolean;
 }) {
   const viewerId = await requireUserId();
-  const [{ people, total }, relationships] = await Promise.all([
+  const [{ people, total }, relationships, me] = await Promise.all([
     searchPeople(viewerId, filters),
     getRelationships(viewerId),
+    showPicks ? getMyProfile() : null,
   ]);
+  // Nothing searched yet: recommendations first, then everyone.
+  const picks = me ? await getPeopleForYou(me, 8).catch(() => []) : [];
 
   if (people.length === 0) {
     return (
@@ -210,7 +226,8 @@ async function PeopleResults({
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-muted text-[14px]">{total} kishi</p>
+      {picks.length > 0 ? <PeopleCarousel meId={viewerId} picks={picks} relationships={relationships} /> : null}
+      <p className="text-muted text-[14px]">{picks.length > 0 ? `Barcha maqsaddoshlar · ${total}` : `${total} kishi`}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {people.map((p) => (
           <PersonCard
