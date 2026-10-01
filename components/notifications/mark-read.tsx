@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { markNotificationsRead } from "@/lib/actions/social";
+import { markNotificationsRead } from "@/lib/actions/notifications";
 
 // Marks everything read once the page has been seen. The list keeps its
 // "new" highlight until the next visit, so the user can still spot what changed.

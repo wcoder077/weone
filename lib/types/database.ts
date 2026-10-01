@@ -107,6 +107,7 @@ export type Database = {
           created_at: string
           id: string
           requester_id: string
+          responded_at: string | null
           status: string
         }
         Insert: {
@@ -114,6 +115,7 @@ export type Database = {
           created_at?: string
           id?: string
           requester_id: string
+          responded_at?: string | null
           status?: string
         }
         Update: {
@@ -121,6 +123,7 @@ export type Database = {
           created_at?: string
           id?: string
           requester_id?: string
+          responded_at?: string | null
           status?: string
         }
         Relationships: [
@@ -175,18 +178,29 @@ export type Database = {
       }
       conversations: {
         Row: {
+          connection_id: string | null
           created_at: string
           id: string
         }
         Insert: {
+          connection_id?: string | null
           created_at?: string
           id?: string
         }
         Update: {
+          connection_id?: string | null
           created_at?: string
           id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "conversations_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: true
+            referencedRelation: "connections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       education: {
         Row: {
@@ -399,7 +413,9 @@ export type Database = {
           body: string
           conversation_id: string
           created_at: string
+          edited_at: string | null
           id: string
+          image_path: string | null
           kind: string
           project_id: string | null
           sender_id: string
@@ -408,7 +424,9 @@ export type Database = {
           body?: string
           conversation_id: string
           created_at?: string
+          edited_at?: string | null
           id?: string
+          image_path?: string | null
           kind?: string
           project_id?: string | null
           sender_id: string
@@ -417,7 +435,9 @@ export type Database = {
           body?: string
           conversation_id?: string
           created_at?: string
+          edited_at?: string | null
           id?: string
+          image_path?: string | null
           kind?: string
           project_id?: string | null
           sender_id?: string
@@ -820,8 +840,19 @@ export type Database = {
       }
     }
     Functions: {
-      accept_collab_request: { Args: { p_request_id: string }; Returns: string }
       can_confirm_journey_item: { Args: { item_id: string }; Returns: boolean }
+      can_read_message_image: {
+        Args: { object_name: string }
+        Returns: boolean
+      }
+      check_first_message: {
+        Args: { p_body: string; p_image_path: string }
+        Returns: undefined
+      }
+      conversation_is_open: {
+        Args: { p_conversation_id: string }
+        Returns: boolean
+      }
       find_people: {
         Args: {
           p_city?: string
@@ -851,11 +882,13 @@ export type Database = {
           username: string
         }[]
       }
+      grapheme_length: { Args: { value: string }; Returns: number }
       is_conversation_member: {
         Args: { p_conversation_id: string }
         Returns: boolean
       }
       is_project_owner: { Args: { p_project_id: string }; Returns: boolean }
+      normalize_apostrophes: { Args: { value: string }; Returns: string }
       owns_journey_item: { Args: { item_id: string }; Returns: boolean }
       owns_project_folder: { Args: { object_name: string }; Returns: boolean }
       owns_project_role: { Args: { p_role_id: string }; Returns: boolean }
@@ -881,7 +914,19 @@ export type Database = {
           tagline: string
         }[]
       }
+      respond_connection_request: {
+        Args: { p_accept: boolean; p_connection_id: string }
+        Returns: undefined
+      }
+      send_connection_request: {
+        Args: { p_addressee: string; p_body: string; p_image_path?: string }
+        Returns: string
+      }
       start_conversation: { Args: { other_user: string }; Returns: string }
+      update_connection_request: {
+        Args: { p_body: string; p_connection_id: string; p_image_path?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

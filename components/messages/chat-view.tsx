@@ -33,7 +33,9 @@ export function ChatView({
   initialMessages,
   myProjects,
   myProjectIds,
+  connection,
 }: {
+  connection: { status: string; requestedByMe: boolean } | null;
   conversationId: string;
   meId: string;
   other: Person | null;
@@ -80,6 +82,8 @@ export function ChatView({
             createdAt: row.created_at,
             projectId: row.project_id,
             project,
+            editedAt: null,
+            imageUrl: null,
           });
           if (row.sender_id !== meId) void markConversationRead(conversationId);
         },
@@ -127,7 +131,9 @@ export function ChatView({
         ) : (
           <span className="flex-1 font-semibold">Suhbat</span>
         )}
-        <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} />
+        {connection?.status === "accepted" ? (
+          <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} />
+        ) : null}
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-5" aria-live="polite">
@@ -154,9 +160,17 @@ export function ChatView({
                     mine ? "bg-border rounded-br-lg" : "bg-surface rounded-bl-lg",
                   )}
                 >
+                  {m.imageUrl ? (
+                    // Signed URL of a private first-message image.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={m.imageUrl} alt="Xabardagi rasm" className="mb-2 max-h-64 rounded-2xl object-cover" />
+                  ) : null}
                   {m.body}
                 </p>
-                <span className="text-muted px-2 text-[11px]">{formatTime(m.createdAt)}</span>
+                <span className="text-muted px-2 text-[11px]">
+                  {formatTime(m.createdAt)}
+                  {m.editedAt ? " · tahrirlangan" : null}
+                </span>
               </div>
             );
           })
@@ -164,6 +178,15 @@ export function ChatView({
         <div ref={bottomRef} />
       </div>
 
+      {connection?.status !== "accepted" ? (
+        <p role="status" className="border-border text-muted border-t p-4 text-center text-[14px]">
+          {connection?.status === "pending"
+            ? connection.requestedByMe
+              ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."
+              : "Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi."
+            : "Yozishuv faqat bog'langan odamlar bilan ochiladi."}
+        </p>
+      ) : (
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -188,6 +211,7 @@ export function ChatView({
           <Send />
         </Button>
       </form>
+      )}
     </div>
   );
 }

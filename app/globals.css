@@ -101,13 +101,11 @@
   background-color: var(--glass-fill);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
 }
 
-/* Modals and sheets: glass, but opaque enough that page text never shows through. */
+/* Modals, sheets and popovers: opaque so page text never shows through. */
 @utility glass-panel {
-  background-color: color-mix(in srgb, var(--card) 94%, transparent);
+  background-color: var(--card);
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
 }

@@ -218,7 +218,7 @@ async function PeopleResults({
             person={p}
             skills={p.user_skills.flatMap((s) => (s.skills ? [s.skills.name] : []))}
             matchedSkills={selectedSkillNames}
-            actions={<ConnectButton userId={p.id} connection={relationships.connection(p.id)} className="flex-1" />}
+            actions={<ConnectButton meId={viewerId} userId={p.id} name={p.full_name} connection={relationships.connection(p.id)} className="flex-1" />}
           />
         ))}
       </div>

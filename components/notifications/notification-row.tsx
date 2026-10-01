@@ -5,7 +5,7 @@ import { formatRelative } from "@/lib/format";
 import type { NotificationItem } from "@/lib/queries/notifications";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { cn } from "@/lib/utils";
-import { CollabRequestActions, ConnectionRequestActions, JoinRequestActions } from "./request-actions";
+import { ConnectionRequestActions, JoinRequestActions } from "./request-actions";
 
 function Strong({ children }: { children: ReactNode }) {
   return <span className="font-semibold">{children}</span>;
@@ -20,6 +20,7 @@ function describe(n: NotificationItem): { text: ReactNode; detail?: string | nul
     case "connection_request":
       return {
         text: <>{actor} siz bilan bog&apos;lanmoqchi</>,
+        detail: t.kind === "connection" ? t.message : null,
         actions: t.kind === "connection" && t.pending ? <ConnectionRequestActions connectionId={t.id} /> : null,
       };
     case "connection_accepted":
@@ -34,7 +35,6 @@ function describe(n: NotificationItem): { text: ReactNode; detail?: string | nul
               </>
             ),
             detail: t.message,
-            actions: t.pending ? <CollabRequestActions requestId={t.id} /> : null,
           }
         : { text: <>{actor} hamkorlik taklif qildi</> };
     case "collab_accepted":

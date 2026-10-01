@@ -99,7 +99,7 @@ async function PeopleForYou({ me }: { me: MyProfile }) {
           skills={skills}
           matchedSkills={sharedSkills}
           reasons={<InlineReasons reasons={reasons} />}
-          actions={<ConnectButton userId={person.id} connection={relationships.connection(person.id)} className="flex-1" />}
+          actions={<ConnectButton meId={me.id} userId={person.id} name={person.full_name} connection={relationships.connection(person.id)} className="flex-1" />}
         />
       ))}
     </div>

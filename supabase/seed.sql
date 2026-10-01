@@ -410,24 +410,20 @@ update public.connections
 set status = 'accepted'
 where created_at < now() - interval '5 days';
 
-insert into public.collab_requests (sender_id, receiver_id, reason, project_id, message, created_at)
-select pg_temp.u(v.sender), pg_temp.u(v.receiver), v.reason, pg_temp.p(v.slug), v.message,
-       now() - make_interval(days => v.days_ago)
+-- ---------------------------------------------------------------------------
+-- Conversations (written directly; the app goes through send_connection_request)
+-- ---------------------------------------------------------------------------
+-- Each chat belongs to the (accepted) connection between its two members.
+insert into public.conversations (id, connection_id, created_at)
+select v.id::uuid, c.id, now() - make_interval(days => v.days_ago)
 from (values
-  ('nilufar_ml', 'kamola_data', 'project', 'agrosense', 'AgroSense uchun dataset tozalashda yordam bera olasizmi?', 9),
-  ('sardor_fs', 'otabek_py', 'hackathon', null, 'Keyingi hackathonga backend kerak, birga qatnashamizmi?', 3),
-  ('islom_sec', 'aziz_dev', 'project', 'ctf-arena', 'CTF Arena uchun frontend qidiryapmiz.', 1)
-) as v(sender, receiver, reason, slug, message, days_ago);
-
-update public.collab_requests set status = 'accepted' where created_at < now() - interval '5 days';
-
--- ---------------------------------------------------------------------------
--- Conversations (written directly; the app goes through start_conversation)
--- ---------------------------------------------------------------------------
-insert into public.conversations (id, created_at) values
-  ('00000000-0000-4000-c000-000000000001', now() - interval '29 days'),
-  ('00000000-0000-4000-c000-000000000002', now() - interval '24 days'),
-  ('00000000-0000-4000-c000-000000000003', now() - interval '8 days');
+  ('00000000-0000-4000-c000-000000000001', 'aziz_dev', 'jasur_go', 29),
+  ('00000000-0000-4000-c000-000000000002', 'madina_ux', 'bekzod_mobile', 24),
+  ('00000000-0000-4000-c000-000000000003', 'nilufar_ml', 'kamola_data', 8)
+) as v(id, a, b, days_ago)
+join public.connections c
+  on least(c.requester_id, c.addressee_id) = least(pg_temp.u(v.a), pg_temp.u(v.b))
+ and greatest(c.requester_id, c.addressee_id) = greatest(pg_temp.u(v.a), pg_temp.u(v.b));
 
 insert into public.conversation_members (conversation_id, user_id, last_read_at)
 select v.conversation_id::uuid, pg_temp.u(v.username), now() - make_interval(hours => v.read_hours_ago)

@@ -49,12 +49,13 @@ export async function getConversations(userId: string) {
 
 export type ConversationSummary = Awaited<ReturnType<typeof getConversations>>[number];
 
-const MESSAGE_FIELDS = "id, sender_id, body, kind, project_id, created_at, projects(name, slug, tagline, logo_url)";
+const MESSAGE_FIELDS =
+  "id, sender_id, body, kind, project_id, image_path, edited_at, created_at, projects(name, slug, tagline, logo_url)";
 
 // Null when the conversation does not exist or the user is not a member (RLS).
 export async function getConversation(conversationId: string, userId: string) {
   const supabase = await createClient();
-  const [members, messages] = await Promise.all([
+  const [members, messages, conversation] = await Promise.all([
     supabase
       .from("conversation_members")
       .select(`user_id, profiles(${PROFILE_FIELDS}, headline)`)
@@ -65,15 +66,34 @@ export async function getConversation(conversationId: string, userId: string) {
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: false })
       .limit(100),
+    supabase
+      .from("conversations")
+      .select("connections(id, status, requester_id)")
+      .eq("id", conversationId)
+      .maybeSingle(),
   ]);
   if (members.error) throw members.error;
   if (messages.error) throw messages.error;
   if (!members.data.some((m) => m.user_id === userId)) return null;
 
+  // First-message images live in a private bucket: sign them for an hour.
+  const imagePaths = messages.data.flatMap((m) => (m.image_path ? [m.image_path] : []));
+  const signed = imagePaths.length
+    ? (await supabase.storage.from("message-images").createSignedUrls(imagePaths, 60 * 60)).data ?? []
+    : [];
+  const imageUrls = new Map(signed.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])));
+
+  const connection = conversation.data?.connections ?? null;
   const other = members.data.find((m) => m.user_id !== userId);
   return {
     other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,
-    messages: messages.data.reverse().map(toChatMessage),
+    // Messaging is open only once the connection is accepted (enforced by RLS).
+    connection: connection
+      ? { id: connection.id, status: connection.status, requestedByMe: connection.requester_id === userId }
+      : null,
+    messages: messages.data
+      .reverse()
+      .map((m) => ({ ...toChatMessage(m), imageUrl: m.image_path ? (imageUrls.get(m.image_path) ?? null) : null })),
   };
 }
 
@@ -83,6 +103,8 @@ type MessageRow = {
   body: string;
   kind: string;
   project_id: string | null;
+  image_path?: string | null;
+  edited_at?: string | null;
   created_at: string;
   projects: { name: string; slug: string; tagline: string | null; logo_url: string | null } | null;
 };
@@ -96,6 +118,8 @@ export function toChatMessage(row: MessageRow) {
     createdAt: row.created_at,
     projectId: row.project_id,
     project: row.projects,
+    editedAt: row.edited_at ?? null,
+    imageUrl: null as string | null,
   };
 }
 

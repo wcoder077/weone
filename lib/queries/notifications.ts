@@ -4,7 +4,7 @@ export const REQUEST_TYPES = ["connection_request", "collab_request", "join_requ
 
 // What a notification row is about, resolved from `entity_id` by type.
 export type NotificationTarget =
-  | { kind: "connection"; id: string; pending: boolean }
+  | { kind: "connection"; id: string; pending: boolean; message: string | null }
   | { kind: "collab"; id: string; pending: boolean; reason: string; message: string | null; projectName: string | null }
   | { kind: "join"; id: string; pending: boolean; projectName: string; projectSlug: string; message: string | null }
   | { kind: "project"; name: string; slug: string }
@@ -28,7 +28,10 @@ export async function getNotifications(userId: string, onlyRequests: boolean) {
     rows.filter((r) => types.includes(r.type) && r.entity_id).map((r) => r.entity_id as string);
 
   const [connections, collabs, joins, projects, invites, journey] = await Promise.all([
-    supabase.from("connections").select("id, status").in("id", idsOf("connection_request", "connection_accepted")),
+    supabase
+      .from("connections")
+      .select("id, status, conversations(messages(body, created_at))")
+      .in("id", idsOf("connection_request", "connection_accepted")),
     supabase
       .from("collab_requests")
       .select("id, status, reason, message, projects(name)")
@@ -50,7 +53,11 @@ export async function getNotifications(userId: string, onlyRequests: boolean) {
       case "connection_request":
       case "connection_accepted": {
         const c = find(connections.data, entityId);
-        return c ? { kind: "connection", id: c.id, pending: c.status === "pending" } : { kind: "none" };
+        // The request's first message (the earliest one in its chat).
+        const first = c?.conversations?.messages.toSorted((a, b) => a.created_at.localeCompare(b.created_at))[0];
+        return c
+          ? { kind: "connection", id: c.id, pending: c.status === "pending", message: first?.body || null }
+          : { kind: "none" };
       }
       case "collab_request":
       case "collab_accepted": {

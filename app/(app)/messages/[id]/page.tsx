@@ -24,6 +24,7 @@ export default async function ConversationPage({ params }: PageProps<"/messages/
       initialMessages={conversation.messages}
       myProjects={myProjects}
       myProjectIds={myProjects.map((p) => p.id)}
+      connection={conversation.connection}
     />
   );
 }
