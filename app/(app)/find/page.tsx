@@ -10,6 +10,7 @@ import { FIND_PURPOSES, LOOKING_FOR, labelOf } from "@/lib/constants";
 import { findPeople, type FindParams, type FindResult } from "@/lib/queries/find";
 import { getAllSkills } from "@/lib/queries/skills";
 import { many, single } from "@/lib/url";
+import { BackLink } from "@/components/shared/back-link";
 
 export const metadata = { title: "Odam topish" };
 
@@ -81,6 +82,7 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
 
   return (
     <div className="flex flex-col gap-6">
+      <BackLink fallback="/discover" />
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold lg:text-[32px]">Odam topish</h1>
         <p className="text-muted">Kim kerakligini yozing — har bir natija nega mos ekanini ko&apos;rasiz.</p>

@@ -1,3 +1,4 @@
+import { BackLink } from "@/components/shared/back-link";
 import { notFound, redirect } from "next/navigation";
 import { ProjectForm } from "@/components/projects/project-form";
 import { requireUserId } from "@/lib/auth";
@@ -19,6 +20,7 @@ export default async function EditProjectPage({ params }: PageProps<"/projects/[
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+      <BackLink fallback={`/projects/${slug}`} />
       <h1 className="text-2xl font-bold lg:text-[32px]">Loyihani tahrirlash</h1>
       <div className="bg-card border-border rounded-card border p-5 sm:p-6">
         <ProjectForm

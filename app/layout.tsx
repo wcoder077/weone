@@ -13,6 +13,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: { default: "we1", template: "%s · we1" },
   description: "Odamlarni toping. Birga yarating. Birga o'sing.",
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  // Installed on iOS: full-screen, content draws under a translucent status bar
+  // (bars pad themselves with env(safe-area-inset-top)).
+  appleWebApp: { capable: true, title: "we1", statusBarStyle: "black-translucent" },
+  // Next emits only `mobile-web-app-capable`; older iOS still reads the Apple name.
+  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export const viewport: Viewport = {

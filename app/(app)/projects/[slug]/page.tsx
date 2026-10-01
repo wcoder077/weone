@@ -19,6 +19,7 @@ import { memberRoleLabel } from "@/lib/constants";
 import { formatMonth } from "@/lib/format";
 import { getJoinRequests, getProject, type ProjectDetails } from "@/lib/queries/projects";
 import { createClient } from "@/lib/supabase/server";
+import { BackLink } from "@/components/shared/back-link";
 
 export async function generateMetadata({ params }: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
@@ -49,6 +50,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
   return (
     <div className="flex flex-col gap-6">
+      <BackLink fallback="/projects" />
       <ProjectHeader project={project}>
         {isOwner ? (
           <>

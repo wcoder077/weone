@@ -1,3 +1,4 @@
+import { NavigationTracker } from "@/components/shared/back-link";
 import { redirect } from "next/navigation";
 import { BarsVisibilityProvider } from "@/components/layout/bars-visibility";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
@@ -30,6 +31,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           <PageFade>{children}</PageFade>
         </main>
         <MobileTabBar username={me.username} />
+        <NavigationTracker />
       </BarsVisibilityProvider>
     </UnreadMessagesProvider>
   );

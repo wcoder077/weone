@@ -8,6 +8,7 @@ import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { requireUserId } from "@/lib/auth";
 import { getNotifications } from "@/lib/queries/notifications";
 import { single } from "@/lib/url";
+import { BackLink } from "@/components/shared/back-link";
 
 export const metadata = { title: "Bildirishnomalar" };
 
@@ -16,6 +17,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/no
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+      <BackLink fallback="/home" />
       <h1 className="text-2xl font-bold lg:text-[32px]">Bildirishnomalar</h1>
       <LinkTabs
         label="Bildirishnoma turlari"

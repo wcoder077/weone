@@ -12,6 +12,7 @@ import { requireUserId } from "@/lib/auth";
 import { PROJECT_STATUSES } from "@/lib/constants";
 import { getProjectCategories, listProjects, type ProjectListTab } from "@/lib/queries/projects";
 import { getAllSkills } from "@/lib/queries/skills";
+import { BackLink } from "@/components/shared/back-link";
 
 export const metadata = { title: "Loyihalar" };
 
@@ -49,6 +50,7 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
 
   return (
     <div className="flex flex-col gap-6">
+      <BackLink fallback="/home" />
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold lg:text-[32px]">Loyihalar</h1>
         <Link href="/projects/new" className={buttonVariants()}>

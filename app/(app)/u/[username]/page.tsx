@@ -1,3 +1,4 @@
+import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -61,6 +62,8 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Own profile is a tab; other people's profiles are inner pages. */}
+      {isMe ? null : <BackLink fallback="/discover" className="-mb-2" />}
       <ProfileHeader
         profile={page.profile}
         bannerEditor={

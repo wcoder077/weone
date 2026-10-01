@@ -24,7 +24,7 @@ export function Navbar({ me }: { me: Me }) {
       onFocus={revealOnKeyboardFocus}
       className={cn(
         // Floating bar: inset from the edges, rounded bottom corners, soft shadow.
-        "glass shadow-bar rounded-b-bar sticky top-0 z-40 mx-2 border-t-0 transition-transform duration-200 ease-out motion-reduce:transition-none sm:mx-3",
+        "glass shadow-bar rounded-b-bar sticky top-0 z-40 mx-2 border-t-0 pt-[env(safe-area-inset-top)] transition-transform duration-200 ease-out motion-reduce:transition-none sm:mx-3",
         hidden && "-translate-y-full",
         isConversationPath(pathname) && "max-lg:hidden",
       )}
