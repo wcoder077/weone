@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { CITIES, FIND_PURPOSES } from "@/lib/constants";
 import { FormField } from "@/components/shared/form-field";
@@ -28,6 +28,7 @@ export function FindForm({
 }) {
   const router = useRouter();
   const [values, setValues] = useState(initial);
+  const [searching, startSearch] = useTransition();
   const set = <K extends keyof FindFormValues>(key: K, value: FindFormValues[K]) =>
     setValues((v) => ({ ...v, [key]: value }));
 
@@ -41,7 +42,7 @@ export function FindForm({
     if (values.online) params.set("online", "1");
     if (values.openOnly) params.set("open", "1");
     params.set("go", "1");
-    router.push(`/find?${params.toString()}`, { scroll: false });
+    startSearch(() => router.push(`/find?${params.toString()}`, { scroll: false }));
   }
 
   return (
@@ -84,8 +85,8 @@ export function FindForm({
         Faqat hamkorlikka ochiqlar
         <Switch checked={values.openOnly} onCheckedChange={(v) => set("openOnly", v)} />
       </label>
-      <Button type="submit" size="lg">
-        Natijalarni ko&apos;rsatish
+      <Button type="submit" size="lg" disabled={searching} aria-busy={searching}>
+        {searching ? "Qidirilmoqda…" : "Natijalarni ko'rsatish"}
       </Button>
     </form>
   );

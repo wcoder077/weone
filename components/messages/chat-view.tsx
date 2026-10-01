@@ -136,14 +136,16 @@ export function ChatView({
   }, [conversationId, meId, router]);
 
   return (
-    <div className="bg-card border-border rounded-card flex h-[calc(100dvh-11rem)] flex-col overflow-hidden border lg:h-full">
-      <header className="border-border flex items-center gap-3 border-b px-3 py-3 sm:px-5">
+    // Below lg the chat is a full-screen view (the app bars are hidden, see isConversationPath).
+    <div className="bg-card flex flex-col overflow-hidden max-lg:fixed max-lg:inset-0 max-lg:z-50 lg:border-border lg:rounded-card lg:h-full lg:border">
+      <header className="border-border flex items-center gap-2 border-b px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 sm:px-4 lg:gap-3 lg:px-5 lg:py-3">
         <Link
           href="/messages"
           aria-label="Suhbatlarga qaytish"
-          className="text-muted hover:text-text inline-flex size-11 items-center justify-center rounded-full transition-colors duration-150 lg:hidden"
+          className="text-text hover:bg-surface inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full pr-3 pl-2 text-[15px] font-medium transition-colors duration-150 lg:hidden"
         >
-          <ArrowLeft className="size-5" />
+          <ArrowLeft className="size-5" aria-hidden />
+          Orqaga
         </Link>
         {other ? (
           <Link href={`/u/${other.username}`} className="flex min-w-0 flex-1 items-center gap-3">
@@ -159,7 +161,7 @@ export function ChatView({
         {open ? <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} /> : null}
       </header>
 
-      <div className="chat-surface flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6" aria-live="polite">
+      <div className="chat-surface flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-3 py-4 sm:px-6" aria-live="polite">
         {messages.length === 0 ? (
           <p className="text-muted m-auto text-center text-[14px]">Birinchi xabarni yozing.</p>
         ) : (
@@ -193,7 +195,7 @@ export function ChatView({
       {open ? (
         <ChatComposer conversationId={conversationId} onSent={append} />
       ) : (
-        <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 text-center">
+        <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
           <p className="text-muted text-[14px]">
             {pending?.state === "outgoing"
               ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."

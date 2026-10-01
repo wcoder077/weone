@@ -131,6 +131,22 @@
   html {
     @apply font-sans;
   }
+  /* Touch: no iOS callout or accidental selection when long-pressing controls.
+     Message, post and form text stays selectable. */
+  @media (pointer: coarse) {
+    a,
+    button,
+    img,
+    label,
+    nav,
+    [role="button"],
+    [role="tab"],
+    [role="menuitem"] {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+  }
   body {
     @apply bg-background text-foreground min-h-dvh text-[15px];
     background-image: radial-gradient(
@@ -183,4 +199,15 @@
 /* iOS: no "copy / look up" callout on long-press. */
 @utility touch-callout-none {
   -webkit-touch-callout: none;
+}
+
+/* Page enter: opacity only — a transform would become the containing block
+   for position: fixed children (the full-screen chat). */
+@theme {
+  --animate-page-in: page-in 180ms ease-out;
+  @keyframes page-in {
+    from {
+      opacity: 0;
+    }
+  }
 }

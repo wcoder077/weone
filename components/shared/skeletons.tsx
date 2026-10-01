@@ -71,3 +71,40 @@ export function CardGridSkeleton({
     </div>
   );
 }
+
+// Narrow page with a title and a form card (settings, project form).
+export function FormPageSkeleton() {
+  return (
+    <div role="status" aria-label="Yuklanmoqda" className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+      <Skeleton className="h-8 w-56" />
+      <div className="bg-card border-border rounded-card flex flex-col gap-5 border p-5 sm:p-6">
+        {Array.from({ length: 4 }, (_, i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-11 w-full rounded-full" />
+          </div>
+        ))}
+        <Skeleton className="h-12 w-40 self-end rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+// Narrow feed/list page: title, optional tabs, stacked cards or rows.
+export function ListPageSkeleton({ tabs = false, cards = false }: { tabs?: boolean; cards?: boolean }) {
+  return (
+    <div role="status" aria-label="Yuklanmoqda" className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+      <Skeleton className="h-8 w-48" />
+      {tabs ? <Skeleton className="h-11 w-56 rounded-full" /> : null}
+      {cards ? (
+        Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="rounded-card h-36" />)
+      ) : (
+        <div className="bg-card border-border rounded-card flex flex-col gap-1 border p-4">
+          {Array.from({ length: 6 }, (_, i) => (
+            <ListRowSkeleton key={i} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -14,3 +14,8 @@ export const desktopNavItems = navItems.filter((i) => i.href !== "/profile");
 export function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+// An open conversation (/messages/<id>): full-screen chat below lg, bars hidden.
+export function isConversationPath(pathname: string) {
+  return /^\/messages\/[^/]+$/.test(pathname);
+}

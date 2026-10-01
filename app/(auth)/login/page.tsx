@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   return (
     <>
       <header className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-bold">Xush kelibsiz</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Xush kelibsiz</h1>
         <p className="text-muted">Hisobingizga kiring</p>
       </header>
       <FormMessage error={error} />

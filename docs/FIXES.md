@@ -21,9 +21,9 @@ Rules: no features beyond this list, do not edit `CLAUDE.md`, all UI text in Uzb
 - [x] Profile banner: banner behind the profile header with overlapping avatar; owner can upload / reposition / remove. Push migration 15, regenerate types.
 
 ## Priority 3 — UX / polish
-- [ ] Desktop `/login` and `/signup`: proper centered desktop layout (wider card, better spacing), still mobile-friendly.
-- [ ] Top bar and bottom tab bar hide on scroll down, show on scroll up — consistent on desktop and touch.
-- [ ] Chat screen: hide both bars inside a conversation, clear back/exit button at the top, restore bars on leave.
-- [ ] Navigation feels laggy: smooth transitions and loading states (`loading.tsx`, `useTransition`, prefetch).
-- [ ] Long-press: disable native context menu and text callout on app chrome and interactive elements (text stays selectable in messages and inputs).
-- [ ] PWA manifest: write up tradeoffs only — do not add yet.
+- [x] Desktop `/login` and `/signup`: proper centered desktop layout (wider card, better spacing), still mobile-friendly.
+- [x] Top bar and bottom tab bar hide on scroll down, show on scroll up — consistent on desktop and touch.
+- [x] Chat screen: hide both bars inside a conversation, clear back/exit button at the top, restore bars on leave.
+- [x] Navigation feels laggy: smooth transitions and loading states (`loading.tsx`, `useTransition`, prefetch).
+- [x] Long-press: disable native context menu and text callout on app chrome and interactive elements (text stays selectable in messages and inputs).
+- [x] PWA manifest: write up tradeoffs only — do not add yet.

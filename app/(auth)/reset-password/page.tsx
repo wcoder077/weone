@@ -14,7 +14,7 @@ export default async function ResetPasswordPage() {
     return (
       <>
         <header className="flex flex-col gap-2 text-center">
-          <h1 className="text-2xl font-bold">Havola yaroqsiz</h1>
+          <h1 className="text-2xl font-bold sm:text-[28px]">Havola yaroqsiz</h1>
         </header>
         <FormMessage error="Parolni tiklash havolasi eskirgan yoki noto'g'ri. Yangi havola so'rang." />
         <Link href="/forgot-password" className={buttonVariants({ size: "lg" })}>
@@ -27,7 +27,7 @@ export default async function ResetPasswordPage() {
   return (
     <>
       <header className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-bold">Yangi parol</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Yangi parol</h1>
         <p className="text-muted">Hisobingiz uchun yangi parol o&apos;rnating</p>
       </header>
       <ResetPasswordForm />

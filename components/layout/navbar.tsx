@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { HeaderActions } from "./header-actions";
 import { useBarsVisibility } from "./bars-visibility";
-import { desktopNavItems, isActive } from "./nav-items";
+import { LinkPending } from "./link-pending";
+import { desktopNavItems, isActive, isConversationPath } from "./nav-items";
 import type { Me } from "./types";
 
 export function Navbar({ me }: { me: Me }) {
@@ -22,6 +23,7 @@ export function Navbar({ me }: { me: Me }) {
         // Floating bar: inset from the edges, rounded bottom corners, soft shadow.
         "glass shadow-bar rounded-b-bar sticky top-0 z-40 mx-2 border-t-0 transition-transform duration-200 ease-out motion-reduce:transition-none sm:mx-3",
         hidden && "-translate-y-full",
+        isConversationPath(pathname) && "max-lg:hidden",
       )}
     >
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-3 lg:px-6">
@@ -50,11 +52,12 @@ export function Navbar({ me }: { me: Me }) {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex min-h-11 items-center rounded-full px-4 text-[15px] font-medium transition-colors",
+                  "relative inline-flex min-h-11 items-center rounded-full px-4 text-[15px] font-medium transition-colors",
                   active ? "text-text" : "text-muted hover:text-text",
                 )}
               >
                 {label}
+                <LinkPending />
               </Link>
             );
           })}

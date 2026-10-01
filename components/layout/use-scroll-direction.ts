@@ -27,7 +27,10 @@ export function useScrollDirection() {
 
     function update() {
       frame = 0;
-      const y = Math.max(0, window.scrollY);
+      // Clamp to the real scroll range: iOS rubber-banding past the top or bottom
+      // would otherwise read as a direction change and flash the bars.
+      const maxY = document.documentElement.scrollHeight - window.innerHeight;
+      const y = Math.min(Math.max(0, window.scrollY), Math.max(0, maxY));
       if (reduceMotion.matches || y < TOP_ZONE) {
         setHidden(false);
         lastY = y;

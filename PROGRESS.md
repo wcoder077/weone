@@ -126,3 +126,10 @@
 - Profile sidebar "Bog'lanishlar va faoliyat": connections + projects counts and the 4 latest activities (skeleton / empty / retry). No follow feature exists, so "following" is not shown.
 - Banner: migration 15 pushed with a missing owner-only storage SELECT policy (list/remove needed it); banner behind the header with the avatar overlapping; owner editor uploads (WebP, ≤1800 px), repositions (vertical slider), removes; unsaved uploads are deleted. Types regenerated (`pnpm db:types`).
 - Also fixed: `connectedIds()` on Home didn't filter by the current user (since migration 13 everyone's accepted connections are readable), so "Tarmog'ingizdan" and "Siz uchun odamlar" used other people's connections.
+
+## Fixes P3 — UX / polish (done)
+- Auth pages: logo above a wider card (420 → 500 px from sm), roomier padding, larger heading; checked at 390 / 1440, no overflow.
+- Scroll hide: scroll position clamped to the real range, so iOS bounce at the bottom no longer flashes the bars back.
+- Conversations below lg are a full-screen view: both bars hidden (`isConversationPath`), "Orqaga" button top-left, safe-area padding, overscroll contained; leaving the chat restores the bars. Desktop keeps the list + chat split under the navbar.
+- Navigation: Vercel functions pinned to `syd1` (vercel.json) next to the Supabase DB in ap-southeast-2 — before, every query crossed US East ↔ Sydney. Route skeletons for home, posts, notifications, settings and project forms (partial prefetch); `useLinkStatus` bar on nav links; filters and Find use `useTransition` with a pending state; opacity-only section fade (`PageFade`).
+- Long-press on touch: CSS stops callout/selection on links, buttons, images and nav; `ContextMenuGuard` blocks the native menu there (inputs keep theirs, desktop right-click untouched). Messages and posts text stays selectable. PWA manifest not added (tradeoffs reported, waiting for a decision).

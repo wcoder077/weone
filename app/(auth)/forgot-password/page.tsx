@@ -14,7 +14,7 @@ export default async function ForgotPasswordPage({ searchParams }: PageProps<"/f
   return (
     <>
       <header className="flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-bold">Parolni tiklash</h1>
+        <h1 className="text-2xl font-bold sm:text-[28px]">Parolni tiklash</h1>
         <p className="text-muted">Emailingizni kiriting — yangi parol o&apos;rnatish havolasini yuboramiz</p>
       </header>
       <FormMessage error={linkError} />

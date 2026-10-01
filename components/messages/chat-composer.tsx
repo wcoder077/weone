@@ -42,7 +42,7 @@ export function ChatComposer({ conversationId, onSent }: { conversationId: strin
         e.preventDefault();
         send();
       }}
-      className="border-border bg-card flex items-end gap-1 border-t p-2 sm:p-3"
+      className="border-border bg-card flex items-end gap-1 border-t p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
       <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, draft, emoji, setDraft)} />
       <label className="sr-only" htmlFor="message-input">

@@ -1,6 +1,8 @@
 "use client";
 
+import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { NativeSelect } from "./native-select";
 
 // A filter that lives in the query string; changing it resets pagination.
@@ -19,6 +21,7 @@ export function UrlFilterSelect({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
 
   function onChange(value: string) {
     const next = new URLSearchParams(searchParams);
@@ -27,22 +30,31 @@ export function UrlFilterSelect({
     } else if (value) next.set(param, value);
     else next.delete(param);
     next.delete("page");
-    router.push(`${pathname}?${next.toString()}`, { scroll: false });
+    // Transition keeps the current results on screen (with a spinner) until the new ones arrive.
+    startTransition(() => router.push(`${pathname}?${next.toString()}`, { scroll: false }));
   }
 
   return (
-    <NativeSelect
-      aria-label={label}
-      value={multi ? "" : (searchParams.get(param) ?? "")}
-      onChange={(e) => onChange(e.target.value)}
-      className="bg-card h-11 w-auto min-w-36 text-[14px]"
-    >
-      <option value="">{label}</option>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </NativeSelect>
+    <span className="relative inline-flex items-center" aria-busy={pending}>
+      <NativeSelect
+        aria-label={label}
+        value={multi ? "" : (searchParams.get(param) ?? "")}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-card h-11 w-auto min-w-36 text-[14px]"
+      >
+        <option value="">{label}</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </NativeSelect>
+      {pending ? (
+        <Loader2
+          className="text-muted pointer-events-none absolute right-9 size-4 animate-spin"
+          aria-label="Yuklanmoqda"
+        />
+      ) : null}
+    </span>
   );
 }

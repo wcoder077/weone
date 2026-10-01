@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { ContextMenuGuard } from "@/components/layout/context-menu-guard";
 import { Toaster } from "@/components/ui/sonner";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {children}
         <Toaster />
+        <ContextMenuGuard />
       </body>
     </html>
   );
