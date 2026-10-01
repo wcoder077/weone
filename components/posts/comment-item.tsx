@@ -27,7 +27,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
   return (
     <li className="flex items-start gap-3">
       <Link href={`/u/${comment.author.username}`} className="shrink-0" aria-label={comment.author.full_name}>
-        <UserAvatar name={comment.author.full_name} url={comment.author.avatar_url} size="sm" />
+        <UserAvatar name={comment.author.full_name} url={comment.author.avatar_url} size="sm" userId={comment.author.id} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="flex items-baseline gap-2">

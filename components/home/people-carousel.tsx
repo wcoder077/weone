@@ -30,7 +30,7 @@ export function PeopleCarousel({ meId, picks, relationships }: { meId: string; p
             className="bg-card border-border rounded-card flex w-[220px] shrink-0 snap-start flex-col items-center gap-2 border p-4 text-center"
           >
             <Link href={`/u/${person.username}`} className="flex min-w-0 flex-col items-center gap-2" aria-label={person.full_name}>
-              <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" available={person.available} />
+              <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
               <span className="w-full truncate font-semibold">{person.full_name}</span>
             </Link>
             <span className="text-muted line-clamp-1 min-h-5 w-full text-[13px]">{person.headline ?? person.city ?? ""}</span>

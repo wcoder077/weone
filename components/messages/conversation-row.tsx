@@ -185,7 +185,7 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
             active ? "bg-surface" : "hover:bg-surface/60",
           )}
         >
-          <UserAvatar name={name} url={c.other?.avatar_url ?? null} />
+          <UserAvatar name={name} url={c.other?.avatar_url ?? null} userId={c.other?.id} />
           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
             <span className="flex items-baseline justify-between gap-2">
               <span className={cn("flex min-w-0 items-center gap-1.5", c.unread > 0 ? "font-semibold" : "font-medium")}>

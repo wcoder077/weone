@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OnlineDot } from "@/components/layout/online-presence";
 import { cn } from "@/lib/utils";
 
 const SIZES = {
@@ -18,13 +19,14 @@ export function UserAvatar({
   name,
   url,
   size = "md",
-  available,
+  userId,
   className,
 }: {
   name: string;
   url: string | null;
   size?: keyof typeof SIZES;
-  available?: boolean;
+  /** Shows the green "online" dot while this user is online. */
+  userId?: string;
   className?: string;
 }) {
   return (
@@ -35,13 +37,7 @@ export function UserAvatar({
           {initialsOf(name)}
         </AvatarFallback>
       </Avatar>
-      {available ? (
-        <span
-          className="bg-success ring-bg absolute right-0 bottom-0 size-3 rounded-full ring-2"
-          aria-label="Hamkorlikka ochiq"
-          role="img"
-        />
-      ) : null}
+      {userId ? <OnlineDot userId={userId} className={size === "xl" ? "right-1 bottom-1 size-5 ring-4" : undefined} /> : null}
     </span>
   );
 }

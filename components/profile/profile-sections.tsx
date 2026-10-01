@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { MapPin } from "lucide-react";
+import { Handshake, MapPin } from "lucide-react";
 import { LOOKING_FOR, evidenceText, labelOf } from "@/lib/constants";
 import type { ProfilePage } from "@/lib/queries/profile-page";
 import { SkillChip } from "@/components/shared/skill-chip";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { OnlineLabel } from "@/components/layout/online-presence";
 import { bannerUrl } from "@/lib/url";
 import { isGeneratedUsername } from "@/lib/validation/profile";
 
@@ -59,7 +60,7 @@ export function ProfileHeader({
       </div>
       <div className="flex flex-col gap-4 px-5 pb-5 sm:flex-row sm:gap-5 sm:px-6 sm:pb-6">
         <div className="ring-card bg-card relative -mt-12 w-fit shrink-0 rounded-full ring-4">
-          <UserAvatar name={profile.full_name} url={profile.avatar_url} size="xl" available={profile.available} />
+          <UserAvatar name={profile.full_name} url={profile.avatar_url} size="xl" userId={profile.id} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:pt-4">
           <h1 className="text-2xl font-bold lg:text-[28px]">{profile.full_name || profile.username}</h1>
@@ -73,9 +74,11 @@ export function ProfileHeader({
                 {profile.is_online_ok ? " · onlayn ham" : ""}
               </span>
             ) : null}
+            <OnlineLabel userId={profile.id} />
+            {/* The green dot means "online" now, so "open to collaboration" gets its own icon. */}
             {profile.available ? (
               <span className="inline-flex items-center gap-1.5">
-                <span className="bg-success size-2 rounded-full" aria-hidden />
+                <Handshake className="text-primary size-4" aria-hidden />
                 Hamkorlikka ochiq
               </span>
             ) : null}

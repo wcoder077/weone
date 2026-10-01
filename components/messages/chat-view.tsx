@@ -180,7 +180,7 @@ export function ChatView({
         </Link>
         {other ? (
           <Link href={`/u/${other.username}`} className="flex min-h-11 min-w-0 flex-1 items-center gap-3">
-            <UserAvatar name={other.full_name} url={other.avatar_url} />
+            <UserAvatar name={other.full_name} url={other.avatar_url} userId={other.id} />
             <span className="flex min-w-0 flex-col">
               <span className="truncate font-semibold">{other.full_name}</span>
               {other.headline ? <span className="text-muted truncate text-[13px]">{other.headline}</span> : null}
