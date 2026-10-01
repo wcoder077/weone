@@ -6,6 +6,7 @@ import { checkUsername, type UsernameStatus } from "@/lib/actions/onboarding";
 import { saveSettings } from "@/lib/actions/profile";
 import type { ActionState } from "@/lib/actions/types";
 import { CITIES, LOOKING_FOR } from "@/lib/constants";
+import { isGeneratedUsername } from "@/lib/validation/profile";
 import type { MyProfile } from "@/lib/queries/profiles";
 import { AvatarUpload } from "@/components/shared/avatar-upload";
 import { FormField, FormMessage } from "@/components/shared/form-field";
@@ -30,6 +31,10 @@ export function SettingsForm({ profile }: { profile: MyProfile }) {
 
   function onUsernameChange(value: string) {
     clearTimeout(timer.current);
+    if (!value.trim()) {
+      setUsernameTaken(false);
+      return;
+    }
     timer.current = setTimeout(async () => {
       const status: UsernameStatus = await checkUsername(value);
       setUsernameTaken(status === "taken");
@@ -64,7 +69,8 @@ export function SettingsForm({ profile }: { profile: MyProfile }) {
             name="username"
             autoCapitalize="none"
             spellCheck={false}
-            defaultValue={profile.username}
+            defaultValue={isGeneratedUsername(profile.username) ? "" : profile.username}
+          placeholder="Foydalanuvchi nomi"
             onChange={(e) => onUsernameChange(e.target.value)}
             aria-describedby="username-desc"
             aria-invalid={Boolean(errors?.username) || usernameTaken}

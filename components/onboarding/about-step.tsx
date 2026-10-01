@@ -2,6 +2,7 @@
 
 import { useActionState, useRef, useState } from "react";
 import { checkUsername, saveAbout, type UsernameStatus } from "@/lib/actions/onboarding";
+import { isGeneratedUsername } from "@/lib/validation/profile";
 import { CITIES } from "@/lib/constants";
 import type { MyProfile } from "@/lib/queries/profiles";
 import { AvatarUpload } from "@/components/shared/avatar-upload";
@@ -24,6 +25,10 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
 
   function onUsernameChange(value: string) {
     clearTimeout(timer.current);
+    if (!value.trim()) {
+      setUsernameStatus(null);
+      return;
+    }
     setUsernameStatus("checking");
     timer.current = setTimeout(async () => setUsernameStatus(await checkUsername(value)), 400);
   }
@@ -50,7 +55,7 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
       <FormField
         id="username"
         label="Foydalanuvchi nomi"
-        hint={usernameStatus ? USERNAME_HINTS[usernameStatus] : "Profilingiz manzili: /u/username"}
+        hint={usernameStatus ? USERNAME_HINTS[usernameStatus] : "Ixtiyoriy. Keyinroq ham qo'sha olasiz"}
         errors={errors?.username ?? (usernameStatus === "taken" ? [USERNAME_HINTS.taken] : undefined)}
       >
         <Input
@@ -59,7 +64,8 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
-          defaultValue={profile.username}
+          defaultValue={isGeneratedUsername(profile.username) ? "" : profile.username}
+          placeholder="Foydalanuvchi nomi"
           onChange={(e) => onUsernameChange(e.target.value)}
           aria-describedby="username-desc"
           aria-invalid={Boolean(errors?.username) || usernameStatus === "taken"}
