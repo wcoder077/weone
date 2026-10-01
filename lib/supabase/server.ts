@@ -4,8 +4,10 @@ import type { Database } from "@/lib/types/database";
 import { requireSupabaseEnv } from "./env";
 
 export async function createClient() {
-  const { url, key } = requireSupabaseEnv();
+  // Read cookies first so routes using this client render per request
+  // instead of being prerendered at build time.
   const cookieStore = await cookies();
+  const { url, key } = requireSupabaseEnv();
 
   return createServerClient<Database>(url, key, {
     cookies: {
