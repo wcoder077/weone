@@ -69,6 +69,12 @@
   --radius: 1.25rem;
 }
 
+/* Motion: short and calm (~150–250 ms, ease-out) for every transition utility. */
+@theme {
+  --default-transition-duration: 180ms;
+  --default-transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -153,4 +159,16 @@
   background-size:
     100% 100%,
     22px 22px;
+}
+
+/* Respect reduced motion everywhere: no slides, fades or smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -84,3 +84,8 @@
 - Chat rebuilt as `ChatView` + `MessageBubble` + `ChatComposer`: own bubbles right (`bubble-mine` token), others left, day separators (Bugun / Kecha / date), timestamps + "tahrirlangan", auto-scroll, emoji picker at caret, Enter sends / Shift+Enter new line, text + emoji only. `chat-surface` background = soft primary tint + faint dot grid from tokens (both themes).
 - Conversation list: "Jarayonda" badge for pending, live refresh on new messages (Realtime, RLS-scoped, debounced). Mobile keeps list and chat as separate screens.
 - E2E: multi-line + emoji message delivered live to the other user; list preview updates live.
+
+## Milestone 5 — Navbar behaviour and style (done)
+- `useHideOnScroll`: hides the sticky header on scroll down (8 px threshold, never in the top 64 px), shows on scroll up; stays visible while focused / a menu is open; keyboard focus reveals it; with prefers-reduced-motion it never hides.
+- Glass = semi-opaque token fill (dark 72 %, light 75 %) + working `backdrop-filter: blur(24px)` on navbar and mobile tab bar; modals/sheets/popovers opaque.
+- Motion defaults set once: every transition 180 ms ease-out; global reduced-motion rule disables animations/transitions.

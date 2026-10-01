@@ -1,19 +1,31 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { HeaderActions } from "./header-actions";
+import { useHideOnScroll } from "./use-hide-on-scroll";
 import { desktopNavItems, isActive } from "./nav-items";
 import type { Me } from "./types";
 
 export function Navbar({ me }: { me: Me }) {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+  const { hidden, reveal } = useHideOnScroll(headerRef);
 
   return (
-    <header className="glass sticky top-0 z-40 border-x-0 border-t-0">
+    <header
+      ref={headerRef}
+      data-hidden={hidden}
+      onFocus={reveal}
+      className={cn(
+        "glass sticky top-0 z-40 border-x-0 border-t-0 transition-transform duration-200 ease-out motion-reduce:transition-none",
+        hidden && "-translate-y-full",
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 lg:px-8">
         <Logo />
 
