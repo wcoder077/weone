@@ -820,6 +820,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_collab_request: { Args: { p_request_id: string }; Returns: string }
       can_confirm_journey_item: { Args: { item_id: string }; Returns: boolean }
       find_people: {
         Args: {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, LogOut, Settings, User } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import {
@@ -11,18 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { NotificationBell } from "./notification-bell";
 import type { Me } from "./types";
 
 export function HeaderActions({ me }: { me: Me }) {
   return (
     <div className="flex items-center gap-1">
-      <Link
-        href="/notifications"
-        aria-label="Bildirishnomalar"
-        className="text-muted hover:text-text inline-flex size-11 items-center justify-center rounded-full transition-colors"
-      >
-        <Bell className="size-5" />
-      </Link>
+      <NotificationBell userId={me.id} initialUnread={me.unread} />
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="Profil menyusi"

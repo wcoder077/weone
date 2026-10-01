@@ -109,3 +109,15 @@ export const FIND_PURPOSES = [
   { value: "project", label: "Loyiha" },
   { value: "learning", label: "O'qish" },
 ] as const;
+
+export const COLLAB_REASONS = [
+  { value: "project", label: "Loyiha" },
+  { value: "hackathon", label: "Hackathon" },
+  { value: "startup", label: "Startap" },
+  { value: "learning", label: "Birga o'rganish" },
+  { value: "open_source", label: "Open source" },
+  { value: "mentorship", label: "Mentorlik" },
+] as const;
+
+export type CollabReason = (typeof COLLAB_REASONS)[number]["value"];
+export const COLLAB_REASON_VALUES = COLLAB_REASONS.map((o) => o.value) as [CollabReason, ...CollabReason[]];

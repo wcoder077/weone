@@ -12,6 +12,7 @@ import {
   TagList,
 } from "@/components/profile/profile-sections";
 import { ShareButton } from "@/components/profile/share-button";
+import { PersonActions } from "@/components/social/person-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { JourneyItem } from "@/components/shared/journey-item";
 import { LinkTabs } from "@/components/shared/link-tabs";
@@ -64,7 +65,10 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
               <ShareButton path={path} />
             </>
           ) : (
-            <ShareButton path={path} />
+            <>
+              <PersonActions viewerId={viewerId} userId={page.profile.id} name={page.profile.full_name} />
+              <ShareButton path={path} />
+            </>
           )
         }
       />

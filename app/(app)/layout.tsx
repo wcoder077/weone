@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { Navbar } from "@/components/layout/navbar";
+import { getUnreadCount } from "@/lib/queries/notifications";
 import { getMyProfile } from "@/lib/queries/profiles";
 
 export default async function AppLayout({ children }: LayoutProps<"/">) {
@@ -13,6 +14,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
     username: profile.username,
     fullName: profile.full_name,
     avatarUrl: profile.avatar_url,
+    unread: await getUnreadCount(profile.id),
   };
 
   return (

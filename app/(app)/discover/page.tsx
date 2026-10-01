@@ -9,6 +9,7 @@ import { PersonCard } from "@/components/shared/person-card";
 import { ProjectCard } from "@/components/shared/project-card";
 import { CardGridSkeleton } from "@/components/shared/skeletons";
 import { UrlFilterSelect } from "@/components/shared/url-filter-select";
+import { ConnectButton } from "@/components/social/connect-button";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { requireUserId } from "@/lib/auth";
@@ -22,6 +23,7 @@ import {
   type ProjectSearchFilters,
 } from "@/lib/queries/discover";
 import { getAllSkills } from "@/lib/queries/skills";
+import { getRelationships } from "@/lib/queries/social";
 import { hrefWith, many, pageOf, single } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -190,7 +192,10 @@ async function PeopleResults({
   selectedSkillNames: string[];
 }) {
   const viewerId = await requireUserId();
-  const { people, total } = await searchPeople(viewerId, filters);
+  const [{ people, total }, relationships] = await Promise.all([
+    searchPeople(viewerId, filters),
+    getRelationships(viewerId),
+  ]);
 
   if (people.length === 0) {
     return (
@@ -213,11 +218,7 @@ async function PeopleResults({
             person={p}
             skills={p.user_skills.flatMap((s) => (s.skills ? [s.skills.name] : []))}
             matchedSkills={selectedSkillNames}
-            actions={
-              <Link href={`/u/${p.username}`} className={cn(buttonVariants({ variant: "outline" }), "w-full")}>
-                Profilni ko&apos;rish
-              </Link>
-            }
+            actions={<ConnectButton userId={p.id} connection={relationships.connection(p.id)} className="flex-1" />}
           />
         ))}
       </div>

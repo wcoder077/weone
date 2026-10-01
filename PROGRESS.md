@@ -39,3 +39,9 @@
 - `/find`: requirements form (role, for, skills, city, online, open-only) → `find_people()`; every result shows a "Nega mos" checklist (skills, role, hackathon experience, city/online, open, same goal). No percentages. Free text from Welcome (`?q=`) pre-fills purpose + role (filler words dropped).
 - Navbar search now goes to `/discover` (people, skills, projects); `/find` stays the requirement-based search. Shared `PersonCard`, `MatchReasons`, `Pagination`, URL helpers in `lib/url.ts`.
 - Connect / Collaborate buttons on cards arrive with Phase 7.
+
+## Phase 7 — Connections, collaborate, notifications (done)
+- `ConnectButton` is state-aware (connect / request sent → cancel / accept-decline / connected). Profile, Find cards: Connect + Message (if allowed) or Collaborate; Discover cards: Connect. Reconnecting after a decline clears the old declined row first (pair-unique index).
+- Collaborate dialog: reason pills, optional project (my projects), message. Accept goes through new SQL `accept_collab_request()` (migration 10, pushed): marks accepted, opens the chat via `start_conversation`, posts the request text as the first message *from the sender*, returns the chat id.
+- `/notifications` (All · Requests): readable Uzbek sentences per type with entity lookups, inline accept/decline for still-pending connection/collab/join requests; marked read on visit. Bell shows a live unread badge (Realtime INSERT on own notifications).
+- E2E (two users, local stack): connect → collaborate → bell count → accept connection → accept join request (member added by trigger) → accept collab → redirected to the chat → sender now sees "Xabar".

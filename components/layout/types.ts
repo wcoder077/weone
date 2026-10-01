@@ -3,4 +3,5 @@ export type Me = {
   username: string;
   fullName: string;
   avatarUrl: string | null;
+  unread: number;
 };

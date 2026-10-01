@@ -5,7 +5,9 @@ import { FindForm, type FindFormValues } from "@/components/find/find-form";
 import { EmptyState } from "@/components/shared/empty-state";
 import { MatchReasons, PersonCard } from "@/components/shared/person-card";
 import { CardGridSkeleton } from "@/components/shared/skeletons";
+import { PersonActions } from "@/components/social/person-actions";
 import { buttonVariants } from "@/components/ui/button";
+import { requireUserId } from "@/lib/auth";
 import { FIND_PURPOSES, LOOKING_FOR, labelOf } from "@/lib/constants";
 import { findPeople, type FindParams, type FindResult } from "@/lib/queries/find";
 import { getAllSkills } from "@/lib/queries/skills";
@@ -117,7 +119,7 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
 }
 
 async function FindResults({ params }: { params: FindParams }) {
-  const people = await findPeople(params);
+  const [viewerId, people] = await Promise.all([requireUserId(), findPeople(params)]);
 
   if (people.length === 0) {
     return (
@@ -140,9 +142,12 @@ async function FindResults({ params }: { params: FindParams }) {
           matchedSkills={person.matchedSkillNames}
           reasons={<MatchReasons reasons={reasonsFor(person, params)} />}
           actions={
-            <Link href={`/u/${person.username}`} className={buttonVariants({ variant: "outline" })}>
-              Profilni ko&apos;rish
-            </Link>
+            <>
+              <Link href={`/u/${person.username}`} className={buttonVariants({ variant: "ghost" })}>
+                Profilni ko&apos;rish
+              </Link>
+              <PersonActions viewerId={viewerId} userId={person.id} name={person.full_name} />
+            </>
           }
         />
       ))}
