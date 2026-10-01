@@ -203,3 +203,6 @@
 
 ## Default banner and avatar (done)
 - `public/defaults/banner.jpg` (1500×500, dark with soft brand-blue light and a faint dot grid, rendered with headless Chromium, 27 KB) is shown on every profile until the user uploads their own banner; the position slider applies only to uploaded banners. `public/defaults/avatar.svg` (neutral user silhouette) replaces the initials wherever someone has no photo (initials still show while it loads). Constants `DEFAULT_BANNER` / `DEFAULT_AVATAR` in `lib/url.ts`.
+
+## Compact recommendation cards (done)
+- "Siz uchun maqsaddoshlar" cards (home + discover): 160 px wide instead of 220, tighter padding, 14 px name, one-line subtitle, a single reason line ("✓ Python +2"), hidden scrollbar (row still swipes). Connect button keeps the 44 px touch height.

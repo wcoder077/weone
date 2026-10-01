@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
 import type { getPeopleForYou } from "@/lib/queries/home";
 import type { getRelationships } from "@/lib/queries/social";
-import { InlineReasons } from "@/components/shared/person-card";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ConnectButton } from "@/components/social/connect-button";
 
@@ -23,26 +22,33 @@ export function PeopleCarousel({ meId, picks, relationships }: { meId: string; p
           <ChevronRight className="size-4" aria-hidden />
         </Link>
       </div>
-      <ul className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:px-0">
+      {/* Small cards in a swipeable row; the scrollbar is hidden (the row still scrolls). */}
+      <ul className="-mx-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 [scrollbar-width:none] lg:mx-0 lg:px-0 [&::-webkit-scrollbar]:hidden">
         {picks.map(({ person, reasons }) => (
           <li
             key={person.id}
-            className="bg-card border-border rounded-card flex w-[220px] shrink-0 snap-start flex-col items-center gap-2 border p-4 text-center"
+            className="bg-card border-border flex w-[160px] shrink-0 snap-start flex-col items-center gap-1 rounded-[20px] border px-3 pt-4 pb-3 text-center"
           >
-            <Link href={`/u/${person.username}`} className="flex min-w-0 flex-col items-center gap-2" aria-label={person.full_name}>
+            <Link href={`/u/${person.username}`} className="flex w-full min-w-0 flex-col items-center gap-2" aria-label={person.full_name}>
               <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
-              <span className="w-full truncate font-semibold">{person.full_name}</span>
+              <span className="w-full truncate text-[14px] font-semibold">{person.full_name}</span>
             </Link>
-            <span className="text-muted line-clamp-1 min-h-5 w-full text-[13px]">{person.headline ?? person.city ?? ""}</span>
-            <div className="flex min-h-10 justify-center">
-              <InlineReasons reasons={reasons.slice(0, 2)} />
-            </div>
+            <span className="text-muted h-4 w-full truncate text-[12px] leading-4">{person.headline ?? person.city ?? ""}</span>
+            <span className="text-muted mb-2 flex h-4 w-full items-center justify-center gap-1 text-[12px] leading-4">
+              {reasons[0] ? (
+                <>
+                  <Check className="text-primary size-3 shrink-0" aria-hidden />
+                  <span className="truncate">{reasons[0]}</span>
+                  {reasons.length > 1 ? <span className="shrink-0">+{reasons.length - 1}</span> : null}
+                </>
+              ) : null}
+            </span>
             <ConnectButton
               meId={meId}
               userId={person.id}
               name={person.full_name}
               connection={relationships.connection(person.id)}
-              className="mt-auto w-full"
+              className="mt-auto w-full px-3 text-[14px]"
             />
           </li>
         ))}
