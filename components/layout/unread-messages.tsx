@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 
 // Fired by the chat after it marks a conversation read.
 export const MESSAGES_READ_EVENT = "weone:messages-read";
@@ -43,22 +43,23 @@ export function UnreadMessagesProvider({
       timer = setTimeout(() => void recount(), 600);
     }
 
-    const channel = supabase
-      .channel(`unread-messages:${meId}`)
-      .on<{ sender_id: string }>(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        ({ new: row }) => {
-          if (row.sender_id !== meId) scheduleRecount();
-        },
-      )
-      .subscribe();
+    const unsubscribe = subscribeWithAuth(supabase, () =>
+      supabase
+        .channel(`unread-messages:${meId}`)
+        .on<{ sender_id: string }>(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "messages" },
+          ({ new: row }) => {
+            if (row.sender_id !== meId) scheduleRecount();
+          },
+        )
+    );
     window.addEventListener(MESSAGES_READ_EVENT, scheduleRecount);
 
     return () => {
       clearTimeout(timer);
       window.removeEventListener(MESSAGES_READ_EVENT, scheduleRecount);
-      void supabase.removeChannel(channel);
+      unsubscribe();
     };
   }, [meId]);
 

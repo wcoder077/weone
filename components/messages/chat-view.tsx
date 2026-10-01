@@ -8,7 +8,7 @@ import { markConversationRead } from "@/lib/actions/messages";
 import { MESSAGES_READ_EVENT } from "@/components/layout/unread-messages";
 import type { ChatMessage } from "@/lib/queries/messages";
 import type { ConnectionState } from "@/lib/queries/social";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 import { formatDay } from "@/lib/format";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ConnectButton } from "@/components/social/connect-button";
@@ -92,55 +92,56 @@ export function ChatView({
     });
 
     const supabase = createClient();
-    const channel = supabase
-      .channel(`messages:${conversationId}`)
-      .on<MessageInsert>(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
-        async (payload) => {
-          const row = payload.new;
-          // Invite cards need the project; Realtime rows carry only its id.
-          const project = row.project_id
-            ? (await supabase.from("projects").select("name, slug, tagline, logo_url").eq("id", row.project_id).maybeSingle()).data
-            : null;
-          append({
-            id: row.id,
-            senderId: row.sender_id,
-            body: row.body,
-            kind: row.kind,
-            createdAt: row.created_at,
-            projectId: row.project_id,
-            project,
-            editedAt: null,
-            imageUrl: null,
-          });
-          if (row.sender_id !== meId) {
-            void markConversationRead(conversationId).then(() => {
-              window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
-              router.refresh();
+    const unsubscribe = subscribeWithAuth(supabase, () =>
+      supabase
+        .channel(`messages:${conversationId}`)
+        .on<MessageInsert>(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+          async (payload) => {
+            const row = payload.new;
+            // Invite cards need the project; Realtime rows carry only its id.
+            const project = row.project_id
+              ? (await supabase.from("projects").select("name, slug, tagline, logo_url").eq("id", row.project_id).maybeSingle()).data
+              : null;
+            append({
+              id: row.id,
+              senderId: row.sender_id,
+              body: row.body,
+              kind: row.kind,
+              createdAt: row.created_at,
+              projectId: row.project_id,
+              project,
+              editedAt: null,
+              imageUrl: null,
             });
-          }
-        },
-      )
-      .on<MessageUpdate>(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
-        ({ new: row }) =>
-          setMessages((prev) =>
-            prev.map((m) => (m.id === row.id ? { ...m, body: row.body, editedAt: row.edited_at } : m)),
-          ),
-      )
-      // Deletes can't be filtered by column and carry only the id; unknown ids are ignored.
-      .on<{ id: string }>(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "messages" },
-        ({ old }) => {
-          if (old.id) setMessages((prev) => prev.filter((m) => m.id !== old.id));
-        },
-      )
-      .subscribe();
+            if (row.sender_id !== meId) {
+              void markConversationRead(conversationId).then(() => {
+                window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
+                router.refresh();
+              });
+            }
+          },
+        )
+        .on<MessageUpdate>(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+          ({ new: row }) =>
+            setMessages((prev) =>
+              prev.map((m) => (m.id === row.id ? { ...m, body: row.body, editedAt: row.edited_at } : m)),
+            ),
+        )
+        // Deletes can't be filtered by column and carry only the id; unknown ids are ignored.
+        .on<{ id: string }>(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "messages" },
+          ({ old }) => {
+            if (old.id) setMessages((prev) => prev.filter((m) => m.id !== old.id));
+          },
+        )
+    );
     return () => {
-      void supabase.removeChannel(channel);
+      unsubscribe();
     };
   }, [conversationId, meId, router]);
 

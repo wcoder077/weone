@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 
 // Unread badge that counts new notifications live (Realtime respects RLS:
 // only the user's own rows arrive). Opening /notifications clears it.
@@ -28,16 +28,17 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
 
   useEffect(() => {
     const supabase = createClient();
-    const channel = supabase
-      .channel(`notifications:${userId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-        () => setCount((n) => n + 1),
-      )
-      .subscribe();
+    const unsubscribe = subscribeWithAuth(supabase, () =>
+      supabase
+        .channel(`notifications:${userId}`)
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+          () => setCount((n) => n + 1),
+        )
+    );
     return () => {
-      void supabase.removeChannel(channel);
+      unsubscribe();
     };
   }, [userId]);
 
