@@ -18,7 +18,7 @@ export function StepHeader({
     <header className="flex flex-col gap-4">
       <div
         role="progressbar"
-        aria-label="Onboarding jarayoni"
+        aria-label="Profilni sozlash jarayoni"
         aria-valuemin={1}
         aria-valuemax={ONBOARDING_STEPS}
         aria-valuenow={step}

@@ -8,7 +8,7 @@ export const LOOKING_FOR = [
   { value: "freelance", label: "Frilans" },
   { value: "mentorship", label: "Mentorlik" },
   { value: "learning", label: "Birga o'rganish" },
-  { value: "open_source", label: "Open source" },
+  { value: "open_source", label: "Ochiq manba" },
 ] as const;
 
 export type LookingFor = (typeof LOOKING_FOR)[number]["value"];
@@ -36,7 +36,7 @@ export const CITIES = [
   "Toshkent",
   "Samarqand",
   "Buxoro",
-  "Fargʻona",
+  "Farg'ona",
   "Namangan",
   "Andijon",
   "Qarshi",
@@ -63,12 +63,12 @@ export const JOURNEY_TYPES = [
   { value: "job", label: "Ish" },
   { value: "internship", label: "Amaliyot" },
   { value: "project", label: "Loyiha" },
-  { value: "open_source", label: "Open source" },
+  { value: "open_source", label: "Ochiq manba" },
   { value: "course", label: "Kurs" },
   { value: "workshop", label: "Ustaxona" },
   { value: "meetup", label: "Uchrashuv" },
   { value: "conference", label: "Konferensiya" },
-  { value: "volunteer", label: "Volontyorlik" },
+  { value: "volunteer", label: "Ko'ngillilik" },
   { value: "other", label: "Boshqa" },
 ] as const;
 
@@ -107,7 +107,7 @@ export const FIND_PURPOSES = [
   { value: "hackathon", label: "Hackathon" },
   { value: "startup", label: "Startap" },
   { value: "project", label: "Loyiha" },
-  { value: "learning", label: "O'qish" },
+  { value: "learning", label: "O'rganish" },
 ] as const;
 
 export const COLLAB_REASONS = [
@@ -115,7 +115,7 @@ export const COLLAB_REASONS = [
   { value: "hackathon", label: "Hackathon" },
   { value: "startup", label: "Startap" },
   { value: "learning", label: "Birga o'rganish" },
-  { value: "open_source", label: "Open source" },
+  { value: "open_source", label: "Ochiq manba" },
   { value: "mentorship", label: "Mentorlik" },
 ] as const;
 

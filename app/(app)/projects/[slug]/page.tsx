@@ -62,7 +62,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
         {canAsk ? <JoinDialog projectId={project.id} projectName={project.name} roles={roleOptions} /> : null}
         {myPending ? (
           <span className="flex flex-wrap items-center gap-2">
-            <span className="text-muted text-[14px]">So&apos;rov yuborilgan</span>
+            <span className="text-muted text-[14px]">So&apos;rov yuborildi</span>
             <CancelRequestButton requestId={myPending.id} />
           </span>
         ) : null}

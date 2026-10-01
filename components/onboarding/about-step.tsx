@@ -11,8 +11,8 @@ import { StepFooter } from "./step-shell";
 
 const USERNAME_HINTS: Record<UsernameStatus | "checking", string> = {
   checking: "Tekshirilmoqda…",
-  available: "Bo'sh, olsa bo'ladi",
-  taken: "Bu username band",
+  available: "Bo'sh — olishingiz mumkin",
+  taken: "Bu foydalanuvchi nomi band",
   invalid: "3–30 ta belgi: kichik lotin harflari, raqamlar va _",
 };
 
@@ -49,7 +49,7 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
 
       <FormField
         id="username"
-        label="Username"
+        label="Foydalanuvchi nomi"
         hint={usernameStatus ? USERNAME_HINTS[usernameStatus] : "Profilingiz manzili: /u/username"}
         errors={errors?.username ?? (usernameStatus === "taken" ? [USERNAME_HINTS.taken] : undefined)}
       >
@@ -84,7 +84,7 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
 
       <FormField
         id="headline"
-        label="Qisqacha siz haqingizda"
+        label="Qisqa tavsif"
         hint="Masalan: Frontend dasturchi · React, TypeScript"
         errors={errors?.headline}
       >

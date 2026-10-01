@@ -27,6 +27,15 @@ function cleanTerm(value: string) {
   return value.replace(/[,()"'\\%_*:]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
 }
 
+// ILIKE pattern where any apostrophe variant matches any other ("Farg'ona" = "Fargʻona").
+function cityPattern(city: string) {
+  return city
+    .replace(/[,()"\\%_*:]/g, "")
+    .replace(/['ʻʼ’‘`]/g, "_")
+    .trim()
+    .slice(0, 60);
+}
+
 // FIX 1: skills are matched with a join, not inside the tsvector.
 // Returns ids of skills whose name starts with the search text.
 async function skillIdsMatching(supabase: Supabase, term: string) {
@@ -85,7 +94,7 @@ export async function searchPeople(viewerId: string, f: PeopleFilters) {
     if (ids.length === 0) return { people: [], total: 0 };
     query = query.in("id", ids);
   }
-  if (f.city) query = query.ilike("city", cleanTerm(f.city));
+  if (f.city) query = query.ilike("city", cityPattern(f.city));
   if (f.role) query = query.ilike("headline", `%${cleanTerm(f.role)}%`);
   if (f.available) query = query.eq("available", true);
   if (f.online) query = query.eq("is_online_ok", true);

@@ -27,7 +27,7 @@ import { getRelationships } from "@/lib/queries/social";
 import { hrefWith, many, pageOf, single } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
-export const metadata = { title: "Kashf qilish" };
+export const metadata = { title: "Kashf etish" };
 
 type Params = Record<string, string | string[] | undefined>;
 
@@ -59,7 +59,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold lg:text-[32px]">Kashf qilish</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">Kashf etish</h1>
 
       <form action="/discover" role="search" className="flex flex-col gap-2 sm:flex-row">
         <input type="hidden" name="tab" value={tab} />
@@ -83,7 +83,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
       </form>
 
       <LinkTabs
-        label="Kashf qilish bo'limlari"
+        label="Kashf etish bo'limlari"
         active={tab}
         tabs={[
           { value: "people", label: "Odamlar", href: hrefWith("/discover", { q }, { tab: "people" }) },

@@ -30,8 +30,7 @@ const STEPS = {
 export default async function OnboardingPage({ searchParams }: PageProps<"/onboarding">) {
   const userId = await requireUserId();
   const profile = await getMyProfile();
-  if (!profile) redirect("/login");
-  if (profile.onboarded) redirect("/home");
+  if (!profile) redirect("/login"); // Narrows the type; the layout already redirected.
 
   const { step: rawStep } = await searchParams;
   const step = rawStep === "2" ? 2 : rawStep === "3" ? 3 : 1;

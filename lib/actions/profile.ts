@@ -293,7 +293,7 @@ export async function saveSettings(_prev: ActionState, formData: FormData): Prom
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update(parsed.data).eq("id", userId);
   if (error?.code === UNIQUE_VIOLATION) {
-    return { fieldErrors: { username: ["Bu username band. Boshqasini tanlang."] } };
+    return { fieldErrors: { username: ["Bu foydalanuvchi nomi band. Boshqasini tanlang."] } };
   }
   if (error) return { error: SAVE_FAILED };
 

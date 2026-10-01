@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="uz" className={`${inter.variable} antialiased`}>
+    <html lang="uz" data-theme="dark" className={`${inter.variable} antialiased`}>
       <body>
         {children}
         <Toaster />

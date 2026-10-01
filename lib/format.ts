@@ -26,10 +26,10 @@ export function formatDateRange(start: string | null, end: string | null) {
   return `${formatMonth(start)} – ${formatMonth(end)}`;
 }
 
-// Relative time for feeds and notifications: "hozir", "5 daqiqa oldin", "3 kun oldin", "12 Mart".
+// Relative time for feeds and notifications: "hozirgina", "5 daqiqa oldin", "3 kun oldin", "12 Mart".
 export function formatRelative(iso: string, now = Date.now()) {
   const seconds = Math.max(0, Math.round((now - new Date(iso).getTime()) / 1000));
-  if (seconds < 60) return "hozir";
+  if (seconds < 60) return "hozirgina";
   const minutes = Math.round(seconds / 60);
   if (minutes < 60) return `${minutes} daqiqa oldin`;
   const hours = Math.round(minutes / 60);

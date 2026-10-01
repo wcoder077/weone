@@ -16,7 +16,7 @@ import {
 import { fieldErrorsOf, type ActionState } from "./types";
 
 const UNIQUE_VIOLATION = "23505";
-const USERNAME_TAKEN = "Bu username band. Boshqasini tanlang.";
+const USERNAME_TAKEN = "Bu foydalanuvchi nomi band. Boshqasini tanlang.";
 
 export type UsernameStatus = "available" | "taken" | "invalid";
 

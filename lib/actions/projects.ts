@@ -179,7 +179,7 @@ export async function requestToJoin(_prev: ActionState, formData: FormData): Pro
   const supabase = await createClient();
   const { error } = await supabase.from("join_requests").insert({ ...parsed.data, user_id: userId });
   if (error?.code === "23505") return { error: "Sizda bu loyihaga ochiq so'rov bor." };
-  if (error) return { error: "So'rov yuborib bo'lmadi." };
+  if (error) return { error: "So'rovni yuborib bo'lmadi." };
 
   refresh();
   return { message: "So'rov yuborildi" };

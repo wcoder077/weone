@@ -89,7 +89,7 @@ export function ProjectForm({
             ))}
           </datalist>
         </FormField>
-        <FormField id="status" label="Holati" errors={errors?.status}>
+        <FormField id="status" label="Holat" errors={errors?.status}>
           <NativeSelect id="status" name="status" defaultValue={initial?.status ?? "idea"}>
             {PROJECT_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>

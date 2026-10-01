@@ -51,8 +51,8 @@ async function NotificationList({ onlyRequests }: { onlyRequests: boolean }) {
     return (
       <EmptyState
         icon={Bell}
-        title={onlyRequests ? "So'rovlar yo'q" : "Hozircha jim"}
-        description="Bog'lanish, hamkorlik va loyiha so'rovlari shu yerda ko'rinadi."
+        title={onlyRequests ? "So'rovlar yo'q" : "Hozircha bildirishnoma yo'q"}
+        description="Bog'lanish va loyiha so'rovlari shu yerda ko'rinadi."
       />
     );
   }

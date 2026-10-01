@@ -56,8 +56,8 @@ export function SettingsForm({ profile }: { profile: MyProfile }) {
         </FormField>
         <FormField
           id="username"
-          label="Username"
-          errors={errors?.username ?? (usernameTaken ? ["Bu username band"] : undefined)}
+          label="Foydalanuvchi nomi"
+          errors={errors?.username ?? (usernameTaken ? ["Bu foydalanuvchi nomi band"] : undefined)}
         >
           <Input
             id="username"
@@ -80,7 +80,7 @@ export function SettingsForm({ profile }: { profile: MyProfile }) {
             ))}
           </datalist>
         </FormField>
-        <FormField id="headline" label="Qisqacha" errors={errors?.headline}>
+        <FormField id="headline" label="Qisqa tavsif" errors={errors?.headline}>
           <Input id="headline" name="headline" maxLength={120} defaultValue={profile.headline ?? ""} />
         </FormField>
       </div>

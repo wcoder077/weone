@@ -23,7 +23,7 @@ export async function sendMessage(conversationId: string, body: string): Promise
     .insert({ conversation_id: parsed.data.conversationId, sender_id: userId, body: parsed.data.body })
     .select(MESSAGE_FIELDS)
     .single();
-  if (error) return { error: "Xabar yuborilmadi." };
+  if (error) return { error: "Xabarni yuborib bo'lmadi." };
   return { message: toChatMessage(data) };
 }
 
@@ -31,7 +31,7 @@ export async function sendMessage(conversationId: string, body: string): Promise
 export async function sendProjectInvite(conversationId: string, projectId: string): Promise<SendResult> {
   const userId = await requireUserId();
   if (!idSchema.safeParse(conversationId).success || !idSchema.safeParse(projectId).success) {
-    return { error: "Taklif yuborilmadi." };
+    return { error: "Taklifni yuborib bo'lmadi." };
   }
 
   const supabase = await createClient();
@@ -40,7 +40,7 @@ export async function sendProjectInvite(conversationId: string, projectId: strin
     .insert({ conversation_id: conversationId, sender_id: userId, kind: "project_invite", project_id: projectId })
     .select(MESSAGE_FIELDS)
     .single();
-  if (error) return { error: "Taklif yuborilmadi." };
+  if (error) return { error: "Taklifni yuborib bo'lmadi." };
   return { message: toChatMessage(data) };
 }
 

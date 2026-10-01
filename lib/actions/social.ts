@@ -87,7 +87,7 @@ export async function sendCollab(_prev: ActionState, formData: FormData): Promis
 
   const supabase = await createClient();
   const { error } = await supabase.from("collab_requests").insert({ ...parsed.data, sender_id: userId });
-  if (error) return { error: "Taklif yuborib bo'lmadi." };
+  if (error) return { error: "Taklifni yuborib bo'lmadi." };
 
   refresh();
   return { message: "Taklif yuborildi" };
