@@ -1,20 +1,28 @@
-import { Suspense } from "react";
+import { Fragment, Suspense, type ReactNode } from "react";
 import Link from "next/link";
-import { ChevronRight, CircleCheck, FolderKanban, Users } from "lucide-react";
-import { ProjectCardFooter } from "@/components/projects/project-card-footer";
+import { ChevronRight, CircleCheck, Newspaper } from "lucide-react";
+import { PeopleCarousel } from "@/components/home/people-carousel";
+import { ProjectsStrip } from "@/components/home/projects-strip";
+import { FeedSkeleton } from "@/components/posts/feed-skeleton";
+import { PostCard } from "@/components/posts/post-card";
+import { PostComposer } from "@/components/posts/post-composer";
 import { SectionCard } from "@/components/profile/profile-sections";
 import { ActivityRow } from "@/components/shared/activity-row";
 import { EmptyState } from "@/components/shared/empty-state";
-import { InlineReasons, PersonCard } from "@/components/shared/person-card";
-import { ProjectCard } from "@/components/shared/project-card";
-import { CardGridSkeleton, ListRowSkeleton } from "@/components/shared/skeletons";
-import { ConnectButton } from "@/components/social/connect-button";
+import { RetryErrorState } from "@/components/shared/retry-error-state";
+import { ListRowSkeleton } from "@/components/shared/skeletons";
+import { buttonVariants } from "@/components/ui/button";
 import { getNetworkActivity, getPeopleForYou, getProfileChecklist } from "@/lib/queries/home";
+import { getFeed } from "@/lib/queries/posts";
 import { getMyProfile, type MyProfile } from "@/lib/queries/profiles";
 import { listProjects } from "@/lib/queries/projects";
 import { getRelationships } from "@/lib/queries/social";
 
 export const metadata = { title: "Asosiy" };
+
+// Recommendations are slotted in after these posts, so the feed stays mostly posts.
+const PEOPLE_AFTER = 3;
+const PROJECTS_AFTER = 8;
 
 export default async function HomePage() {
   const me = await getMyProfile();
@@ -23,25 +31,14 @@ export default async function HomePage() {
 
   return (
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
-      <div className="flex min-w-0 flex-col gap-8">
-        <header className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold lg:text-[32px]">Salom, {firstName}</h1>
-          <p className="text-muted">Ko&apos;nikmalaringizga mos odamlar va loyihalar</p>
-        </header>
-
-        <section className="flex flex-col gap-4">
-          <SectionHeader title="Siz uchun odamlar" href="/find" linkLabel="Ko'proq topish" />
-          <Suspense fallback={<CardGridSkeleton count={3} />}>
-            <PeopleForYou me={me} />
-          </Suspense>
+      <div className="mx-auto flex w-full max-w-[680px] min-w-0 flex-col gap-4">
+        <h1 className="text-xl font-bold lg:text-2xl">Salom, {firstName}</h1>
+        <section aria-label="Yangi post" className="bg-card border-border rounded-card border p-4">
+          <PostComposer userId={me.id} />
         </section>
-
-        <section className="flex flex-col gap-4">
-          <SectionHeader title="Siz uchun loyihalar" href="/projects" linkLabel="Hammasi" />
-          <Suspense fallback={<CardGridSkeleton count={2} variant="project" />}>
-            <ProjectsForYou userId={me.id} />
-          </Suspense>
-        </section>
+        <Suspense fallback={<FeedSkeleton />}>
+          <HomeFeed me={me} />
+        </Suspense>
       </div>
 
       <aside className="flex flex-col gap-4">
@@ -56,14 +53,71 @@ export default async function HomePage() {
   );
 }
 
-function SectionHeader({ title, href, linkLabel }: { title: string; href: string; linkLabel: string }) {
+// Recommendations are extras: if they fail, the feed still shows.
+async function optional<T>(promise: Promise<T>, fallback: T) {
+  try {
+    return await promise;
+  } catch {
+    return fallback;
+  }
+}
+
+async function HomeFeed({ me }: { me: MyProfile }) {
+  const [feed, picks, relationships, projects] = await Promise.all([
+    getFeed(me.id).catch(() => null),
+    optional(getPeopleForYou(me, 8), []),
+    getRelationships(me.id),
+    optional(listProjects(me.id, "for-you", {}), []),
+  ]);
+  if (!feed) return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
+
+  const people = <PeopleCarousel meId={me.id} picks={picks} relationships={relationships} />;
+  const projectStrip = <ProjectsStrip projects={projects.slice(0, 6)} />;
+
+  if (feed.posts.length === 0) {
+    return (
+      <div className="flex flex-col gap-6">
+        <EmptyState
+          icon={Newspaper}
+          title="Hali postlar yo'q"
+          description="Birinchi bo'lib yozing yoki odamlar bilan bog'laning: ularning postlari shu yerda chiqadi."
+        />
+        {people}
+        {projectStrip}
+      </div>
+    );
+  }
+
+  // Short feeds still get the recommendations, right after the last post.
+  const slots = new Map<number, ReactNode>([
+    [Math.min(PEOPLE_AFTER, feed.posts.length) - 1, people],
+    [Math.min(PROJECTS_AFTER, feed.posts.length) - 1, projectStrip],
+  ]);
+  if (PEOPLE_AFTER >= feed.posts.length && PROJECTS_AFTER >= feed.posts.length) {
+    slots.set(feed.posts.length - 1, (
+      <>
+        {people}
+        {projectStrip}
+      </>
+    ));
+  }
+
   return (
-    <div className="flex items-center justify-between gap-4">
-      <h2 className="text-lg font-semibold whitespace-nowrap">{title}</h2>
-      <Link href={href} className="text-muted hover:text-text inline-flex min-h-11 items-center gap-1 text-[14px] whitespace-nowrap">
-        {linkLabel}
-        <ChevronRight className="size-4" aria-hidden />
-      </Link>
+    <div className="flex flex-col gap-4">
+      {feed.posts.map((post, i) => (
+        <Fragment key={post.id}>
+          <PostCard post={post} isMine={post.author.id === me.id} />
+          {slots.get(i)}
+        </Fragment>
+      ))}
+      {feed.nextBefore ? (
+        <Link
+          href={`/posts?before=${encodeURIComponent(feed.nextBefore)}`}
+          className={buttonVariants({ variant: "outline", className: "self-center" })}
+        >
+          Ko&apos;proq postlar
+        </Link>
+      ) : null}
     </div>
   );
 }
@@ -74,55 +128,6 @@ function SidebarSkeleton() {
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
-  );
-}
-
-async function PeopleForYou({ me }: { me: MyProfile }) {
-  const [picks, relationships] = await Promise.all([getPeopleForYou(me), getRelationships(me.id)]);
-  if (picks.length === 0) {
-    return (
-      <EmptyState
-        icon={Users}
-        title="Hozircha tavsiya yo'q"
-        description="Ko'proq ko'nikma qo'shing yoki talablaringiz bo'yicha odam qidiring."
-        action={{ label: "Odam topish", href: "/find" }}
-      />
-    );
-  }
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {picks.map(({ person, skills, sharedSkills, reasons }) => (
-        <PersonCard
-          key={person.id}
-          person={person}
-          skills={skills}
-          matchedSkills={sharedSkills}
-          reasons={<InlineReasons reasons={reasons} />}
-          actions={<ConnectButton meId={me.id} userId={person.id} name={person.full_name} connection={relationships.connection(person.id)} />}
-        />
-      ))}
-    </div>
-  );
-}
-
-async function ProjectsForYou({ userId }: { userId: string }) {
-  const projects = (await listProjects(userId, "for-you", {})).slice(0, 4);
-  if (projects.length === 0) {
-    return (
-      <EmptyState
-        icon={FolderKanban}
-        title="Mos ochiq rol yo'q"
-        description="Ko'nikmalaringizga mos rol ochilsa, shu yerda ko'rasiz. Yoki o'z loyihangizni boshlang."
-        action={{ label: "Loyiha yaratish", href: "/projects/new" }}
-      />
-    );
-  }
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {projects.map((p) => (
-        <ProjectCard key={p.id} project={p} footer={<ProjectCardFooter members={p.members} openRoles={p.openRoles} />} />
-      ))}
     </div>
   );
 }
