@@ -11,10 +11,12 @@ export async function getUnreadCounts() {
   return new Map(data.map((r) => [r.conversation_id, r.unread]));
 }
 
+// Nav badge total: muted chats don't count.
 export async function getUnreadMessageTotal() {
-  let total = 0;
-  for (const n of (await getUnreadCounts()).values()) total += n;
-  return total;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("my_unread_counts");
+  if (error) throw error;
+  return data.reduce((sum, r) => sum + (r.muted ? 0 : r.unread), 0);
 }
 
 // The user's chats, newest activity first, with the other person, last message
@@ -23,7 +25,7 @@ export async function getConversations(userId: string) {
   const supabase = await createClient();
   const { data: mine, error } = await supabase
     .from("conversation_members")
-    .select("conversation_id, conversations(created_at, connections(status))")
+    .select("conversation_id, muted, pinned_at, hidden_at, conversations(created_at, connections(status))")
     .eq("user_id", userId);
   if (error) throw error;
   if (mine.length === 0) return [];
@@ -50,7 +52,10 @@ export async function getConversations(userId: string) {
   return mine
     .map((m) => {
       const other = others.data.find((o) => o.conversation_id === m.conversation_id);
-      const own = messages.data.filter((msg) => msg.conversation_id === m.conversation_id);
+      // "Deleted for me": only messages after hidden_at exist for me.
+      const own = messages.data.filter(
+        (msg) => msg.conversation_id === m.conversation_id && (!m.hidden_at || msg.created_at > m.hidden_at),
+      );
       const last = own[0];
       return {
         id: m.conversation_id,
@@ -58,12 +63,20 @@ export async function getConversations(userId: string) {
         last: last ?? null,
         unread: unread.get(m.conversation_id) ?? 0,
         activityAt: last?.created_at ?? m.conversations?.created_at ?? "",
+        muted: m.muted,
+        pinnedAt: m.pinned_at,
+        hidden: Boolean(m.hidden_at) && !last,
         // Chats without a connection (older collaboration chats) stay readable but closed.
         status: m.conversations?.connections?.status ?? "closed",
       };
     })
-    .filter((c) => c.status !== "rejected")
-    .sort((a, b) => b.activityAt.localeCompare(a.activityAt));
+    .filter((c) => c.status !== "rejected" && !c.hidden)
+    // Pinned chats first (newest pin first), then by latest activity.
+    .sort((a, b) =>
+      a.pinnedAt || b.pinnedAt
+        ? (b.pinnedAt ?? "").localeCompare(a.pinnedAt ?? "")
+        : b.activityAt.localeCompare(a.activityAt),
+    );
 }
 
 export type ConversationSummary = Awaited<ReturnType<typeof getConversations>>[number];
@@ -77,7 +90,7 @@ export async function getConversation(conversationId: string, userId: string) {
   const [members, messages, conversation] = await Promise.all([
     supabase
       .from("conversation_members")
-      .select(`user_id, profiles(${PROFILE_FIELDS}, headline)`)
+      .select(`user_id, hidden_at, profiles(${PROFILE_FIELDS}, headline)`)
       .eq("conversation_id", conversationId),
     supabase
       .from("messages")
@@ -93,17 +106,20 @@ export async function getConversation(conversationId: string, userId: string) {
   ]);
   if (members.error) throw members.error;
   if (messages.error) throw messages.error;
-  if (!members.data.some((m) => m.user_id === userId)) return null;
+  const mine = members.data.find((m) => m.user_id === userId);
+  if (!mine) return null;
+  // "Deleted for me": older messages are gone from my side only.
+  const visible = mine.hidden_at ? messages.data.filter((m) => m.created_at > mine.hidden_at!) : messages.data;
 
   // First-message images live in a private bucket: sign them for an hour.
-  const imagePaths = messages.data.flatMap((m) => (m.image_path ? [m.image_path] : []));
+  const imagePaths = visible.flatMap((m) => (m.image_path ? [m.image_path] : []));
   const signed = imagePaths.length
     ? (await supabase.storage.from("message-images").createSignedUrls(imagePaths, 60 * 60)).data ?? []
     : [];
   const imageUrls = new Map(signed.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])));
 
   // Attachments are private too: sign them for an hour.
-  const attachmentPaths = messages.data.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
+  const attachmentPaths = visible.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
   const signedAttachments = attachmentPaths.length
     ? ((await supabase.storage.from(ATTACHMENT_BUCKET).createSignedUrls(attachmentPaths, 60 * 60)).data ?? [])
     : [];
@@ -119,7 +135,7 @@ export async function getConversation(conversationId: string, userId: string) {
     connection: connection
       ? { id: connection.id, status: connection.status, requestedByMe: connection.requester_id === userId }
       : null,
-    messages: messages.data
+    messages: visible
       .reverse()
       .map((m) => ({
         ...toChatMessage(m, m.attachment_path ? attachmentUrls.get(m.attachment_path) : undefined),

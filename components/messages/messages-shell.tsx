@@ -1,15 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { ATTACHMENT_LABELS, type AttachmentKind } from "@/lib/attachments";
-import { formatRelative } from "@/lib/format";
 import type { ConversationSummary } from "@/lib/queries/messages";
-import { Badge } from "@/components/shared/badge";
-import { UnreadBadge } from "@/components/shared/unread-badge";
-import { UserAvatar } from "@/components/shared/user-avatar";
 import { cn } from "@/lib/utils";
+import { ConversationRow } from "./conversation-row";
 import { LiveConversationRefresh } from "./live-refresh";
 
 // Desktop: list + chat side by side. Mobile: list on /messages, chat alone on /messages/[id].
@@ -32,10 +27,10 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
             Hali suhbat yo&apos;q. Bog&apos;langan maqsaddoshingiz profilida «Xabar yozish» tugmasini bosing.
           </p>
         ) : (
-          <ul className="flex min-h-0 flex-col overflow-y-auto px-2 pb-2">
+          <ul className="divide-border/70 border-border/70 flex min-h-0 flex-col divide-y overflow-y-auto border-t pb-2">
             {conversations.map((c) => (
               <li key={c.id}>
-                <ConversationLink conversation={c} active={c.id === activeId} />
+                <ConversationRow conversation={c} active={c.id === activeId} />
               </li>
             ))}
           </ul>
@@ -45,37 +40,4 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
       <LiveConversationRefresh />
     </div>
   );
-}
-
-function ConversationLink({ conversation: c, active }: { conversation: ConversationSummary; active: boolean }) {
-  const preview = c.last ? previewOf(c.last) : "Yangi suhbat";
-  return (
-    <Link
-      href={`/messages/${c.id}`}
-      aria-current={active ? "page" : undefined}
-      aria-label={c.unread > 0 ? `${c.other?.full_name ?? "Suhbat"}, ${c.unread} ta o'qilmagan xabar` : undefined}
-      className={cn("flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors", active ? "bg-surface" : "hover:bg-surface/60")}
-    >
-      <UserAvatar name={c.other?.full_name ?? "?"} url={c.other?.avatar_url ?? null} />
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="flex items-baseline justify-between gap-2">
-          <span className={cn("flex min-w-0 items-center gap-2", c.unread > 0 ? "font-semibold" : "font-medium")}>
-            <span className="truncate">{c.other?.full_name ?? "Suhbat"}</span>
-            {c.status === "pending" ? <Badge className="h-5 px-2 text-[11px]">Jarayonda</Badge> : null}
-          </span>
-          {c.last ? <span className="text-muted shrink-0 text-[12px]">{formatRelative(c.last.created_at)}</span> : null}
-        </span>
-        <span className="flex items-center justify-between gap-2">
-          <span className={cn("truncate text-[14px]", c.unread > 0 ? "text-text" : "text-muted")}>{preview}</span>
-          <UnreadBadge count={c.unread} className="h-5 min-w-5 shrink-0 px-1.5" />
-        </span>
-      </span>
-    </Link>
-  );
-}
-
-function previewOf(last: NonNullable<ConversationSummary["last"]>) {
-  if (last.kind === "project_invite") return "Loyihaga taklif";
-  if (last.body) return last.body;
-  return ATTACHMENT_LABELS[last.attachment_type as AttachmentKind] ?? "Xabar";
 }

@@ -8,7 +8,7 @@ export const MESSAGES_READ_EVENT = "weone:messages-read";
 
 const UnreadMessagesContext = createContext(0);
 
-// Total unread messages for the nav badge. Starts from the server count, then
+// Total unread messages for the nav badge (muted chats excluded). Starts from the server count, then
 // re-counts (my_unread_counts RPC, RLS-safe) when someone else's message arrives
 // or a chat is marked read.
 export function UnreadMessagesProvider({
@@ -35,7 +35,7 @@ export function UnreadMessagesProvider({
 
     async function recount() {
       const { data, error } = await supabase.rpc("my_unread_counts");
-      if (!error) setCount(data.reduce((sum, r) => sum + r.unread, 0));
+      if (!error) setCount(data.reduce((sum, r) => sum + (r.muted ? 0 : r.unread), 0));
     }
     // Debounced so the open chat can mark the message read first.
     function scheduleRecount() {
