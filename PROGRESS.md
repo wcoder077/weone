@@ -68,3 +68,8 @@
 - UI: `ConnectButton` states Bog'lanish → So'rov yuborildi (edit / cancel menu) → Xabar yozish; incoming Accept / Reject + view message; rejected disabled. Reusable `EmojiPicker` (built-in set, inserts at caret), `CharCounter`, image attachment. Collaborate removed (table kept read-only for history; `accept_collab_request` dropped).
 - Also fixed: `backdrop-filter` was emitted only with the -webkit prefix (no blur anywhere); dialog/sheet panels now fully opaque.
 - E2E (local): limit 201 blocked, emoji = 1, image attach/send, edit + remove image, Esc closes, recipient review + accept, chat unlocked, reject → sender disabled. SQL tests for every rule incl. direct API calls.
+
+## Milestone 2 — Connections on profiles (done)
+- Migration 13 (pushed): connections SELECT = accepted for every signed-in viewer, pending/rejected only for their two sides (was: only the two sides for everything).
+- Profile tab "Bog'lanishlar": one row per pair (avatar, name, headline, link); badges "Jarayonda" / "Rad etildi" / "Muvaffaqiyatli" shown only when the viewer is one of the two people (or the profile owner); skeleton, empty ("Hali bog'lanishlar yo'q") and retryable error states. Reusable `Badge`, `RetryErrorState`.
+- Verified per viewer: owner sees all with badges; a third party sees accepted only; the rejected sender sees only their own row with "Rad etildi".

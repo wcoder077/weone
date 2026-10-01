@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FolderKanban, Route, Trophy } from "lucide-react";
@@ -11,7 +12,9 @@ import {
   SkillsList,
   TagList,
 } from "@/components/profile/profile-sections";
+import { ConnectionsTab } from "@/components/profile/connections-tab";
 import { ShareButton } from "@/components/profile/share-button";
+import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { PersonActions } from "@/components/social/person-actions";
 import { EmptyState } from "@/components/shared/empty-state";
 import { JourneyItem } from "@/components/shared/journey-item";
@@ -33,6 +36,7 @@ const TABS = [
   { value: "journey", label: "Yo'l" },
   { value: "projects", label: "Loyihalar" },
   { value: "highlights", label: "Yutuqlar" },
+  { value: "connections", label: "Bog'lanishlar" },
 ] as const;
 type Tab = (typeof TABS)[number]["value"];
 
@@ -116,6 +120,11 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           ) : null}
           {tab === "projects" ? <ProjectsTab projects={page.projects} isMe={isMe} /> : null}
           {tab === "highlights" ? <HighlightsTab page={page} /> : null}
+          {tab === "connections" ? (
+            <Suspense fallback={<ConnectionsSkeleton />}>
+              <ConnectionsTab profileId={page.profile.id} viewerId={viewerId} />
+            </Suspense>
+          ) : null}
         </section>
       </div>
     </div>
@@ -270,5 +279,15 @@ async function SkillDialogLoader({ page, viewerId }: { page: ProfilePage; viewer
         skillIds: j.journey_item_skills.map((s) => s.skill_id),
       }))}
     />
+  );
+}
+
+function ConnectionsSkeleton() {
+  return (
+    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+      <ListRowSkeleton />
+      <ListRowSkeleton />
+      <ListRowSkeleton />
+    </div>
   );
 }
