@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -16,6 +16,7 @@ import { ChatComposer } from "./chat-composer";
 import { InviteCard } from "./invite-card";
 import { InviteToProject } from "./invite-to-project";
 import { DaySeparator, MessageBubble } from "./message-bubble";
+import { useVisualViewportFit } from "./use-visual-viewport-fit";
 
 type Person = { id: string; username: string; full_name: string; avatar_url: string | null; headline: string | null };
 
@@ -59,6 +60,9 @@ export function ChatView({
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const scrollToEnd = useCallback(() => bottomRef.current?.scrollIntoView({ block: "end" }), []);
+  useVisualViewportFit(rootRef, scrollToEnd);
   const open = connection?.status === "accepted";
   const pending = pendingState(connection);
 
@@ -147,18 +151,22 @@ export function ChatView({
 
   return (
     // Below lg the chat is a full-screen view (the app bars are hidden, see isConversationPath).
-    <div className="bg-card flex flex-col overflow-hidden max-lg:fixed max-lg:inset-0 max-lg:z-50 lg:border-border lg:rounded-card lg:h-full lg:border">
-      <header className="border-border flex items-center gap-2 border-b px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 sm:px-4 lg:gap-3 lg:px-5 lg:py-3">
+    // --vv-top / --vv-height follow the visible area, so the keyboard never pushes the header away.
+    <div
+      ref={rootRef}
+      className="bg-card flex flex-col overflow-hidden max-lg:fixed max-lg:inset-x-0 max-lg:top-[var(--vv-top,0px)] max-lg:z-50 max-lg:h-[var(--vv-height,100dvh)] lg:border-border lg:rounded-card lg:h-full lg:border"
+    >
+      <header className="border-border flex shrink-0 items-center gap-1 border-b px-1 pt-[max(0.25rem,env(safe-area-inset-top))] pb-1 sm:px-3 lg:gap-3 lg:px-5 lg:py-3">
         <Link
           href="/messages"
           aria-label="Suhbatlarga qaytish"
-          className="text-text hover:bg-surface inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full pr-3 pl-2 text-[15px] font-medium transition-colors duration-150"
+          className="text-text hover:bg-surface inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-full text-[15px] font-medium transition-colors duration-150 lg:pr-3 lg:pl-2"
         >
-          <ArrowLeft className="size-5" aria-hidden />
-          Orqaga
+          <ArrowLeft className="size-6 lg:size-5" aria-hidden />
+          <span className="max-lg:sr-only">Orqaga</span>
         </Link>
         {other ? (
-          <Link href={`/u/${other.username}`} className="flex min-w-0 flex-1 items-center gap-3">
+          <Link href={`/u/${other.username}`} className="flex min-h-11 min-w-0 flex-1 items-center gap-3">
             <UserAvatar name={other.full_name} url={other.avatar_url} />
             <span className="flex min-w-0 flex-col">
               <span className="truncate font-semibold">{other.full_name}</span>
