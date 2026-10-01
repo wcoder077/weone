@@ -48,6 +48,10 @@ const EXTENSIONS: Record<string, string> = {
   "application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
 };
 
+export function extensionOf(mime: string) {
+  return EXTENSIONS[mime];
+}
+
 export function attachmentKindOf(mime: string): AttachmentKind | null {
   for (const kind of ATTACHMENT_KINDS) {
     if ((ATTACHMENT_TYPES[kind] as readonly string[]).includes(mime)) return kind;
@@ -68,7 +72,7 @@ export function attachmentProblem(file: File): string | null {
 
 // <sender id>/<conversation id>/<uuid>.<ext> (the database checks this exact shape).
 export function attachmentPath(userId: string, conversationId: string, mime: string) {
-  return `${userId}/${conversationId}/${crypto.randomUUID()}.${EXTENSIONS[mime]}`;
+  return `${userId}/${conversationId}/${crypto.randomUUID()}.${extensionOf(mime)}`;
 }
 
 export function formatBytes(bytes: number) {

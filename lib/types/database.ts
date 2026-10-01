@@ -523,20 +523,92 @@ export type Database = {
           },
         ]
       }
-      posts: {
+      post_comments: {
         Row: {
           author_id: string
           body: string
           created_at: string
-          edited_at: string | null
           id: string
+          post_id: string
         }
         Insert: {
           author_id: string
           body: string
           created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: []
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      post_views: {
+        Row: {
+          created_at: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string
+          body: string
+          comment_count: number
+          created_at: string
+          edited_at: string | null
+          id: string
+          like_count: number
+          media_name: string | null
+          media_path: string | null
+          media_type: string | null
+          repost_count: number
+          repost_of: string | null
+          view_count: number
+        }
+        Insert: {
+          author_id: string
+          body?: string
+          created_at?: string
           edited_at?: string | null
           id?: string
+          media_name?: string | null
+          media_path?: string | null
+          media_type?: string | null
+          repost_of?: string | null
         }
         Update: {
           author_id?: string
@@ -544,6 +616,10 @@ export type Database = {
           created_at?: string
           edited_at?: string | null
           id?: string
+          media_name?: string | null
+          media_path?: string | null
+          media_type?: string | null
+          repost_of?: string | null
         }
         Relationships: [
           {
@@ -945,6 +1021,7 @@ export type Database = {
           unread: number
         }[]
       }
+      record_post_views: { Args: { p_post_ids: string[] }; Returns: string[] }
       normalize_apostrophes: { Args: { value: string }; Returns: string }
       owns_journey_item: { Args: { item_id: string }; Returns: boolean }
       owns_project_folder: { Args: { object_name: string }; Returns: boolean }

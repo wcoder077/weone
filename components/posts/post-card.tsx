@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { formatRelative } from "@/lib/format";
-import type { FeedPost } from "@/lib/queries/posts";
+import { MessageCircle } from "lucide-react";
+import { formatCount, formatRelative } from "@/lib/format";
+import type { EmbeddedPost, FeedPost, PostAuthor } from "@/lib/queries/posts";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { LikeButton } from "./like-button";
 import { PostActions } from "./post-actions";
+import { PostMediaView } from "./post-media-view";
+import { PostMoreMenu } from "./post-more-menu";
+import { PostViews } from "./post-views";
 
 // User text is rendered as a plain React text node (escaped, never HTML);
 // whitespace-pre-wrap keeps the author's line breaks.
@@ -10,22 +15,64 @@ export function PostCard({ post, isMine }: { post: FeedPost; isMine: boolean }) 
   return (
     <article className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
       <header className="flex items-start gap-3">
-        <Link href={`/u/${post.author.username}`} className="shrink-0" aria-label={post.author.full_name}>
-          <UserAvatar name={post.author.full_name} url={post.author.avatar_url} />
-        </Link>
+        <AuthorLink author={post.author} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Link href={`/u/${post.author.username}`} className="truncate font-semibold hover:underline">
             {post.author.full_name}
           </Link>
           {post.author.headline ? <p className="text-muted truncate text-[13px]">{post.author.headline}</p> : null}
           <p className="text-muted text-[12px]">
-            <time dateTime={post.created_at}>{formatRelative(post.created_at)}</time>
-            {post.edited_at ? " · tahrirlangan" : null}
+            <time dateTime={post.createdAt}>{formatRelative(post.createdAt)}</time>
+            {post.editedAt ? " · tahrirlangan" : null}
           </p>
         </div>
         {isMine ? <PostActions postId={post.id} body={post.body} /> : null}
       </header>
-      <p className="max-w-[65ch] text-base leading-[1.6] break-words whitespace-pre-wrap">{post.body}</p>
+
+      {post.body ? <p className="max-w-[65ch] text-base leading-[1.6] break-words whitespace-pre-wrap">{post.body}</p> : null}
+      {post.media ? <PostMediaView media={post.media} /> : null}
+      {post.original ? <EmbeddedOriginal original={post.original} /> : null}
+
+      <footer className="-mx-2 -mb-2 flex items-center">
+        <PostViews postId={post.id} initialCount={post.viewCount} track={!isMine} />
+        <LikeButton postId={post.id} initialLiked={post.liked} initialCount={post.likeCount} />
+        <Link
+          href={`/posts/${post.id}`}
+          aria-label={`Izohlar, ${post.commentCount} ta`}
+          className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-[14px] transition-colors duration-150 outline-none focus-visible:ring-3"
+        >
+          <MessageCircle className="size-5" aria-hidden />
+          <span className="tabular-nums">{formatCount(post.commentCount)}</span>
+        </Link>
+        <span className="ml-auto">
+          <PostMoreMenu postId={post.id} />
+        </span>
+      </footer>
     </article>
+  );
+}
+
+function AuthorLink({ author }: { author: PostAuthor }) {
+  return (
+    <Link href={`/u/${author.username}`} className="shrink-0" aria-label={author.full_name}>
+      <UserAvatar name={author.full_name} url={author.avatar_url} />
+    </Link>
+  );
+}
+
+// The post that was reposted, shown inside the repost.
+function EmbeddedOriginal({ original }: { original: EmbeddedPost }) {
+  return (
+    <div className="border-border flex flex-col gap-2 rounded-2xl border p-3">
+      <Link href={`/posts/${original.id}`} className="flex items-center gap-2 hover:underline">
+        <UserAvatar name={original.author.full_name} url={original.author.avatar_url} size="sm" />
+        <span className="truncate text-[14px] font-semibold">{original.author.full_name}</span>
+        <time dateTime={original.createdAt} className="text-muted shrink-0 text-[12px]">
+          {formatRelative(original.createdAt)}
+        </time>
+      </Link>
+      {original.body ? <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap">{original.body}</p> : null}
+      {original.media ? <PostMediaView media={original.media} /> : null}
+    </div>
   );
 }

@@ -56,3 +56,11 @@ export function formatDay(iso: string, now = new Date()) {
   const label = `${date.getDate()} ${MONTHS[date.getMonth()]}`;
   return date.getFullYear() === now.getFullYear() ? label : `${label} ${date.getFullYear()}`;
 }
+
+// Counters for likes, comments, views: 999, 1,2K, 15K, 3,4M.
+export function formatCount(n: number) {
+  if (n < 1000) return String(n);
+  const [value, suffix] = n < 1_000_000 ? [n / 1000, "K"] : [n / 1_000_000, "M"];
+  const text = value >= 10 ? Math.round(value).toString() : value.toFixed(1).replace(/\.0$/, "").replace(".", ",");
+  return `${text}${suffix}`;
+}
