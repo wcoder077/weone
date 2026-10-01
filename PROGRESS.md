@@ -78,3 +78,9 @@
 - Tokens per theme under `[data-theme="dark"|"light"]` (bg, surface, card, border, text, muted, primary(+hover), success, danger, on-accent, glass, glow, chat tint, own-bubble). All text pairs ≥ 4.5:1 (WCAG AA), checked with a contrast script.
 - Inline head script (`THEME_SCRIPT`, lib/theme.ts) applies localStorage `weone-theme` or prefers-color-scheme before first paint and follows OS changes while on "Tizim"; `<html suppressHydrationWarning>`. Settings → "Ko'rinish": Tizim / Yorug' / Qorong'i radio group (`useSyncExternalStore`). Toasts follow the theme; `themeColor` per scheme.
 - Fixed: shadcn `hover:bg-muted` / skeleton `bg-muted` used our *text* grey as a background (washed-out hover); remapped to accent/surface/border. Last hard-coded colours replaced with tokens.
+
+## Milestone 4 — Messaging (done)
+- Only accepted connections can write (RLS from milestone 1); pending chats show the first message and, in the footer, edit/cancel (sender) or accept/reject (recipient) instead of a composer; rejected chats are hidden from the list.
+- Chat rebuilt as `ChatView` + `MessageBubble` + `ChatComposer`: own bubbles right (`bubble-mine` token), others left, day separators (Bugun / Kecha / date), timestamps + "tahrirlangan", auto-scroll, emoji picker at caret, Enter sends / Shift+Enter new line, text + emoji only. `chat-surface` background = soft primary tint + faint dot grid from tokens (both themes).
+- Conversation list: "Jarayonda" badge for pending, live refresh on new messages (Realtime, RLS-scoped, debounced). Mobile keeps list and chat as separate screens.
+- E2E: multi-line + emoji message delivered live to the other user; list preview updates live.

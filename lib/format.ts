@@ -45,3 +45,14 @@ export function formatTime(iso: string) {
   const date = new Date(iso);
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
+
+// Day separators in chat: "Bugun", "Kecha", "12 Mart" (+ year when not this year).
+export function formatDay(iso: string, now = new Date()) {
+  const date = new Date(iso);
+  const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((startOf(now) - startOf(date)) / 86_400_000);
+  if (days === 0) return "Bugun";
+  if (days === 1) return "Kecha";
+  const label = `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  return date.getFullYear() === now.getFullYear() ? label : `${label} ${date.getFullYear()}`;
+}

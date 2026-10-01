@@ -5,8 +5,10 @@ import type { ReactNode } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { formatRelative } from "@/lib/format";
 import type { ConversationSummary } from "@/lib/queries/messages";
+import { Badge } from "@/components/shared/badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { cn } from "@/lib/utils";
+import { LiveConversationRefresh } from "./live-refresh";
 
 // Desktop: list + chat side by side. Mobile: list on /messages, chat alone on /messages/[id].
 export function MessagesShell({ conversations, children }: { conversations: ConversationSummary[]; children: ReactNode }) {
@@ -25,7 +27,7 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
         <h1 className="px-5 pt-5 pb-3 text-xl font-bold">Xabarlar</h1>
         {conversations.length === 0 ? (
           <p className="text-muted px-5 pb-5 text-[14px]">
-            Hali suhbat yo&apos;q. Bog&apos;langan odamingiz profilida «Xabar» tugmasini bosing.
+            Hali suhbat yo&apos;q. Bog&apos;langan odamingiz profilida «Xabar yozish» tugmasini bosing.
           </p>
         ) : (
           <ul className="flex min-h-0 flex-col overflow-y-auto px-2 pb-2">
@@ -38,6 +40,7 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
         )}
       </aside>
       <section className={cn("min-h-0 min-w-0", !inChat && "hidden lg:block")}>{children}</section>
+      <LiveConversationRefresh />
     </div>
   );
 }
@@ -53,8 +56,9 @@ function ConversationLink({ conversation: c, active }: { conversation: Conversat
       <UserAvatar name={c.other?.full_name ?? "?"} url={c.other?.avatar_url ?? null} />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex items-baseline justify-between gap-2">
-          <span className={cn("truncate", c.unread > 0 ? "font-semibold" : "font-medium")}>
-            {c.other?.full_name ?? "Suhbat"}
+          <span className={cn("flex min-w-0 items-center gap-2", c.unread > 0 ? "font-semibold" : "font-medium")}>
+            <span className="truncate">{c.other?.full_name ?? "Suhbat"}</span>
+            {c.status === "pending" ? <Badge className="h-5 px-2 text-[11px]">Jarayonda</Badge> : null}
           </span>
           {c.last ? <span className="text-muted shrink-0 text-[12px]">{formatRelative(c.last.created_at)}</span> : null}
         </span>

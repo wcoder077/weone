@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Send } from "lucide-react";
-import { toast } from "sonner";
-import { markConversationRead, sendMessage } from "@/lib/actions/messages";
+import { ArrowLeft } from "lucide-react";
+import { markConversationRead } from "@/lib/actions/messages";
 import type { ChatMessage } from "@/lib/queries/messages";
+import type { ConnectionState } from "@/lib/queries/social";
 import { createClient } from "@/lib/supabase/client";
-import { formatTime } from "@/lib/format";
+import { formatDay } from "@/lib/format";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ConnectButton } from "@/components/social/connect-button";
+import { ChatComposer } from "./chat-composer";
 import { InviteCard } from "./invite-card";
 import { InviteToProject } from "./invite-to-project";
+import { DaySeparator, MessageBubble } from "./message-bubble";
 
 type Person = { id: string; username: string; full_name: string; avatar_url: string | null; headline: string | null };
 
@@ -26,6 +27,15 @@ type MessageInsert = {
   created_at: string;
 };
 
+type Connection = { id: string; status: string; requestedByMe: boolean } | null;
+
+// Pending chats hold only the request's first message; the footer then shows the
+// request actions instead of a composer (RLS rejects messages until accepted).
+function pendingState(connection: Connection): ConnectionState | null {
+  if (connection?.status !== "pending") return null;
+  return { state: connection.requestedByMe ? "outgoing" : "incoming", connectionId: connection.id };
+}
+
 export function ChatView({
   conversationId,
   meId,
@@ -35,19 +45,19 @@ export function ChatView({
   myProjectIds,
   connection,
 }: {
-  connection: { status: string; requestedByMe: boolean } | null;
   conversationId: string;
   meId: string;
   other: Person | null;
   initialMessages: ChatMessage[];
   myProjects: { id: string; name: string }[];
   myProjectIds: string[];
+  connection: Connection;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
-  const [draft, setDraft] = useState("");
-  const [sending, startSending] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const open = connection?.status === "accepted";
+  const pending = pendingState(connection);
 
   // Adds a message once, whether it came from our own send or from Realtime.
   function append(message: ChatMessage) {
@@ -94,30 +104,14 @@ export function ChatView({
     };
   }, [conversationId, meId, router]);
 
-  function send() {
-    const body = draft.trim();
-    if (!body || sending) return;
-    startSending(async () => {
-      const result = await sendMessage(conversationId, body);
-      if ("error" in result) toast.error(result.error);
-      else {
-        append(result.message);
-        setDraft("");
-      }
-    });
-  }
-
-  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      send();
-    }
-  }
-
   return (
-    <div className="bg-card border-border rounded-card flex h-[calc(100dvh-11rem)] flex-col border lg:h-full">
+    <div className="bg-card border-border rounded-card flex h-[calc(100dvh-11rem)] flex-col overflow-hidden border lg:h-full">
       <header className="border-border flex items-center gap-3 border-b px-3 py-3 sm:px-5">
-        <Link href="/messages" aria-label="Suhbatlarga qaytish" className="text-muted inline-flex size-11 items-center justify-center rounded-full lg:hidden">
+        <Link
+          href="/messages"
+          aria-label="Suhbatlarga qaytish"
+          className="text-muted hover:text-text inline-flex size-11 items-center justify-center rounded-full transition-colors duration-150 lg:hidden"
+        >
           <ArrowLeft className="size-5" />
         </Link>
         {other ? (
@@ -131,86 +125,51 @@ export function ChatView({
         ) : (
           <span className="flex-1 font-semibold">Suhbat</span>
         )}
-        {connection?.status === "accepted" ? (
-          <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} />
-        ) : null}
+        {open ? <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} /> : null}
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-5" aria-live="polite">
+      <div className="chat-surface flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-3 py-4 sm:px-6" aria-live="polite">
         {messages.length === 0 ? (
           <p className="text-muted m-auto text-center text-[14px]">Birinchi xabarni yozing.</p>
         ) : (
-          messages.map((m) => {
+          messages.map((m, i) => {
+            const day = formatDay(m.createdAt);
+            const newDay = i === 0 || formatDay(messages[i - 1].createdAt) !== day;
             const mine = m.senderId === meId;
-            if (m.kind === "project_invite") {
-              return (
-                <InviteCard
-                  key={m.id}
-                  message={m}
-                  mine={mine}
-                  alreadyMember={m.projectId ? myProjectIds.includes(m.projectId) : false}
-                />
-              );
-            }
             return (
-              <div key={m.id} className={cn("flex max-w-[80%] flex-col gap-1", mine ? "items-end self-end" : "items-start")}>
-                <p
-                  className={cn(
-                    "rounded-3xl px-4 py-2.5 text-[15px] leading-snug break-words whitespace-pre-wrap",
-                    mine ? "bg-border rounded-br-lg" : "bg-surface rounded-bl-lg",
-                  )}
-                >
-                  {m.imageUrl ? (
-                    // Signed URL of a private first-message image.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={m.imageUrl} alt="Xabardagi rasm" className="mb-2 max-h-64 rounded-2xl object-cover" />
-                  ) : null}
-                  {m.body}
-                </p>
-                <span className="text-muted px-2 text-[11px]">
-                  {formatTime(m.createdAt)}
-                  {m.editedAt ? " · tahrirlangan" : null}
-                </span>
-              </div>
+              <Fragment key={m.id}>
+                {newDay ? <DaySeparator label={day} /> : null}
+                {m.kind === "project_invite" ? (
+                  <InviteCard
+                    message={m}
+                    mine={mine}
+                    alreadyMember={m.projectId ? myProjectIds.includes(m.projectId) : false}
+                  />
+                ) : (
+                  <MessageBubble message={m} mine={mine} />
+                )}
+              </Fragment>
             );
           })
         )}
         <div ref={bottomRef} />
       </div>
 
-      {connection?.status !== "accepted" ? (
-        <p role="status" className="border-border text-muted border-t p-4 text-center text-[14px]">
-          {connection?.status === "pending"
-            ? connection.requestedByMe
-              ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."
-              : "Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi."
-            : "Yozishuv faqat bog'langan odamlar bilan ochiladi."}
-        </p>
+      {open ? (
+        <ChatComposer conversationId={conversationId} onSent={append} />
       ) : (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          send();
-        }}
-        className="border-border flex items-end gap-2 border-t p-3"
-      >
-        <label className="sr-only" htmlFor="message-input">
-          Xabar
-        </label>
-        <textarea
-          id="message-input"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={onKeyDown}
-          rows={1}
-          maxLength={4000}
-          placeholder="Xabar yozing…"
-          className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 field-sizing-content max-h-40 min-h-11 flex-1 resize-none rounded-3xl border px-4 py-2.5 text-[15px] outline-none focus-visible:ring-3"
-        />
-        <Button type="submit" size="icon" aria-label="Yuborish" disabled={sending || !draft.trim()}>
-          <Send />
-        </Button>
-      </form>
+        <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 text-center">
+          <p className="text-muted text-[14px]">
+            {pending?.state === "outgoing"
+              ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."
+              : pending?.state === "incoming"
+                ? "Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi."
+                : "Yozishuv faqat bog'langan odamlar bilan ochiladi."}
+          </p>
+          {pending && other ? (
+            <ConnectButton meId={meId} userId={other.id} name={other.full_name} connection={pending} />
+          ) : null}
+        </div>
       )}
     </div>
   );

@@ -8,7 +8,7 @@ export async function getConversations(userId: string) {
   const supabase = await createClient();
   const { data: mine, error } = await supabase
     .from("conversation_members")
-    .select("conversation_id, last_read_at, conversations(created_at)")
+    .select("conversation_id, last_read_at, conversations(created_at, connections(status))")
     .eq("user_id", userId);
   if (error) throw error;
   if (mine.length === 0) return [];
@@ -42,8 +42,11 @@ export async function getConversations(userId: string) {
         last: last ?? null,
         unread: own.filter((msg) => msg.sender_id !== userId && msg.created_at > m.last_read_at).length,
         activityAt: last?.created_at ?? m.conversations?.created_at ?? "",
+        // Chats without a connection (older collaboration chats) stay readable but closed.
+        status: m.conversations?.connections?.status ?? "closed",
       };
     })
+    .filter((c) => c.status !== "rejected")
     .sort((a, b) => b.activityAt.localeCompare(a.activityAt));
 }
 

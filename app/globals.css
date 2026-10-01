@@ -142,3 +142,15 @@
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(24px);
 }
+
+/* Chat background: a soft tint fading down plus a faint dot grid; token-based,
+   so it adapts to both themes without competing with message text. */
+@utility chat-surface {
+  background-color: var(--surface);
+  background-image:
+    linear-gradient(to bottom, var(--chat-tint), transparent 45%),
+    radial-gradient(color-mix(in srgb, var(--text) 7%, transparent) 1px, transparent 1.2px);
+  background-size:
+    100% 100%,
+    22px 22px;
+}
