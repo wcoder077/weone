@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { ATTACHMENT_LABELS, type AttachmentKind } from "@/lib/attachments";
 import { formatRelative } from "@/lib/format";
 import type { ConversationSummary } from "@/lib/queries/messages";
 import { Badge } from "@/components/shared/badge";
@@ -47,7 +48,7 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
 }
 
 function ConversationLink({ conversation: c, active }: { conversation: ConversationSummary; active: boolean }) {
-  const preview = c.last ? (c.last.kind === "project_invite" ? "Loyihaga taklif" : c.last.body) : "Yangi suhbat";
+  const preview = c.last ? previewOf(c.last) : "Yangi suhbat";
   return (
     <Link
       href={`/messages/${c.id}`}
@@ -71,4 +72,10 @@ function ConversationLink({ conversation: c, active }: { conversation: Conversat
       </span>
     </Link>
   );
+}
+
+function previewOf(last: NonNullable<ConversationSummary["last"]>) {
+  if (last.kind === "project_invite") return "Loyihaga taklif";
+  if (last.body) return last.body;
+  return ATTACHMENT_LABELS[last.attachment_type as AttachmentKind] ?? "Xabar";
 }

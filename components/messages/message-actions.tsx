@@ -17,6 +17,7 @@ import {
 type Props = {
   messageId: string;
   body: string;
+  canEdit: boolean;
   menuOpen: boolean;
   onMenuOpenChange: (open: boolean) => void;
   onEdited: (body: string, editedAt: string) => void;
@@ -25,7 +26,7 @@ type Props = {
 
 // Own-message menu: copy, edit (sheet), delete (confirmation). Opened from the
 // hover button on desktop or by long-press on the bubble (see useLongPress).
-export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, onEdited, onDeleted }: Props) {
+export function MessageActions({ messageId, body, canEdit, menuOpen, onMenuOpenChange, onEdited, onDeleted }: Props) {
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [deleting, startDelete] = useTransition();
 
@@ -58,14 +59,18 @@ export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, on
           <MoreHorizontal className="size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
-          <DropdownMenuItem onClick={copy}>
-            <Copy aria-hidden />
-            Nusxa olish
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setDialog("edit")}>
-            <Pencil aria-hidden />
-            Tahrirlash
-          </DropdownMenuItem>
+          {body ? (
+            <DropdownMenuItem onClick={copy}>
+              <Copy aria-hidden />
+              Nusxa olish
+            </DropdownMenuItem>
+          ) : null}
+          {canEdit ? (
+            <DropdownMenuItem onClick={() => setDialog("edit")}>
+              <Pencil aria-hidden />
+              Tahrirlash
+            </DropdownMenuItem>
+          ) : null}
           <DropdownMenuItem variant="destructive" onClick={() => setDialog("delete")}>
             <Trash2 aria-hidden />
             O&apos;chirish
