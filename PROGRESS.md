@@ -104,3 +104,6 @@
 ## Round 3 / 1 — Hide-on-scroll fixed for both bars (done)
 - Why it failed: the old hook kept the header visible whenever focus was inside it; clicking any header link/button leaves focus there, so after normal navigation it never hid. The mobile tab bar never had the logic at all.
 - Now one `useScrollDirection` (rAF-throttled, 8 px threshold, always shown in the top 64 px, reset on route change, off with reduced motion) feeds a `BarsVisibilityProvider`; header slides up, tab bar slides down (translateY, 200 ms ease-out). Only keyboard focus (`:focus-visible`) reveals hidden bars. Chat pages scroll inside their own panel, so the bars stay put there.
+
+## Round 3 / 2 — Bar shape (done)
+- Header: floating glass bar inset 8–12 px from the edges, 20 px bottom radius (`rounded-b-bar`), border without top edge, soft themed shadow (`--bar-shadow`). Mobile tab bar: docked to the bottom, 20 px top radius, upward shadow, safe-area padding (`viewport-fit=cover`). Verified in both themes at 390 and 1440 px.

@@ -15,6 +15,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Lets the docked mobile tab bar pad itself for the home indicator.
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: dark)", color: "#08070d" },
     { media: "(prefers-color-scheme: light)", color: "#f6f6fa" },

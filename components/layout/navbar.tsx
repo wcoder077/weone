@@ -19,11 +19,12 @@ export function Navbar({ me }: { me: Me }) {
       data-hidden={hidden}
       onFocus={revealOnKeyboardFocus}
       className={cn(
-        "glass sticky top-0 z-40 border-x-0 border-t-0 transition-transform duration-200 ease-out motion-reduce:transition-none",
+        // Floating bar: inset from the edges, rounded bottom corners, soft shadow.
+        "glass shadow-bar rounded-b-bar sticky top-0 z-40 mx-2 border-t-0 transition-transform duration-200 ease-out motion-reduce:transition-none sm:mx-3",
         hidden && "-translate-y-full",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-4 lg:px-8 rounded-b-[20px]">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-6 px-3 lg:px-6">
         <Logo />
 
         {/* Mobile: logo left, actions right. Desktop: search + links + actions. */}

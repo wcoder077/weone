@@ -25,6 +25,8 @@
   --glow: rgb(61 75 255 / 0.16);
   --chat-tint: rgb(61 75 255 / 0.06);
   --bubble-mine: #262b6b;
+  --bar-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  --bar-shadow-up: 0 -10px 30px rgb(0 0 0 / 0.35);
   color-scheme: dark;
 }
 
@@ -46,6 +48,8 @@
   --glow: rgb(61 75 255 / 0.1);
   --chat-tint: rgb(61 75 255 / 0.05);
   --bubble-mine: #e3e5ff;
+  --bar-shadow: 0 8px 24px rgb(21 19 31 / 0.08);
+  --bar-shadow-up: 0 -8px 24px rgb(21 19 31 / 0.08);
   color-scheme: light;
 }
 
@@ -88,6 +92,9 @@
   --color-primary-hover: var(--primary-hover);
   --color-on-accent: var(--on-accent);
   --color-bubble-mine: var(--bubble-mine);
+  --shadow-bar: var(--bar-shadow);
+  --shadow-bar-up: var(--bar-shadow-up);
+  --radius-bar: 20px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
