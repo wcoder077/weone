@@ -187,3 +187,7 @@
 
 ## Profile reposts (done)
 - Sidebar stats are now Post · Repost · Bog'lanish · Loyiha (4 compact boxes). "Post" counts only the person's own posts, "Repost" their reposts; each opens its tab. New "Repostlar" tab (latest 50, full cards with the embedded original); "Postlar" tab now lists own posts only. Own empty state hints at the "…" menu.
+
+## Discover: results first (done)
+- Top of `/discover` is now one row: live search (`UrlSearchInput`, 300 ms debounce, `router.replace` in a transition with a spinner, Enter applies at once) + "Filtrlar" button with the active-filter count. Role, skills, city, language, "Hamkorlikka ochiq", "Onlayn" (projects: skills, status) moved into a bottom sheet (`FiltersSheet`); active filters stay as removable chips.
+- With no search/filters on page 1 the People tab shows the "Siz uchun maqsaddoshlar" carousel first, then "Barcha maqsaddoshlar · N". The results Suspense has no key, so a new search keeps the current list until the new one arrives (no skeleton flash). The "/find" card moved under the results.
