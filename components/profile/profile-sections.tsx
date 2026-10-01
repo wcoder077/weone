@@ -50,6 +50,11 @@ export function ProfileHeader({
             style={{ objectPosition: `50% ${profile.banner_position}%` }}
           />
         ) : null}
+        {/* Bottom of the banner melts into the card colour, so it follows light/dark. */}
+        <div
+          aria-hidden
+          className="from-card via-card/70 pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t to-transparent"
+        />
         {bannerEditor ? <div className="absolute top-3 right-3">{bannerEditor}</div> : null}
       </div>
       <div className="flex flex-col gap-4 px-5 pb-5 sm:flex-row sm:gap-5 sm:px-6 sm:pb-6">
