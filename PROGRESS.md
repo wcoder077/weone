@@ -152,3 +152,7 @@
 
 ## Profile banner fade (done)
 - Banner bottom now fades into the card colour (`from-card via-card/60 to-transparent`, bottom 20 % only; top 80 % stays fully clear), so it blends in both light and dark themes. Editor button stays on top and clickable.
+
+## Chat bars like Telegram (done)
+- Why the header vanished while typing: on mobile the keyboard shrinks the visual viewport, not the layout viewport, so the `fixed inset-0` chat slid off the top. `useVisualViewportFit` now pins the chat to the visible area (`--vv-top` / `--vv-height`) and keeps the last message in view.
+- Header: arrow-only back button on mobile (text on desktop), avatar, name, headline. Composer: one pill with the emoji button on the left, text, round send button. Attachments (paperclip: photo, video, file) come next and need a migration.

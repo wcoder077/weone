@@ -42,23 +42,26 @@ export function ChatComposer({ conversationId, onSent }: { conversationId: strin
         e.preventDefault();
         send();
       }}
-      className="border-border bg-card flex items-end gap-1 border-t p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      className="border-border bg-card flex shrink-0 items-end gap-2 border-t p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]"
     >
-      <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, draft, emoji, setDraft)} />
-      <label className="sr-only" htmlFor="message-input">
-        Xabar
-      </label>
-      <textarea
-        id="message-input"
-        ref={fieldRef}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={onKeyDown}
-        rows={1}
-        maxLength={4000}
-        placeholder="Xabar yozing…"
-        className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 field-sizing-content max-h-40 min-h-11 flex-1 resize-none rounded-3xl border px-4 py-2.5 text-[15px] leading-snug outline-none focus-visible:ring-3"
-      />
+      {/* Telegram-style pill: emoji on the left, text in the middle. */}
+      <div className="border-input bg-input/30 focus-within:border-ring focus-within:ring-ring/50 flex min-w-0 flex-1 items-end rounded-3xl border focus-within:ring-3">
+        <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, draft, emoji, setDraft)} />
+        <label className="sr-only" htmlFor="message-input">
+          Xabar
+        </label>
+        <textarea
+          id="message-input"
+          ref={fieldRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          rows={1}
+          maxLength={4000}
+          placeholder="Xabar yozing…"
+          className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 pr-4 text-[15px] leading-snug outline-none"
+        />
+      </div>
       <Button type="submit" size="icon" aria-label="Yuborish" disabled={sending || !draft.trim()}>
         <Send />
       </Button>
