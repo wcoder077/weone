@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { formatRelative } from "@/lib/format";
-import type { NetworkActivity } from "@/lib/queries/home";
+import type { NetworkActivity } from "@/lib/queries/activities";
 import { UserAvatar } from "./user-avatar";
 
-const VERBS: Record<string, (target: string) => string> = {
+const VERBS: Partial<Record<string, (target: string) => string>> = {
   joined_project: (t) => `«${t}» jamoasiga qo'shildi`,
   launched_project: (t) => `«${t}» loyihasini ishga tushirdi`,
   started_project: (t) => `«${t}» loyihasini boshladi`,
   added_journey: (t) => `yo'liga «${t}» qo'shdi`,
   connected: (t) => `${t} bilan bog'landi`,
 };
+
+// "joined «X»" etc., or null for unknown types / missing targets.
+export function activityText(a: NetworkActivity) {
+  const verb = VERBS[a.type];
+  return verb && a.target ? verb(a.target.label) : null;
+}
 
 export function ActivityRow({ activity: a }: { activity: NetworkActivity }) {
   const verb = VERBS[a.type];

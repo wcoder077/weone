@@ -29,3 +29,9 @@ export function hrefWith(
   const query = next.toString();
   return query ? `${path}?${query}` : path;
 }
+
+// Public URL of a profile banner in the public `banners` bucket.
+export function bannerUrl(path: string | null) {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  return path && base ? `${base}/storage/v1/object/public/banners/${path}` : null;
+}

@@ -13,11 +13,17 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
   const onPage = pathname === "/notifications";
   const [count, setCount] = useState(onPage ? 0 : initialUnread);
   const [wasOnPage, setWasOnPage] = useState(onPage);
+  const [serverCount, setServerCount] = useState(initialUnread);
 
   // Visiting the notifications page marks everything read: drop the badge.
   if (onPage !== wasOnPage) {
     setWasOnPage(onPage);
     if (onPage) setCount(0);
+  }
+  // The layout re-rendered (refresh / server action) with a fresh count: trust it.
+  if (initialUnread !== serverCount) {
+    setServerCount(initialUnread);
+    setCount(onPage ? 0 : initialUnread);
   }
 
   useEffect(() => {

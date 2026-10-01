@@ -108,7 +108,7 @@
 ## Round 3 / 2 — Bar shape (done)
 - Header: floating glass bar inset 8–12 px from the edges, 20 px bottom radius (`rounded-b-bar`), border without top edge, soft themed shadow (`--bar-shadow`). Mobile tab bar: docked to the bottom, 20 px top radius, upward shadow, safe-area padding (`viewport-fit=cover`). Verified in both themes at 390 and 1440 px.
 
-## Round 3 / 3 — Profile banner (IN PROGRESS, not pushed)
+## Round 3 / 3 — Profile banner (done in Fixes P2)
 - Done: migration 15 (applied locally only, NOT pushed): `profiles.banner_path` (check: own folder only) + `banner_position` 0–100, public `banners` bucket (5 MB, jpg/png/webp, owner-folder writes) — SQL-tested. `saveBanner()` server action (path regex, file exists, old file deleted). `lib/image.ts` client validate + downscale/WebP compression (reusable for post images).
 - Left: banner display in `ProfileHeader` (image or brand gradient, bottom fade, avatar overlapping), owner editor dialog (upload / position slider / remove), push migration 15 + `pnpm db:types`.
 - Then: milestone 4 (post images + feed as /home), milestone 5 (recommendations with `calculateMatchScore` + tests, /find default list).
@@ -119,3 +119,10 @@
 - Google button + "yoki" hidden behind `ENABLE_GOOGLE_AUTH` (lib/constants.ts); action + callback kept.
 - `/forgot-password` → `resetPasswordForEmail` (redirectTo `<origin>/auth/callback?next=/reset-password`); `/reset-password` sets the new password → `/home`. `/auth/callback` accepts `code` (default template, same browser) and `token_hash`+`type` (custom template, any device); failed recovery links → `/forgot-password?error=link`.
 - Note: reset emails still go through Supabase's built-in SMTP (a few emails/hour per project). Custom SMTP is needed for real traffic.
+
+## Fixes P2 — Missing pieces (done)
+- Bell already had the red 9+ badge, Realtime count and clear-on-open; now also re-syncs when the layout re-renders with a fresh count.
+- Migration 16 (pushed): senders edit (`body` only, `edited_at` by trigger) and delete their own messages in accepted chats; image first-messages excluded. Bubble menu (Nusxa olish / Tahrirlash / O'chirish) via hover "⋯" on desktop, long-press or context menu on touch; delete asks first; edits and deletes arrive live via Realtime UPDATE/DELETE.
+- Profile sidebar "Bog'lanishlar va faoliyat": connections + projects counts and the 4 latest activities (skeleton / empty / retry). No follow feature exists, so "following" is not shown.
+- Banner: migration 15 pushed with a missing owner-only storage SELECT policy (list/remove needed it); banner behind the header with the avatar overlapping; owner editor uploads (WebP, ≤1800 px), repositions (vertical slider), removes; unsaved uploads are deleted. Types regenerated (`pnpm db:types`).
+- Also fixed: `connectedIds()` on Home didn't filter by the current user (since migration 13 everyone's accepted connections are readable), so "Tarmog'ingizdan" and "Siz uchun odamlar" used other people's connections.

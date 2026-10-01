@@ -179,3 +179,8 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* iOS: no "copy / look up" callout on long-press. */
+@utility touch-callout-none {
+  -webkit-touch-callout: none;
+}

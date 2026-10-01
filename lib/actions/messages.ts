@@ -55,3 +55,38 @@ export async function markConversationRead(conversationId: string): Promise<void
     .eq("conversation_id", conversationId)
     .eq("user_id", userId);
 }
+
+type EditResult = { body: string; editedAt: string } | { error: string };
+
+// RLS limits this to the sender's own text messages in an open chat; edited_at is set by trigger.
+export async function editMessage(messageId: string, body: string): Promise<EditResult> {
+  const userId = await requireUserId();
+  const parsed = z.object({ messageId: idSchema, body: bodySchema }).safeParse({ messageId, body });
+  if (!parsed.success) return { error: "Xabar bo'sh yoki juda uzun." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("messages")
+    .update({ body: parsed.data.body })
+    .eq("id", parsed.data.messageId)
+    .eq("sender_id", userId)
+    .select("body, edited_at")
+    .maybeSingle();
+  if (error || !data) return { error: "Xabarni tahrirlab bo'lmadi." };
+  return { body: data.body, editedAt: data.edited_at ?? new Date().toISOString() };
+}
+
+export async function deleteMessage(messageId: string): Promise<{ error?: string }> {
+  const userId = await requireUserId();
+  if (!idSchema.safeParse(messageId).success) return { error: "Xabarni o'chirib bo'lmadi." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("messages")
+    .delete()
+    .eq("id", messageId)
+    .eq("sender_id", userId)
+    .select("id");
+  if (error || data.length === 0) return { error: "Xabarni o'chirib bo'lmadi." };
+  return {};
+}

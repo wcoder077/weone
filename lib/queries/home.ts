@@ -1,13 +1,20 @@
 import { LOOKING_FOR, evidenceText, labelOf } from "@/lib/constants";
 import type { MyProfile } from "@/lib/queries/profiles";
 import { createClient } from "@/lib/supabase/server";
+import { resolveActivities, type NetworkActivity } from "./activities";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
+// The other side of my connections. Accepted rows of other people are readable too
+// (migration 13), so the filter on my id is required. `includePending` also keeps
+// rejected pairs, which can never reconnect.
 async function connectedIds(supabase: Supabase, userId: string, includePending: boolean) {
-  let query = supabase.from("connections").select("requester_id, addressee_id, status");
+  let query = supabase
+    .from("connections")
+    .select("requester_id, addressee_id, status")
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`);
   if (!includePending) query = query.eq("status", "accepted");
-  const { data, error } = await query.neq("status", "declined");
+  const { data, error } = await query;
   if (error) throw error;
   return data.map((c) => (c.requester_id === userId ? c.addressee_id : c.requester_id));
 }
@@ -79,14 +86,6 @@ export async function getProfileChecklist(me: MyProfile) {
   return items;
 }
 
-export type NetworkActivity = {
-  id: string;
-  createdAt: string;
-  actor: { username: string; full_name: string; avatar_url: string | null };
-  type: string;
-  target: { label: string; href: string } | null;
-};
-
 // "From your network": recent activities of accepted connections.
 export async function getNetworkActivity(userId: string, limit = 8): Promise<NetworkActivity[]> {
   const supabase = await createClient();
@@ -114,26 +113,5 @@ export async function getNetworkActivity(userId: string, limit = 8): Promise<Net
     })
     .slice(0, limit);
 
-  const idsOf = (...types: string[]) => rows.filter((r) => types.includes(r.type)).map((r) => r.entity_id);
-  const [projects, items, people] = await Promise.all([
-    supabase.from("projects").select("id, name, slug").in("id", idsOf("joined_project", "launched_project", "started_project")),
-    supabase.from("journey_items").select("id, title, user_id, profiles(username)").in("id", idsOf("added_journey")),
-    supabase.from("profiles").select("id, username, full_name").in("id", idsOf("connected")),
-  ]);
-
-  return rows.flatMap((r) => {
-    if (!r.profiles) return [];
-    let target: NetworkActivity["target"] = null;
-    if (r.type === "added_journey") {
-      const item = items.data?.find((i) => i.id === r.entity_id);
-      if (item) target = { label: item.title, href: `/u/${item.profiles?.username ?? r.profiles.username}` };
-    } else if (r.type === "connected") {
-      const person = people.data?.find((p) => p.id === r.entity_id);
-      if (person) target = { label: person.full_name, href: `/u/${person.username}` };
-    } else {
-      const project = projects.data?.find((p) => p.id === r.entity_id);
-      if (project) target = { label: project.name, href: `/projects/${project.slug}` };
-    }
-    return target ? [{ id: r.id, createdAt: r.created_at, actor: r.profiles, type: r.type, target }] : [];
-  });
+  return resolveActivities(supabase, rows);
 }

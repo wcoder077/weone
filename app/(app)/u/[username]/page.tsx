@@ -12,7 +12,9 @@ import {
   SkillsList,
   TagList,
 } from "@/components/profile/profile-sections";
+import { BannerEditor } from "@/components/profile/banner-editor";
 import { ConnectionsTab } from "@/components/profile/connections-tab";
+import { ProfileSummary, ProfileSummarySkeleton } from "@/components/profile/profile-summary";
 import { ShareButton } from "@/components/profile/share-button";
 import { DeleteProjectButton } from "@/components/projects/team-actions";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
@@ -61,6 +63,14 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
     <div className="flex flex-col gap-6">
       <ProfileHeader
         profile={page.profile}
+        bannerEditor={
+          isMe ? (
+            <BannerEditor
+              userId={page.profile.id}
+              initial={{ path: page.profile.banner_path, position: page.profile.banner_position }}
+            />
+          ) : null
+        }
         actions={
           isMe ? (
             <>
@@ -80,6 +90,9 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <aside className="flex flex-col gap-4">
+          <Suspense fallback={<ProfileSummarySkeleton />}>
+            <ProfileSummary profileId={page.profile.id} path={path} projectCount={page.projects.length} />
+          </Suspense>
           <SectionCard title="Haqida">
             {page.profile.bio ? (
               <p className="text-[15px] leading-relaxed whitespace-pre-line">{page.profile.bio}</p>

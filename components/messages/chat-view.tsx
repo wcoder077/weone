@@ -27,6 +27,8 @@ type MessageInsert = {
   created_at: string;
 };
 
+type MessageUpdate = { id: string; body: string; edited_at: string | null };
+
 type Connection = { id: string; status: string; requestedByMe: boolean } | null;
 
 // Pending chats hold only the request's first message; the footer then shows the
@@ -64,6 +66,19 @@ export function ChatView({
     setMessages((prev) => (prev.some((m) => m.id === message.id) ? prev : [...prev, message]));
   }
 
+  function applyEdit(id: string, body: string, editedAt: string | null) {
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, body, editedAt } : m)));
+  }
+
+  function removeMessage(id: string) {
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+  }
+
+  const editing = {
+    onEdited: applyEdit,
+    onDeleted: removeMessage,
+  };
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages.length]);
@@ -96,6 +111,22 @@ export function ChatView({
             imageUrl: null,
           });
           if (row.sender_id !== meId) void markConversationRead(conversationId);
+        },
+      )
+      .on<MessageUpdate>(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
+        ({ new: row }) =>
+          setMessages((prev) =>
+            prev.map((m) => (m.id === row.id ? { ...m, body: row.body, editedAt: row.edited_at } : m)),
+          ),
+      )
+      // Deletes can't be filtered by column and carry only the id; unknown ids are ignored.
+      .on<{ id: string }>(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "messages" },
+        ({ old }) => {
+          if (old.id) setMessages((prev) => prev.filter((m) => m.id !== old.id));
         },
       )
       .subscribe();
@@ -146,7 +177,11 @@ export function ChatView({
                     alreadyMember={m.projectId ? myProjectIds.includes(m.projectId) : false}
                   />
                 ) : (
-                  <MessageBubble message={m} mine={mine} />
+                  <MessageBubble
+                    message={m}
+                    mine={mine}
+                    editing={open && mine && !m.imageUrl ? editing : undefined}
+                  />
                 )}
               </Fragment>
             );

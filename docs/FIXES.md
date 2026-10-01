@@ -12,13 +12,13 @@ Rules: no features beyond this list, do not edit `CLAUDE.md`, all UI text in Uzb
 - [x] `/reset-password`: set a new password from the recovery session, then redirect. Expired/invalid links get a clear message.
 - [x] "Parolni unutdingizmi?" link on `/login`.
 - [x] Report the exact redirect URL(s) used so they can be checked against Supabase Redirect URLs.
-- [ ] **Stop after Priority 1 is pushed** so login can be tested on the deployed site.
+- [x] **Stop after Priority 1 is pushed** so login can be tested on the deployed site.
 
 ## Priority 2 — Missing pieces
-- [ ] Notification bell: red badge with unread count (display caps at 9+), clears when `/notifications` is opened, live via Realtime.
-- [ ] Messages: edit and delete own messages — hover menu on desktop, long-press on touch. Confirm before delete.
-- [ ] Profile: compact "Connections + activity" summary (connections / following / projects counts + recent activity).
-- [ ] Profile banner: banner behind the profile header with overlapping avatar; owner can upload / reposition / remove. Push migration 15, regenerate types.
+- [x] Notification bell: red badge with unread count (display caps at 9+), clears when `/notifications` is opened, live via Realtime.
+- [x] Messages: edit and delete own messages — hover menu on desktop, long-press on touch. Confirm before delete.
+- [x] Profile: compact "Connections + activity" summary (connections / following / projects counts + recent activity).
+- [x] Profile banner: banner behind the profile header with overlapping avatar; owner can upload / reposition / remove. Push migration 15, regenerate types.
 
 ## Priority 3 — UX / polish
 - [ ] Desktop `/login` and `/signup`: proper centered desktop layout (wider card, better spacing), still mobile-friendly.
