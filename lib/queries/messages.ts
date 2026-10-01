@@ -1,3 +1,4 @@
+import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { createClient } from "@/lib/supabase/server";
 
 const PROFILE_FIELDS = "username, full_name, avatar_url";
@@ -37,7 +38,7 @@ export async function getConversations(userId: string) {
     // Recent messages across the user's chats; enough for previews.
     supabase
       .from("messages")
-      .select("conversation_id, sender_id, body, kind, created_at")
+      .select("conversation_id, sender_id, body, kind, attachment_type, created_at")
       .in("conversation_id", ids)
       .order("created_at", { ascending: false })
       .limit(500),
@@ -68,7 +69,7 @@ export async function getConversations(userId: string) {
 export type ConversationSummary = Awaited<ReturnType<typeof getConversations>>[number];
 
 const MESSAGE_FIELDS =
-  "id, sender_id, body, kind, project_id, image_path, edited_at, created_at, projects(name, slug, tagline, logo_url)";
+  "id, sender_id, body, kind, project_id, image_path, edited_at, created_at, attachment_path, attachment_name, attachment_type, attachment_size, projects(name, slug, tagline, logo_url)";
 
 // Null when the conversation does not exist or the user is not a member (RLS).
 export async function getConversation(conversationId: string, userId: string) {
@@ -101,6 +102,15 @@ export async function getConversation(conversationId: string, userId: string) {
     : [];
   const imageUrls = new Map(signed.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])));
 
+  // Attachments are private too: sign them for an hour.
+  const attachmentPaths = messages.data.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
+  const signedAttachments = attachmentPaths.length
+    ? ((await supabase.storage.from(ATTACHMENT_BUCKET).createSignedUrls(attachmentPaths, 60 * 60)).data ?? [])
+    : [];
+  const attachmentUrls = new Map(
+    signedAttachments.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])),
+  );
+
   const connection = conversation.data?.connections ?? null;
   const other = members.data.find((m) => m.user_id !== userId);
   return {
@@ -111,7 +121,10 @@ export async function getConversation(conversationId: string, userId: string) {
       : null,
     messages: messages.data
       .reverse()
-      .map((m) => ({ ...toChatMessage(m), imageUrl: m.image_path ? (imageUrls.get(m.image_path) ?? null) : null })),
+      .map((m) => ({
+        ...toChatMessage(m, m.attachment_path ? attachmentUrls.get(m.attachment_path) : undefined),
+        imageUrl: m.image_path ? (imageUrls.get(m.image_path) ?? null) : null,
+      })),
   };
 }
 
@@ -124,10 +137,21 @@ type MessageRow = {
   image_path?: string | null;
   edited_at?: string | null;
   created_at: string;
+  attachment_path?: string | null;
+  attachment_name?: string | null;
+  attachment_type?: string | null;
+  attachment_size?: number | null;
   projects: { name: string; slug: string; tagline: string | null; logo_url: string | null } | null;
 };
 
-export function toChatMessage(row: MessageRow) {
+export type ChatAttachment = { url: string; name: string; kind: AttachmentKind; size: number };
+
+// `attachmentUrl` is the signed URL of the row's attachment (callers sign it, see getConversation).
+export function toChatMessage(row: MessageRow, attachmentUrl?: string) {
+  const attachment: ChatAttachment | null =
+    row.attachment_path && row.attachment_name && row.attachment_type && row.attachment_size && attachmentUrl
+      ? { url: attachmentUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
+      : null;
   return {
     id: row.id,
     senderId: row.sender_id,
@@ -138,6 +162,7 @@ export function toChatMessage(row: MessageRow) {
     project: row.projects,
     editedAt: row.edited_at ?? null,
     imageUrl: null as string | null,
+    attachment,
   };
 }
 

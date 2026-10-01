@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ChatMessage } from "@/lib/queries/messages";
 import { formatTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { AttachmentView } from "./attachment-view";
 import { MessageActions } from "./message-actions";
 import { useLongPress } from "./use-long-press";
 
@@ -24,6 +25,8 @@ export function MessageBubble({
   mine: boolean;
   editing?: EditHandlers;
 }) {
+  // Attachment messages can be deleted but not edited (delete and resend instead).
+  const canEdit = !message.attachment;
   const [menuOpen, setMenuOpen] = useState(false);
   const longPress = useLongPress(() => setMenuOpen(true));
 
@@ -34,6 +37,7 @@ export function MessageBubble({
           <MessageActions
             messageId={message.id}
             body={message.body}
+            canEdit={canEdit}
             menuOpen={menuOpen}
             onMenuOpenChange={setMenuOpen}
             onEdited={(body, editedAt) => editing.onEdited(message.id, body, editedAt)}
@@ -53,6 +57,11 @@ export function MessageBubble({
             // Signed URL of a private first-message image.
             // eslint-disable-next-line @next/next/no-img-element
             <img src={message.imageUrl} alt="Xabardagi rasm" className="mb-2 max-h-64 rounded-2xl object-cover" />
+          ) : null}
+          {message.attachment ? (
+            <div className={cn(message.body && "mb-2", "-mx-1 -mt-1 first:mt-0")}>
+              <AttachmentView attachment={message.attachment} />
+            </div>
           ) : null}
           {message.body}
         </div>

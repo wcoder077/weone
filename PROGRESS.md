@@ -156,3 +156,8 @@
 ## Chat bars like Telegram (done)
 - Why the header vanished while typing: on mobile the keyboard shrinks the visual viewport, not the layout viewport, so the `fixed inset-0` chat slid off the top. `useVisualViewportFit` now pins the chat to the visible area (`--vv-top` / `--vv-height`) and keeps the last message in view.
 - Header: arrow-only back button on mobile (text on desktop), avatar, name, headline. Composer: one pill with the emoji button on the left, text, round send button. Attachments (paperclip: photo, video, file) come next and need a migration.
+
+## Chat attachments (done, migration 18 applied via SQL Editor)
+- Paperclip in the composer opens Rasm / Video / Fayl; the picked file is staged with a preview, optional caption, then uploaded from the browser to the private `message-attachments` bucket and sent via `sendAttachment`. Bubbles show the photo (tap = full size), a video player, or a file card with download. Attachment messages can be deleted (the file is removed too) but not edited. Chat list previews show "Rasm" / "Video" / "Fayl".
+- Migration 18: 4 `attachment_*` columns with all-or-none and path-format checks (path = `<sender>/<conversation>/<uuid>.<ext>`), bucket with 20 MB and a MIME allow-list, storage policies (owner uploads/deletes, conversation members read), insert policy requires an existing upload, edit policy excludes attachments. Tested on Postgres 16 with a Supabase shim (8 cases).
+- Changing limits later: edit `lib/attachments.ts` (ATTACHMENT_MAX_BYTES, ATTACHMENT_TYPES) and update the bucket with the SQL shown at the top of the migration.

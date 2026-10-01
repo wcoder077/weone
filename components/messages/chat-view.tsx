@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { markConversationRead } from "@/lib/actions/messages";
+import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { MESSAGES_READ_EVENT } from "@/components/layout/unread-messages";
 import type { ChatMessage } from "@/lib/queries/messages";
 import type { ConnectionState } from "@/lib/queries/social";
@@ -27,6 +28,10 @@ type MessageInsert = {
   kind: string;
   project_id: string | null;
   created_at: string;
+  attachment_path: string | null;
+  attachment_name: string | null;
+  attachment_type: string | null;
+  attachment_size: number | null;
 };
 
 type MessageUpdate = { id: string; body: string; edited_at: string | null };
@@ -108,6 +113,10 @@ export function ChatView({
             const project = row.project_id
               ? (await supabase.from("projects").select("name, slug, tagline, logo_url").eq("id", row.project_id).maybeSingle()).data
               : null;
+            // Attachments are private files: sign the link (RLS lets conversation members read).
+            const signedUrl = row.attachment_path
+              ? (await supabase.storage.from(ATTACHMENT_BUCKET).createSignedUrl(row.attachment_path, 60 * 60)).data?.signedUrl
+              : undefined;
             append({
               id: row.id,
               senderId: row.sender_id,
@@ -118,6 +127,10 @@ export function ChatView({
               project,
               editedAt: null,
               imageUrl: null,
+              attachment:
+                signedUrl && row.attachment_name && row.attachment_type && row.attachment_size
+                  ? { url: signedUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
+                  : null,
             });
             if (row.sender_id !== meId) {
               void markConversationRead(conversationId).then(() => {
@@ -211,7 +224,7 @@ export function ChatView({
       </div>
 
       {open ? (
-        <ChatComposer conversationId={conversationId} onSent={append} />
+        <ChatComposer conversationId={conversationId} meId={meId} onSent={append} />
       ) : (
         <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
           <p className="text-muted text-[14px]">
