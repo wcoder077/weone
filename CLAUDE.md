@@ -56,3 +56,6 @@ Full design rules: spec section 2.
 - Keep answers short. Do not repeat file contents back unless asked.
 
 @AGENTS.md
+
+## Language
+All UI text (labels, buttons, headings, empty states, errors, toasts) is in Uzbek. No i18n library — hardcode Uzbek strings directly. Code, comments, variable names, commit messages stay in English. Database enum values (`status`, `type`, etc.) stay in English; only their displayed labels are Uzbek.
