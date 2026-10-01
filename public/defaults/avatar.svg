@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Foydalanuvchi">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a2f6b"/>
+      <stop offset="1" stop-color="#171522"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="64" cy="64" r="64"/></clipPath>
+  </defs>
+  <g clip-path="url(#c)">
+    <rect width="128" height="128" fill="url(#bg)"/>
+    <circle cx="64" cy="50" r="22" fill="#c9cbe8"/>
+    <path d="M18 128c2-26 22-42 46-42s44 16 46 42z" fill="#c9cbe8"/>
+  </g>
+</svg>

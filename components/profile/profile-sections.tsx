@@ -5,7 +5,7 @@ import type { ProfilePage } from "@/lib/queries/profile-page";
 import { SkillChip } from "@/components/shared/skill-chip";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { OnlineLabel } from "@/components/layout/online-presence";
-import { bannerUrl } from "@/lib/url";
+import { DEFAULT_BANNER, bannerUrl } from "@/lib/url";
 import { isGeneratedUsername } from "@/lib/validation/profile";
 
 export function SectionCard({
@@ -42,15 +42,14 @@ export function ProfileHeader({
     <section className="bg-card border-border rounded-card overflow-hidden border">
       {/* Banner behind the header; the avatar overlaps its bottom edge. */}
       <div className="bg-surface relative h-32 sm:h-44 lg:h-52">
-        {banner ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={banner}
-            alt=""
-            className="size-full object-cover"
-            style={{ objectPosition: `50% ${profile.banner_position}%` }}
-          />
-        ) : null}
+        {/* The user's own banner, or the default one until they upload theirs. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={banner ?? DEFAULT_BANNER}
+          alt=""
+          className="size-full object-cover"
+          style={banner ? { objectPosition: `50% ${profile.banner_position}%` } : undefined}
+        />
         {/* Bottom of the banner melts into the card colour, so it follows light/dark. */}
         <div
           aria-hidden

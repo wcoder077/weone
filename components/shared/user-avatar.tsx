@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { OnlineDot } from "@/components/layout/online-presence";
+import { DEFAULT_AVATAR } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 const SIZES = {
@@ -32,7 +33,8 @@ export function UserAvatar({
   return (
     <span className={cn("relative inline-flex shrink-0", className)}>
       <Avatar className={SIZES[size]}>
-        {url ? <AvatarImage src={url} alt="" /> : null}
+        {/* No photo yet: the default user picture (initials only show while it loads). */}
+        <AvatarImage src={url ?? DEFAULT_AVATAR} alt="" />
         <AvatarFallback className="bg-surface text-text font-semibold">
           {initialsOf(name)}
         </AvatarFallback>
