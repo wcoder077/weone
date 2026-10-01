@@ -9,3 +9,17 @@ export const postBodySchema = z
   .trim()
   .min(1, "Post bo'sh bo'lmasin")
   .refine((v) => graphemeLength(v) <= POST_MAX, `Ko'pi bilan ${POST_MAX} ta belgi`);
+
+// Reposts and photo/video posts may have no text of their own.
+export const postCaptionSchema = z
+  .string()
+  .trim()
+  .refine((v) => graphemeLength(v) <= POST_MAX, `Ko'pi bilan ${POST_MAX} ta belgi`);
+
+export const COMMENT_MAX = 500;
+
+export const commentSchema = z
+  .string()
+  .trim()
+  .min(1, "Izoh bo'sh bo'lmasin")
+  .refine((v) => graphemeLength(v) <= COMMENT_MAX, `Ko'pi bilan ${COMMENT_MAX} ta belgi`);

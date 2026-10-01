@@ -179,7 +179,9 @@ Routes are suggestions; keep them clean.
 
 **Added (2026-10):** `/posts` text feed (≤ 500 graphemes, author edit/delete; replaces "Projects" in the navbar — projects are managed from the profile), profile "Connections" tab, light/dark/system theme.
 
-**Out of scope:** events pages, opportunities, communities, AI features, likes/comments, admin panel, payments, Telegram login.
+**Added (2026-10, posts v2):** one photo or video per post (≤ 20 MB), likes, comments (`/posts/[id]`), views (counted once per viewer, never the author), reposts and "copy link" from the "…" menu under each post.
+
+**Out of scope:** events pages, opportunities, communities, AI features, admin panel, payments, Telegram login.
 
 ---
 

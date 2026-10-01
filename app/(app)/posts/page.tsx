@@ -16,17 +16,18 @@ export const metadata = { title: "Postlar" };
 export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
   const before = single((await searchParams).before);
   const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : undefined;
+  const userId = await requireUserId();
 
   return (
     <div className="mx-auto flex w-full max-w-[680px] flex-col gap-6">
       <h1 className="text-2xl font-bold lg:text-[32px]">Postlar</h1>
       {validBefore ? null : (
         <section aria-label="Yangi post" className="bg-card border-border rounded-card border p-5">
-          <PostComposer />
+          <PostComposer userId={userId} />
         </section>
       )}
       <Suspense key={validBefore ?? "first"} fallback={<FeedSkeleton />}>
-        <Feed before={validBefore} />
+        <Feed userId={userId} before={validBefore} />
       </Suspense>
     </div>
   );
@@ -52,11 +53,10 @@ function FeedSkeleton() {
   );
 }
 
-async function Feed({ before }: { before?: string }) {
-  const userId = await requireUserId();
+async function Feed({ userId, before }: { userId: string; before?: string }) {
   let feed;
   try {
-    feed = await getFeed(before);
+    feed = await getFeed(userId, before);
   } catch {
     return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
   }
