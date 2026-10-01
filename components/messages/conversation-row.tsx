@@ -12,6 +12,7 @@ import { Badge } from "@/components/shared/badge";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { UnreadBadge } from "@/components/shared/unread-badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { ReadMark } from "./message-bubble";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -195,6 +196,7 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
               </span>
               <span className="text-muted flex shrink-0 items-center gap-1 text-[12px]">
                 {c.pinnedAt ? <Pin className="size-3.5" aria-label="Qadalgan" /> : null}
+                {c.lastStatus ? <ReadMark status={c.lastStatus} /> : null}
                 {c.last ? formatRelative(c.last.created_at) : null}
               </span>
             </span>

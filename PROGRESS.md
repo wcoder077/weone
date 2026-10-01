@@ -206,3 +206,7 @@
 
 ## Compact recommendation cards (done)
 - "Siz uchun maqsaddoshlar" cards (home + discover): 160 px wide instead of 220, tighter padding, 14 px name, one-line subtitle, a single reason line ("✓ Python +2"), hidden scrollbar (row still swipes). Connect button keeps the 44 px touch height.
+
+## Read receipts ✓ / ✓✓ (done)
+- My messages show one grey tick (sent) or two blue ticks (read) next to the time, Telegram-style; the chat list shows the same tick before the time when the last message is mine. "Read" = the other member's `last_read_at` is at or after the message (compared as dates).
+- Live without a migration: when a chat marks itself read, `markConversationRead` returns the new time and the chat broadcasts it on the chat's Realtime channel (re-sent on every join, so an early announce isn't lost); the other open chat turns ✓ into ✓✓ at once. `subscribeWithAuth` got an `onSubscribed` callback. Trade-off: broadcasts aren't verified, so a modified client could fake "read" for its own side only.

@@ -1,4 +1,5 @@
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
+import { readStatus } from "@/lib/read-status";
 import { createClient } from "@/lib/supabase/server";
 
 const PROFILE_FIELDS = "username, full_name, avatar_url";
@@ -34,7 +35,7 @@ export async function getConversations(userId: string) {
   const [others, messages, unread] = await Promise.all([
     supabase
       .from("conversation_members")
-      .select(`conversation_id, user_id, profiles(${PROFILE_FIELDS})`)
+      .select(`conversation_id, user_id, last_read_at, profiles(${PROFILE_FIELDS})`)
       .in("conversation_id", ids)
       .neq("user_id", userId),
     // Recent messages across the user's chats; enough for previews.
@@ -61,6 +62,8 @@ export async function getConversations(userId: string) {
         id: m.conversation_id,
         other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,
         last: last ?? null,
+        // ✓ / ✓✓ for my own last message (read = the other person opened the chat after it).
+        lastStatus: last && last.sender_id === userId ? readStatus(last.created_at, other?.last_read_at) : null,
         unread: unread.get(m.conversation_id) ?? 0,
         activityAt: last?.created_at ?? m.conversations?.created_at ?? "",
         muted: m.muted,
@@ -90,7 +93,7 @@ export async function getConversation(conversationId: string, userId: string) {
   const [members, messages, conversation] = await Promise.all([
     supabase
       .from("conversation_members")
-      .select(`user_id, hidden_at, profiles(${PROFILE_FIELDS}, headline)`)
+      .select(`user_id, hidden_at, last_read_at, profiles(${PROFILE_FIELDS}, headline)`)
       .eq("conversation_id", conversationId),
     supabase
       .from("messages")
@@ -131,6 +134,7 @@ export async function getConversation(conversationId: string, userId: string) {
   const other = members.data.find((m) => m.user_id !== userId);
   return {
     other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,
+    otherReadAt: other?.last_read_at ?? null,
     // Messaging is open only once the connection is accepted (enforced by RLS).
     connection: connection
       ? { id: connection.id, status: connection.status, requestedByMe: connection.requester_id === userId }
