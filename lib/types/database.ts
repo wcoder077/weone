@@ -926,6 +926,13 @@ export type Database = {
         Returns: boolean
       }
       is_project_owner: { Args: { p_project_id: string }; Returns: boolean }
+      my_unread_counts: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          unread: number
+        }[]
+      }
       normalize_apostrophes: { Args: { value: string }; Returns: string }
       owns_journey_item: { Args: { item_id: string }; Returns: boolean }
       owns_project_folder: { Args: { object_name: string }; Returns: boolean }

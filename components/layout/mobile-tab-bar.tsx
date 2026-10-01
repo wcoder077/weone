@@ -4,12 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useBarsVisibility } from "./bars-visibility";
+import { UnreadBadge } from "@/components/shared/unread-badge";
 import { LinkPending } from "./link-pending";
+import { useUnreadMessages } from "./unread-messages";
 import { isActive, isConversationPath, navItems } from "./nav-items";
 
 export function MobileTabBar({ username }: { username: string }) {
   const pathname = usePathname();
   const { hidden, revealOnKeyboardFocus } = useBarsVisibility();
+  const unreadMessages = useUnreadMessages();
 
   return (
     <nav
@@ -31,12 +34,16 @@ export function MobileTabBar({ username }: { username: string }) {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
+            aria-label={href === "/messages" && unreadMessages > 0 ? `${label}, ${unreadMessages} ta o'qilmagan` : undefined}
             className={cn(
               "relative flex min-h-12 min-w-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[13px] font-medium transition-colors",
               active ? "bg-primary text-primary-foreground" : "text-muted",
             )}
           >
-            <Icon className="size-5" aria-hidden />
+            <span className="relative">
+              <Icon className="size-5" aria-hidden />
+              {href === "/messages" ? <UnreadBadge count={unreadMessages} className="absolute -top-1.5 left-3" /> : null}
+            </span>
             <span>{label}</span>
             <LinkPending />
           </Link>

@@ -2,31 +2,46 @@ import { createClient } from "@/lib/supabase/server";
 
 const PROFILE_FIELDS = "username, full_name, avatar_url";
 
+// Exact unread counts per conversation for the signed-in user (RPC, scoped to auth.uid()).
+export async function getUnreadCounts() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("my_unread_counts");
+  if (error) throw error;
+  return new Map(data.map((r) => [r.conversation_id, r.unread]));
+}
+
+export async function getUnreadMessageTotal() {
+  let total = 0;
+  for (const n of (await getUnreadCounts()).values()) total += n;
+  return total;
+}
+
 // The user's chats, newest activity first, with the other person, last message
 // and how many messages from others arrived after the user last read it.
 export async function getConversations(userId: string) {
   const supabase = await createClient();
   const { data: mine, error } = await supabase
     .from("conversation_members")
-    .select("conversation_id, last_read_at, conversations(created_at, connections(status))")
+    .select("conversation_id, conversations(created_at, connections(status))")
     .eq("user_id", userId);
   if (error) throw error;
   if (mine.length === 0) return [];
 
   const ids = mine.map((m) => m.conversation_id);
-  const [others, messages] = await Promise.all([
+  const [others, messages, unread] = await Promise.all([
     supabase
       .from("conversation_members")
       .select(`conversation_id, user_id, profiles(${PROFILE_FIELDS})`)
       .in("conversation_id", ids)
       .neq("user_id", userId),
-    // Recent messages across the user's chats; enough for previews and unread counts.
+    // Recent messages across the user's chats; enough for previews.
     supabase
       .from("messages")
       .select("conversation_id, sender_id, body, kind, created_at")
       .in("conversation_id", ids)
       .order("created_at", { ascending: false })
       .limit(500),
+    getUnreadCounts(),
   ]);
   if (others.error) throw others.error;
   if (messages.error) throw messages.error;
@@ -40,7 +55,7 @@ export async function getConversations(userId: string) {
         id: m.conversation_id,
         other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,
         last: last ?? null,
-        unread: own.filter((msg) => msg.sender_id !== userId && msg.created_at > m.last_read_at).length,
+        unread: unread.get(m.conversation_id) ?? 0,
         activityAt: last?.created_at ?? m.conversations?.created_at ?? "",
         // Chats without a connection (older collaboration chats) stay readable but closed.
         status: m.conversations?.connections?.status ?? "closed",

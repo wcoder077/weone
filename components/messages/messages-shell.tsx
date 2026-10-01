@@ -6,6 +6,7 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { formatRelative } from "@/lib/format";
 import type { ConversationSummary } from "@/lib/queries/messages";
 import { Badge } from "@/components/shared/badge";
+import { UnreadBadge } from "@/components/shared/unread-badge";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { cn } from "@/lib/utils";
 import { LiveConversationRefresh } from "./live-refresh";
@@ -51,6 +52,7 @@ function ConversationLink({ conversation: c, active }: { conversation: Conversat
     <Link
       href={`/messages/${c.id}`}
       aria-current={active ? "page" : undefined}
+      aria-label={c.unread > 0 ? `${c.other?.full_name ?? "Suhbat"}, ${c.unread} ta o'qilmagan xabar` : undefined}
       className={cn("flex min-h-16 items-center gap-3 rounded-2xl px-3 py-2.5 transition-colors", active ? "bg-surface" : "hover:bg-surface/60")}
     >
       <UserAvatar name={c.other?.full_name ?? "?"} url={c.other?.avatar_url ?? null} />
@@ -64,11 +66,7 @@ function ConversationLink({ conversation: c, active }: { conversation: Conversat
         </span>
         <span className="flex items-center justify-between gap-2">
           <span className={cn("truncate text-[14px]", c.unread > 0 ? "text-text" : "text-muted")}>{preview}</span>
-          {c.unread > 0 ? (
-            <span className="bg-text text-bg flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold">
-              {c.unread}
-            </span>
-          ) : null}
+          <UnreadBadge count={c.unread} className="h-5 min-w-5 shrink-0 px-1.5" />
         </span>
       </span>
     </Link>

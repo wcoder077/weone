@@ -7,13 +7,16 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { HeaderActions } from "./header-actions";
 import { useBarsVisibility } from "./bars-visibility";
+import { UnreadBadge } from "@/components/shared/unread-badge";
 import { LinkPending } from "./link-pending";
+import { useUnreadMessages } from "./unread-messages";
 import { desktopNavItems, isActive, isConversationPath } from "./nav-items";
 import type { Me } from "./types";
 
 export function Navbar({ me }: { me: Me }) {
   const pathname = usePathname();
   const { hidden, revealOnKeyboardFocus } = useBarsVisibility();
+  const unreadMessages = useUnreadMessages();
 
   return (
     <header
@@ -51,12 +54,14 @@ export function Navbar({ me }: { me: Me }) {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
+                aria-label={href === "/messages" && unreadMessages > 0 ? `${label}, ${unreadMessages} ta o'qilmagan` : undefined}
                 className={cn(
                   "relative inline-flex min-h-11 items-center rounded-full px-4 text-[15px] font-medium transition-colors",
                   active ? "text-text" : "text-muted hover:text-text",
                 )}
               >
                 {label}
+                {href === "/messages" ? <UnreadBadge count={unreadMessages} className="ml-1.5" /> : null}
                 <LinkPending />
               </Link>
             );

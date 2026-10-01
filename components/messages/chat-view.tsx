@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { markConversationRead } from "@/lib/actions/messages";
+import { MESSAGES_READ_EVENT } from "@/components/layout/unread-messages";
 import type { ChatMessage } from "@/lib/queries/messages";
 import type { ConnectionState } from "@/lib/queries/social";
 import { createClient } from "@/lib/supabase/client";
@@ -85,7 +86,10 @@ export function ChatView({
 
   useEffect(() => {
     // Read on open; refresh so the list's unread counts update.
-    void markConversationRead(conversationId).then(() => router.refresh());
+    void markConversationRead(conversationId).then(() => {
+      window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
+      router.refresh();
+    });
 
     const supabase = createClient();
     const channel = supabase
@@ -110,7 +114,12 @@ export function ChatView({
             editedAt: null,
             imageUrl: null,
           });
-          if (row.sender_id !== meId) void markConversationRead(conversationId);
+          if (row.sender_id !== meId) {
+            void markConversationRead(conversationId).then(() => {
+              window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
+              router.refresh();
+            });
+          }
         },
       )
       .on<MessageUpdate>(
