@@ -6,6 +6,7 @@ import { SkillChip } from "./skill-chip";
 import { UserAvatar } from "./user-avatar";
 
 export type PersonCardData = {
+  id: string;
   username: string;
   full_name: string;
   avatar_url: string | null;
@@ -35,7 +36,7 @@ export function PersonCard({
   return (
     <article className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
       <div className="flex items-start gap-3">
-        <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" available={person.available} />
+        <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h3 className="truncate text-base font-semibold">
             <Link href={`/u/${person.username}`} className="hover:underline">

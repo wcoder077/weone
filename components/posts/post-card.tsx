@@ -55,7 +55,7 @@ export function PostCard({ post, isMine }: { post: FeedPost; isMine: boolean }) 
 function AuthorLink({ author }: { author: PostAuthor }) {
   return (
     <Link href={`/u/${author.username}`} className="shrink-0" aria-label={author.full_name}>
-      <UserAvatar name={author.full_name} url={author.avatar_url} />
+      <UserAvatar name={author.full_name} url={author.avatar_url} userId={author.id} />
     </Link>
   );
 }
