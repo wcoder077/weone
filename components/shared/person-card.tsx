@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Check, MapPin } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import { SkillChip } from "./skill-chip";
 import { UserAvatar } from "./user-avatar";
 
@@ -24,6 +25,7 @@ export function PersonCard({
   skills: string[];
   matchedSkills?: string[];
   reasons?: ReactNode;
+  // Connection action(s); shown next to "Profilni ko'rish".
   actions?: ReactNode;
 }) {
   const matched = new Set(matchedSkills);
@@ -59,7 +61,14 @@ export function PersonCard({
         </div>
       ) : null}
       {reasons}
-      {actions ? <div className="mt-auto flex flex-wrap gap-2">{actions}</div> : null}
+      {actions ? (
+        <div className="mt-auto flex flex-wrap gap-2 [&>*]:min-w-36 [&>*]:flex-1">
+          <Link href={`/u/${person.username}`} className={buttonVariants({ variant: "outline" })}>
+            Profilni ko&apos;rish
+          </Link>
+          {actions}
+        </div>
+      ) : null}
     </article>
   );
 }

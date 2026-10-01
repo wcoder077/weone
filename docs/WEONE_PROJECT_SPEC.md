@@ -171,13 +171,15 @@ Routes are suggestions; keep them clean.
 11. `/settings/profile` — everything from onboarding + bio, languages, interests, education list.
 12. Add / edit journey item (dialog desktop, sheet mobile): type, title, organization, role, dates, result, skills used, description. "Confirm" on other people's hackathon/competition items if I have a matching item (FIX 3).
 13. Add skill (dialog): search skill, level, "Where did you use it?" — checkboxes of my projects and journey items, live preview "React · 2 projects · 1 event".
-14. Collaborate dialog: reason pills, optional project select (my projects), short message → `collab_requests` + notification (trigger). Receiver: Accept (calls `start_conversation`, request becomes first message) or Decline.
+14. ~~Collaborate dialog~~ — replaced (2026-10) by connection requests with a first message (≤ 200 graphemes, optional image, emoji). Chat opens only for accepted connections. `collab_requests` is kept read-only for history.
 
 **Communication**
 15. `/messages`, `/messages/[id]` — conversation list (last message, unread), chat with Realtime, "Invite to project" sends a `project_invite` message rendered as a card with "View project" / "Join". Messaging only after accepted connection or accepted collab request — enforced in the database (FIX 4).
 16. `/notifications` — tabs All · Requests. Types: connection request/accepted, collab request, join request, project invite, new project member, journey confirmation. Inline actions. Unread count on the bell (Realtime).
 
-**Out of scope:** events pages, opportunities, communities, AI features, likes/comments/posts, admin panel, payments, Telegram login.
+**Added (2026-10):** `/posts` text feed (≤ 500 graphemes, author edit/delete; replaces "Projects" in the navbar — projects are managed from the profile), profile "Connections" tab, light/dark/system theme.
+
+**Out of scope:** events pages, opportunities, communities, AI features, likes/comments, admin panel, payments, Telegram login.
 
 ---
 

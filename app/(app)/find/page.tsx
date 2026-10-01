@@ -1,12 +1,10 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { SearchX, UserSearch } from "lucide-react";
 import { FindForm, type FindFormValues } from "@/components/find/find-form";
 import { EmptyState } from "@/components/shared/empty-state";
 import { MatchReasons, PersonCard } from "@/components/shared/person-card";
 import { CardGridSkeleton } from "@/components/shared/skeletons";
 import { PersonActions } from "@/components/social/person-actions";
-import { buttonVariants } from "@/components/ui/button";
 import { requireUserId } from "@/lib/auth";
 import { FIND_PURPOSES, LOOKING_FOR, labelOf } from "@/lib/constants";
 import { findPeople, type FindParams, type FindResult } from "@/lib/queries/find";
@@ -87,7 +85,7 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
         <h1 className="text-2xl font-bold lg:text-[32px]">Odam topish</h1>
         <p className="text-muted">Kim kerakligini yozing — har bir natija nega mos ekanini ko&apos;rasiz.</p>
       </div>
-      <div className="grid items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="bg-card border-border rounded-card border p-5 lg:sticky lg:top-24">
           <FindForm key={JSON.stringify(initial)} skills={skills} initial={initial} />
         </aside>
@@ -141,14 +139,7 @@ async function FindResults({ params }: { params: FindParams }) {
           skills={person.skills.map((s) => s.name)}
           matchedSkills={person.matchedSkillNames}
           reasons={<MatchReasons reasons={reasonsFor(person, params)} />}
-          actions={
-            <>
-              <Link href={`/u/${person.username}`} className={buttonVariants({ variant: "ghost" })}>
-                Profilni ko&apos;rish
-              </Link>
-              <PersonActions viewerId={viewerId} userId={person.id} name={person.full_name} />
-            </>
-          }
+          actions={<PersonActions viewerId={viewerId} userId={person.id} name={person.full_name} />}
         />
       ))}
     </div>

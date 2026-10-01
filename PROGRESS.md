@@ -94,3 +94,9 @@
 - Migration 14 (pushed): `posts` (body 1–500 graphemes via `grapheme_length`, server zod too), RLS read for signed-in users, author-only insert/update/delete, column grants (author_id, body), `edited_at` set by trigger.
 - `/posts` feed (navbar "Loyihalar" → "Postlar"): composer with emoji + live "x/500", newest first, 20 per page with "Oldingi postlar", skeleton / empty / retryable error; author menu → edit (dialog) / delete (confirmation). Body = 16 px, line-height 1.6, max 65ch, `whitespace-pre-wrap`, plain text (React-escaped; `<img onerror>` test stays text).
 - Projects: profile "Loyihalar" tab gets "Loyiha qo'shish", and Tahrirlash / O'chirish on owned projects (`deleteProject` now returns a result; project page redirects to the owner's profile). Existing project pages, roles, join requests, Discover tab and Home suggestions keep working (no data migration needed).
+
+## Milestone 7 — Profile card "Profilni ko'rish" + button styling (done)
+- PersonCard action row: "Profilni ko'rish" (secondary) + state-aware connect button (primary), wrapping on narrow cards; used on Discover, Home and Find.
+- Buttons: primary now has a distinct hover colour (`--primary-hover`) and pressed state instead of fading; disabled = neutral fill + muted text (no 50 % wash); outline/ghost/destructive get their own disabled cue.
+- Fixed 390 px overflow on profile / project / find grids (`grid-cols-1`). Regression crawl (all pages, 390 light + 1440 dark): no console errors or failed requests.
+- Spec updated: posts, connections tab, themes in scope; Collaborate replaced by connection requests. CLAUDE.md left untouched (your staged edit) — its "No emojis" design rule now only applies to UI chrome, not user messages.

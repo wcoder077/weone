@@ -78,7 +78,7 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
         }
       />
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         <aside className="flex flex-col gap-4">
           <SectionCard title="Haqida">
             {page.profile.bio ? (
@@ -107,7 +107,7 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           </SectionCard>
         </aside>
 
-        <section className="flex flex-col gap-4" aria-label="Faoliyat">
+        <section className="flex min-w-0 flex-col gap-4" aria-label="Faoliyat">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <LinkTabs
               label="Profil bo'limlari"
