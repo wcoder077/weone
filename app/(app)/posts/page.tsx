@@ -2,11 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Newspaper } from "lucide-react";
 import { PostCard } from "@/components/posts/post-card";
+import { FeedSkeleton } from "@/components/posts/feed-skeleton";
 import { PostComposer } from "@/components/posts/post-composer";
 import { EmptyState } from "@/components/shared/empty-state";
 import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { buttonVariants } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { requireUserId } from "@/lib/auth";
 import { getFeed } from "@/lib/queries/posts";
 import { single } from "@/lib/url";
@@ -29,26 +29,6 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
       <Suspense key={validBefore ?? "first"} fallback={<FeedSkeleton />}>
         <Feed userId={userId} before={validBefore} />
       </Suspense>
-    </div>
-  );
-}
-
-function FeedSkeleton() {
-  return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-4">
-      {Array.from({ length: 3 }, (_, i) => (
-        <div key={i} className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
-          <div className="flex items-center gap-3">
-            <Skeleton className="size-10 rounded-full" />
-            <div className="flex flex-1 flex-col gap-2">
-              <Skeleton className="h-4 w-40" />
-              <Skeleton className="h-3 w-24" />
-            </div>
-          </div>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-4/5" />
-        </div>
-      ))}
     </div>
   );
 }
