@@ -173,3 +173,8 @@
 ## Home = post feed with recommendations (done)
 - `/home` is now mostly posts (no composer: posting stays on `/posts`): the latest 20 posts, a swipeable "Siz uchun odamlar" row after the 3rd post (up to 8 small cards with reasons + Connect) and a "Siz uchun loyihalar" row after the 8th; short feeds get both after the last post; empty feed shows an empty state plus both rows. "Ko'proq postlar" continues on `/posts`. Sidebar (profile checklist, network) unchanged.
 - Recommendation errors don't break the feed (they just disappear). Shared `FeedSkeleton` for /home and /posts.
+
+## Swipe between main tabs (done)
+- On Asosiy / Kashf / Postlar / Xabarlar / own Profil, a sideways swipe moves to the next/previous tab (`SwipeNavigation` in the (app) layout). The page follows the finger (half speed, rubber band at the ends), switches past 22 % of the width or on a quick flick, and the new page slides in from that side. Neighbour tabs are prefetched.
+- Smoothness: passive touch listeners, styles written in requestAnimationFrame (no React re-render while dragging), direction locked after 10 px so vertical scrolling is untouched. Ignored: 24 px screen edges (browser back gesture), carousels and other horizontal scrollers, inputs, video, `[data-no-swipe]`, inner pages (post, chat, other profiles). Reduced motion: switches without the slide.
+- Not tested on a real phone from the cloud container.
