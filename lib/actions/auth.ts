@@ -49,21 +49,23 @@ function text(formData: FormData, key: string) {
 }
 
 export async function signIn(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const values = { email: text(formData, "email") };
-  const parsed = signInSchema.safeParse({ ...values, password: text(formData, "password") });
-  if (!parsed.success) return { ...fieldErrorsOf(parsed.error), values };
+  const parsed = signInSchema.safeParse({ email: text(formData, "email"), password: text(formData, "password") });
+  if (!parsed.success) return fieldErrorsOf(parsed.error);
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: authErrorMessage(error, "Kirib bo'lmadi. Qayta urinib ko'ring."), values };
+  if (error) return { error: authErrorMessage(error, "Kirib bo'lmadi. Qayta urinib ko'ring.") };
 
   redirect(safeNextPath(formData.get("next")));
 }
 
 export async function signUp(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const values = { full_name: text(formData, "full_name"), email: text(formData, "email") };
-  const parsed = signUpSchema.safeParse({ ...values, password: text(formData, "password") });
-  if (!parsed.success) return { ...fieldErrorsOf(parsed.error), values };
+  const parsed = signUpSchema.safeParse({
+    full_name: text(formData, "full_name"),
+    email: text(formData, "email"),
+    password: text(formData, "password"),
+  });
+  if (!parsed.success) return fieldErrorsOf(parsed.error);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
@@ -75,7 +77,7 @@ export async function signUp(_prev: ActionState, formData: FormData): Promise<Ac
     },
   });
   if (error) {
-    return { error: authErrorMessage(error, "Hisob yaratib bo'lmadi. Qayta urinib ko'ring."), values };
+    return { error: authErrorMessage(error, "Hisob yaratib bo'lmadi. Qayta urinib ko'ring.") };
   }
 
   // Email confirmation is off, so signUp returns a session and the user is signed in.
@@ -90,16 +92,15 @@ export async function requestPasswordReset(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const values = { email: text(formData, "email") };
-  const parsed = forgotPasswordSchema.safeParse(values);
-  if (!parsed.success) return { ...fieldErrorsOf(parsed.error), values };
+  const parsed = forgotPasswordSchema.safeParse({ email: text(formData, "email") });
+  if (!parsed.success) return fieldErrorsOf(parsed.error);
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${await siteOrigin()}/auth/callback?next=/reset-password`,
   });
   if (error) {
-    return { error: authErrorMessage(error, "Xat yuborib bo'lmadi. Qayta urinib ko'ring."), values };
+    return { error: authErrorMessage(error, "Xat yuborib bo'lmadi. Qayta urinib ko'ring.") };
   }
 
   // Same answer whether or not the account exists, so emails can't be probed.

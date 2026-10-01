@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { useKeepValuesSubmit } from "./use-keep-values-submit";
 import { signIn } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
@@ -9,9 +10,10 @@ import { Input } from "@/components/ui/input";
 
 export function LoginForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState(signIn, null);
+  const onSubmit = useKeepValuesSubmit(action);
 
   return (
-    <form action={action} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       {next ? <input type="hidden" name="next" value={next} /> : null}
       <FormField id="email" label="Email" errors={state?.fieldErrors?.email}>
         <Input
@@ -19,7 +21,6 @@ export function LoginForm({ next }: { next?: string }) {
           name="email"
           type="email"
           autoComplete="email"
-          defaultValue={state?.values?.email}
           required
           aria-describedby="email-desc"
           aria-invalid={Boolean(state?.fieldErrors?.email)}

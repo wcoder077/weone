@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useKeepValuesSubmit } from "./use-keep-values-submit";
 import { signUp } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
@@ -8,17 +9,17 @@ import { Input } from "@/components/ui/input";
 
 export function SignupForm() {
   const [state, action, pending] = useActionState(signUp, null);
+  const onSubmit = useKeepValuesSubmit(action);
 
   if (state?.message) return <FormMessage message={state.message} />;
 
   return (
-    <form action={action} className="flex flex-col gap-4" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <FormField id="full_name" label="Ism va familiya" errors={state?.fieldErrors?.full_name}>
         <Input
           id="full_name"
           name="full_name"
           autoComplete="name"
-          defaultValue={state?.values?.full_name}
           required
           aria-describedby="full_name-desc"
           aria-invalid={Boolean(state?.fieldErrors?.full_name)}
@@ -30,7 +31,6 @@ export function SignupForm() {
           name="email"
           type="email"
           autoComplete="email"
-          defaultValue={state?.values?.email}
           required
           aria-describedby="email-desc"
           aria-invalid={Boolean(state?.fieldErrors?.email)}

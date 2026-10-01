@@ -5,8 +5,6 @@ export type ActionState = {
   error?: string;
   fieldErrors?: Record<string, string[] | undefined>;
   message?: string;
-  // Non-secret inputs echoed back so the form keeps them after an error.
-  values?: Record<string, string>;
 } | null;
 
 export function fieldErrorsOf(error: z.ZodError): ActionState {
