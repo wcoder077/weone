@@ -133,3 +133,7 @@
 - Conversations below lg are a full-screen view: both bars hidden (`isConversationPath`), "Orqaga" button top-left, safe-area padding, overscroll contained; leaving the chat restores the bars. Desktop keeps the list + chat split under the navbar.
 - Navigation: Vercel functions pinned to `syd1` (vercel.json) next to the Supabase DB in ap-southeast-2 — before, every query crossed US East ↔ Sydney. Route skeletons for home, posts, notifications, settings and project forms (partial prefetch); `useLinkStatus` bar on nav links; filters and Find use `useTransition` with a pending state; opacity-only section fade (`PageFade`).
 - Long-press on touch: CSS stops callout/selection on links, buttons, images and nav; `ContextMenuGuard` blocks the native menu there (inputs keep theirs, desktop right-click untouched). Messages and posts text stays selectable. PWA manifest not added (tradeoffs reported, waiting for a decision).
+
+## Move to Frankfurt (done)
+- Supabase project relinked to `xyrcpyrpgthshjilazlh` (Frankfurt, eu-central-1): migrations 1–16 + seed pushed with `db push --include-seed`, no errors; regenerated types unchanged.
+- Vercel functions moved `syd1` → `fra1` to sit next to the database. `.env.local` / Vercel env vars are updated by the owner.
