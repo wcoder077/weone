@@ -25,9 +25,19 @@ export const resetPasswordSchema = z
     message: "Parollar bir xil emas",
   });
 
-// Only same-site relative paths are allowed after sign-in.
+// Only same-site paths are allowed after sign-in. Parsing (not prefix checks)
+// catches browser normalisation tricks: "/\evil.com", "/\t/evil.com" and
+// "/.//evil.com" all resolve to another host or a protocol-relative "//" path.
+const PLACEHOLDER_ORIGIN = "http://same-site.invalid";
+
 export function safeNextPath(value: unknown, fallback = "/home") {
-  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//")
-    ? value
-    : fallback;
+  if (typeof value !== "string" || !value.startsWith("/")) return fallback;
+  let url: URL;
+  try {
+    url = new URL(value, PLACEHOLDER_ORIGIN);
+  } catch {
+    return fallback;
+  }
+  const path = `${url.pathname}${url.search}${url.hash}`;
+  return url.origin === PLACEHOLDER_ORIGIN && !path.startsWith("//") ? path : fallback;
 }
