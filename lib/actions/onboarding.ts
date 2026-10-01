@@ -1,8 +1,10 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireUserId } from "@/lib/auth";
 import { ONBOARDING_SKILLS } from "@/lib/constants";
+import { FIND_QUERY_COOKIE } from "@/lib/find-query-cookie";
 import { createClient } from "@/lib/supabase/server";
 import { requireSupabaseEnv } from "@/lib/supabase/env";
 import {
@@ -113,5 +115,12 @@ export async function finishOnboarding(
     .eq("id", userId);
   if (error) return { error: "Saqlab bo'lmadi. Qayta urinib ko'ring." };
 
+  // Came from the Welcome search: show those results first.
+  const cookieStore = await cookies();
+  const pendingQuery = cookieStore.get(FIND_QUERY_COOKIE)?.value;
+  if (pendingQuery) {
+    cookieStore.delete(FIND_QUERY_COOKIE);
+    redirect(`/find?q=${encodeURIComponent(pendingQuery)}`);
+  }
   redirect("/home");
 }

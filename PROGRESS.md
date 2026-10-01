@@ -51,3 +51,8 @@
 - Realtime INSERT subscription per chat (RLS: members only); own sends appended from the action result, Realtime duplicates dropped by id; chat marks itself read on open and on incoming messages, then refreshes the list counts.
 - "Loyihaga taklif" sends a `project_invite` (RLS: sender must be a project member) rendered as a card with "Loyihani ko'rish" / "Qo'shilish". Join = join request (only owners can add members), so the owner accepts it in one tap.
 - Chat list unread counts update on navigation/refresh, not live (only the open chat and the bell are live). Fixed 390px horizontal overflow on grids (`grid-cols-1` = minmax(0,1fr)); all main pages scanned at 390px.
+
+## Phase 9 — Home + Welcome (done)
+- `/home`: "Siz uchun odamlar" (not yet connected; ranked by shared skills ×2, shared goals, same city; each card shows ✓ reasons + Connect), "Siz uchun loyihalar" (open roles needing my skills), "Profilingizni kuchaytiring" (real gaps: bio, photo, education, first project, unproven skill), "Tarmog'ingizdan" (connections' activities; skips ones about me, one line per connected pair).
+- `/` Welcome (signed-in users go to `/home`): hero, search, live previews via `public_people_preview` / `public_projects_preview` (FIX 2, anon), 3 "how it works" steps with real copy. Search → `/start` stores the text in a 1-hour httpOnly cookie → sign up → onboarding → lands on `/find?q=…` with role + purpose pre-filled (E2E verified).
+- Remaining for Phase 10: Google provider + leaked-password protection in Supabase dashboard, README, final visual pass (all main pages already scanned for 390px overflow), chat list unread counts are not live.

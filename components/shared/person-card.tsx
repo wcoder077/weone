@@ -81,3 +81,18 @@ export function MatchReasons({ reasons, title = "Nega mos" }: { reasons: string[
     </div>
   );
 }
+
+// Compact "✓ React ✓ Toshkent" line for suggestion cards.
+export function InlineReasons({ reasons }: { reasons: string[] }) {
+  if (reasons.length === 0) return null;
+  return (
+    <ul className="text-muted flex flex-wrap gap-x-3 gap-y-1 text-[13px]" aria-label="Nega mos">
+      {reasons.map((reason) => (
+        <li key={reason} className="inline-flex items-center gap-1">
+          <Check className="text-primary size-3.5" aria-hidden />
+          {reason}
+        </li>
+      ))}
+    </ul>
+  );
+}
