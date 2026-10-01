@@ -117,6 +117,21 @@ export async function getFeed(userId: string, before?: string) {
   };
 }
 
+export const PROFILE_POSTS_LIMIT = 50;
+
+// One person's posts and reposts, newest first (profile "Postlar" tab).
+export async function getUserPosts(authorId: string, viewerId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_FIELDS)
+    .eq("author_id", authorId)
+    .order("created_at", { ascending: false })
+    .limit(PROFILE_POSTS_LIMIT);
+  if (error) throw error;
+  return hydrate(supabase, data, viewerId);
+}
+
 // Null when the post does not exist (or was deleted).
 export async function getPost(postId: string, userId: string) {
   const supabase = await createClient();

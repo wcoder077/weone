@@ -2,7 +2,7 @@ import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FolderKanban, Pencil, Plus, Route, Trophy } from "lucide-react";
+import { FolderKanban, Newspaper, Pencil, Plus, Route, Trophy } from "lucide-react";
 import { AddSkillDialog } from "@/components/profile/add-skill-dialog";
 import { JourneyDialog } from "@/components/profile/journey-dialog";
 import { ConfirmJourneyButton, DeleteJourneyButton } from "@/components/profile/journey-actions";
@@ -16,6 +16,8 @@ import {
 import { BannerEditor } from "@/components/profile/banner-editor";
 import { ConnectionsTab } from "@/components/profile/connections-tab";
 import { ProfileSummary, ProfileSummarySkeleton } from "@/components/profile/profile-summary";
+import { PostCard } from "@/components/posts/post-card";
+import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { ShareButton } from "@/components/profile/share-button";
 import { DeleteProjectButton } from "@/components/projects/team-actions";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
@@ -34,10 +36,12 @@ import {
   type JourneyItem as JourneyRow,
   type ProfilePage,
 } from "@/lib/queries/profile-page";
+import { getUserPosts, PROFILE_POSTS_LIMIT } from "@/lib/queries/posts";
 import { getAllSkills } from "@/lib/queries/skills";
 
 const TABS = [
   { value: "journey", label: "Yo'l" },
+  { value: "posts", label: "Postlar" },
   { value: "projects", label: "Loyihalar" },
   { value: "highlights", label: "Yutuqlar" },
   { value: "connections", label: "Bog'lanishlar" },
@@ -133,12 +137,13 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           </SectionCard>
         </aside>
 
-        <section className="flex min-w-0 flex-col gap-4" aria-label="Faoliyat">
+        {/* The sidebar stats link to #profile-tabs, so on phones the tapped tab scrolls into view. */}
+        <section id="profile-tabs" className="flex min-w-0 scroll-mt-24 flex-col gap-4" aria-label="Faoliyat">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <LinkTabs
               label="Profil bo'limlari"
               active={tab}
-              tabs={TABS.map((t) => ({ ...t, href: `${path}?tab=${t.value}` }))}
+              tabs={TABS.map((t) => ({ ...t, href: `${path}?tab=${t.value}#profile-tabs` }))}
             />
             {isMe && tab === "journey" ? <JourneyDialog mySkills={mySkillOptions} /> : null}
             {isMe && tab === "projects" ? (
@@ -150,6 +155,11 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           </div>
           {tab === "journey" ? (
             <JourneyTab page={page} isMe={isMe} viewerId={viewerId} mySkillOptions={mySkillOptions} />
+          ) : null}
+          {tab === "posts" ? (
+            <Suspense fallback={<PostsSkeleton />}>
+              <PostsTab authorId={page.profile.id} viewerId={viewerId} isMe={isMe} />
+            </Suspense>
           ) : null}
           {tab === "projects" ? <ProjectsTab projects={page.projects} isMe={isMe} viewerId={viewerId} /> : null}
           {tab === "highlights" ? <HighlightsTab page={page} /> : null}
@@ -238,6 +248,45 @@ async function JourneyTab({
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+async function PostsTab({ authorId, viewerId, isMe }: { authorId: string; viewerId: string; isMe: boolean }) {
+  let posts;
+  try {
+    posts = await getUserPosts(authorId, viewerId);
+  } catch {
+    return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
+  }
+  if (posts.length === 0) {
+    return (
+      <EmptyState
+        icon={Newspaper}
+        title="Hali postlar yo'q"
+        description={isMe ? "Nima ustida ishlayotganingizni yozing." : "Bu odam hali post joylamagan."}
+        action={isMe ? { label: "Post yozish", href: "/posts" } : undefined}
+      />
+    );
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} isMine={isMe} />
+      ))}
+      {posts.length === PROFILE_POSTS_LIMIT ? (
+        <p className="text-muted text-center text-[13px]">Oxirgi {PROFILE_POSTS_LIMIT} ta post ko&apos;rsatilgan.</p>
+      ) : null}
+    </div>
+  );
+}
+
+function PostsSkeleton() {
+  return (
+    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+      <ListRowSkeleton />
+      <ListRowSkeleton />
+      <ListRowSkeleton />
     </div>
   );
 }

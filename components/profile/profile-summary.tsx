@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getProfileSummary } from "@/lib/queries/activities";
-import { formatRelative } from "@/lib/format";
+import { formatCount, formatRelative } from "@/lib/format";
 import { activityText } from "@/components/shared/activity-row";
 import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,7 +8,7 @@ import { SectionCard } from "./profile-sections";
 
 const TITLE = "Bog'lanishlar va faoliyat";
 
-// Compact sidebar card: connections / projects counts + latest activities.
+// Compact sidebar card: posts / connections / projects counts (each opens its tab) + latest activities.
 export async function ProfileSummary({
   profileId,
   path,
@@ -36,9 +36,10 @@ export async function ProfileSummary({
 
   return (
     <SectionCard title={TITLE}>
-      <div className="grid grid-cols-2 gap-2">
-        <Stat href={`${path}?tab=connections`} value={summary.connections} label="Bog'lanish" />
-        <Stat href={`${path}?tab=projects`} value={projectCount} label="Loyiha" />
+      <div className="grid grid-cols-3 gap-2">
+        <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label="Post" />
+        <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label="Bog'lanish" />
+        <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label="Loyiha" />
       </div>
       {activity.length > 0 ? (
         <ul className="flex flex-col gap-3">
@@ -62,10 +63,10 @@ function Stat({ href, value, label }: { href: string; value: number; label: stri
   return (
     <Link
       href={href}
-      className="bg-surface hover:border-primary/40 border-border flex min-h-16 flex-col justify-center rounded-2xl border px-4 py-2 transition-colors"
+      className="bg-surface hover:border-primary/40 border-border focus-visible:ring-ring/50 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl border px-2 py-1.5 text-center transition-colors outline-none focus-visible:ring-3"
     >
-      <span className="text-xl font-bold">{value}</span>
-      <span className="text-muted text-[13px]">{label}</span>
+      <span className="text-[17px] leading-tight font-bold tabular-nums">{formatCount(value)}</span>
+      <span className="text-muted truncate text-[12px]">{label}</span>
     </Link>
   );
 }
@@ -74,9 +75,10 @@ export function ProfileSummarySkeleton() {
   return (
     <SectionCard title={TITLE}>
       <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          <Skeleton className="h-16 rounded-2xl" />
-          <Skeleton className="h-16 rounded-2xl" />
+        <div className="grid grid-cols-3 gap-2">
+          <Skeleton className="h-14 rounded-xl" />
+          <Skeleton className="h-14 rounded-xl" />
+          <Skeleton className="h-14 rounded-xl" />
         </div>
         <Skeleton className="h-4 w-4/5" />
         <Skeleton className="h-4 w-3/5" />
