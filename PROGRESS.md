@@ -137,3 +137,8 @@
 ## Move to Frankfurt (done)
 - Supabase project relinked to `xyrcpyrpgthshjilazlh` (Frankfurt, eu-central-1): migrations 1–16 + seed pushed with `db push --include-seed`, no errors; regenerated types unchanged.
 - Vercel functions moved `syd1` → `fra1` to sit next to the database. `.env.local` / Vercel env vars are updated by the owner.
+
+## Unread badges, desktop back, PWA, E2E on Frankfurt (done)
+- Migration 17 `my_unread_counts()` → red 9+ badge on Xabarlar (navbar + tab bar) and exact per-chat counts; desktop chat "Orqaga"; minimal PWA (manifest, icons, iOS tags, no service worker) + `BackLink` on every inner page.
+- E2E with two UI-created accounts passed: signup → onboarding → /home, login, request + accept, notification badge, send/edit/delete live, unread badges, mobile long-press + full-screen chat, banner upload/position; signed-in crawl at 390/1440 clean.
+- Fixed on the way: Realtime channels joined as anon (no live updates anywhere; `subscribeWithAuth`), open redirect via `/\` in `next`, missing security headers, `/posts` missing from the proxy guard, Base UI default-value warning on auth forms.
