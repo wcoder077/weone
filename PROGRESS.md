@@ -146,3 +146,6 @@
 ## Optional username (done)
 - Username is no longer forced: onboarding and settings show an empty field (placeholder "Foydalanuvchi nomi") while the profile still has the generated `<prefix>_<6 hex>` handle; leaving it empty keeps the current one (`optionalUsernameSchema`). Typing one validates, checks uniqueness and replaces it.
 - The DB column stays `not null unique` because `/u/<username>` links depend on it; generated handles are hidden in the profile header (`isGeneratedUsername`). No migration.
+
+## Scroll-hide on every device (done)
+- Bars never hid on phones/desktops with `prefers-reduced-motion` (Android "remove animations", battery saver): the hook returned early. Now they always hide on scroll down; reduced motion only removes the slide animation. Hidden bars also drop their shadow so no edge line stays visible.

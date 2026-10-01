@@ -7,8 +7,9 @@ const THRESHOLD = 8; // px of movement before switching direction (no flicker)
 const TOP_ZONE = 64; // bars are always shown near the top of the page
 
 // Shared by the top header and the mobile tab bar: true while the user scrolls
-// the page down, false when scrolling up, near the top, on route change, or with
-// prefers-reduced-motion. Reads scroll position once per animation frame.
+// the page down, false when scrolling up, near the top or on route change.
+// Reads scroll position once per animation frame. Reduced motion only removes the
+// slide animation (see the bars' motion-reduce classes); the bars still hide.
 export function useScrollDirection() {
   const [hidden, setHidden] = useState(false);
   const pathname = usePathname();
@@ -21,7 +22,6 @@ export function useScrollDirection() {
   }
 
   useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let lastY = window.scrollY;
     let frame = 0;
 
@@ -31,7 +31,7 @@ export function useScrollDirection() {
       // would otherwise read as a direction change and flash the bars.
       const maxY = document.documentElement.scrollHeight - window.innerHeight;
       const y = Math.min(Math.max(0, window.scrollY), Math.max(0, maxY));
-      if (reduceMotion.matches || y < TOP_ZONE) {
+      if (y < TOP_ZONE) {
         setHidden(false);
         lastY = y;
         return;

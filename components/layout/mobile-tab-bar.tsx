@@ -22,7 +22,7 @@ export function MobileTabBar({ username }: { username: string }) {
       className={cn(
         // Docked bar with rounded top corners matching the header's bottom corners.
         "glass shadow-bar-up rounded-t-bar fixed inset-x-2 bottom-0 z-40 flex justify-between border-b-0 px-1.5 pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden",
-        hidden && "translate-y-full",
+        hidden && "shadow-none! translate-y-full",
         isConversationPath(pathname) && "hidden",
       )}
     >
