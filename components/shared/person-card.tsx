@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Check, MapPin } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { SkillChip } from "./skill-chip";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { UserAvatar } from "./user-avatar";
 
 export type PersonCardData = {
@@ -26,50 +25,50 @@ export function PersonCard({
   skills: string[];
   matchedSkills?: string[];
   reasons?: ReactNode;
-  // Connection action(s); shown next to "Profilni ko'rish".
+  // Connection action(s), bottom right; the rest of the card opens the profile.
   actions?: ReactNode;
 }) {
   const matched = new Set(matchedSkills);
   // Matched skills first so the reason for showing this person is visible.
-  const shown = [...skills].sort((a, b) => Number(matched.has(b)) - Number(matched.has(a))).slice(0, 4);
+  const sorted = [...skills].sort((a, b) => Number(matched.has(b)) - Number(matched.has(a)));
+  const shown = sorted.slice(0, 3);
+  const subtitle = [person.headline, person.city].filter(Boolean).join(" · ");
 
+  // Compact card: the whole card opens the profile (stretched link on the name);
+  // the connect button sits above that link.
   return (
-    <article className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
-      <div className="flex items-start gap-3">
-        <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <h3 className="truncate text-base font-semibold">
-            <Link href={`/u/${person.username}`} className="hover:underline">
+    <article className="bg-card border-border hover:border-muted/40 relative flex flex-col gap-3 rounded-[20px] border p-4 transition-colors">
+      <div className="flex items-center gap-3">
+        <UserAvatar name={person.full_name} url={person.avatar_url} userId={person.id} />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <h3 className="truncate text-[15px] font-semibold">
+            <Link href={`/u/${person.username}`} className="after:absolute after:inset-0 after:rounded-[20px]">
               {person.full_name || person.username}
             </Link>
           </h3>
-          {person.headline ? <p className="text-muted line-clamp-2 text-[14px]">{person.headline}</p> : null}
-          {person.city ? (
-            <p className="text-muted inline-flex items-center gap-1 text-[13px]">
-              <MapPin className="size-3.5" aria-hidden />
-              {person.city}
-            </p>
-          ) : null}
+          {subtitle ? <p className="text-muted truncate text-[13px]">{subtitle}</p> : null}
         </div>
       </div>
       {shown.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
+        <ul className="flex flex-wrap gap-1.5" aria-label="Ko'nikmalar">
           {shown.map((name) => (
-            <SkillChip key={name} matched={matched.has(name)}>
+            <li
+              key={name}
+              className={cn(
+                "inline-flex h-7 items-center rounded-full border px-2.5 text-[12px]",
+                matched.has(name) ? "border-primary bg-primary/10 text-text" : "border-border text-muted",
+              )}
+            >
               {name}
-            </SkillChip>
+            </li>
           ))}
-        </div>
+          {sorted.length > shown.length ? (
+            <li className="text-muted inline-flex h-7 items-center px-1 text-[12px]">+{sorted.length - shown.length}</li>
+          ) : null}
+        </ul>
       ) : null}
       {reasons}
-      {actions ? (
-        <div className="mt-auto flex flex-wrap gap-2 [&>*]:min-w-36 [&>*]:flex-1">
-          <Link href={`/u/${person.username}`} className={buttonVariants({ variant: "outline" })}>
-            Profilni ko&apos;rish
-          </Link>
-          {actions}
-        </div>
-      ) : null}
+      {actions ? <div className="relative z-10 mt-auto flex justify-end gap-2 [&>*]:px-4">{actions}</div> : null}
     </article>
   );
 }
