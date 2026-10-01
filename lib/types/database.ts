@@ -146,17 +146,26 @@ export type Database = {
       conversation_members: {
         Row: {
           conversation_id: string
+          hidden_at: string | null
           last_read_at: string
+          muted: boolean
+          pinned_at: string | null
           user_id: string
         }
         Insert: {
           conversation_id: string
+          hidden_at?: string | null
           last_read_at?: string
+          muted?: boolean
+          pinned_at?: string | null
           user_id: string
         }
         Update: {
           conversation_id?: string
+          hidden_at?: string | null
           last_read_at?: string
+          muted?: boolean
+          pinned_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -1018,6 +1027,7 @@ export type Database = {
         Args: never
         Returns: {
           conversation_id: string
+          muted: boolean
           unread: number
         }[]
       }

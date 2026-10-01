@@ -1,5 +1,6 @@
 "use server";
 
+import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireUserId } from "@/lib/auth";
 import { ATTACHMENT_BUCKET, ATTACHMENT_KINDS, ATTACHMENT_MAX_BYTES } from "@/lib/attachments";
@@ -140,4 +141,41 @@ export async function deleteMessage(messageId: string): Promise<{ error?: string
   const paths = data.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
   if (paths.length) await supabase.storage.from(ATTACHMENT_BUCKET).remove(paths);
   return {};
+}
+
+// ---------------------------------------------------------------------------
+// Per-person chat settings (only the caller's own conversation_members row)
+// ---------------------------------------------------------------------------
+
+type MemberSettings = { muted?: boolean; pinned_at?: string | null; hidden_at?: string | null; last_read_at?: string };
+
+async function updateMySettings(conversationId: string, changes: MemberSettings): Promise<{ error?: string }> {
+  const userId = await requireUserId();
+  if (!idSchema.safeParse(conversationId).success) return { error: "Saqlab bo'lmadi." };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("conversation_members")
+    .update(changes)
+    .eq("conversation_id", conversationId)
+    .eq("user_id", userId)
+    .select("conversation_id");
+  if (error || data.length === 0) return { error: "Saqlab bo'lmadi." };
+
+  refresh();
+  return {};
+}
+
+export async function setConversationMuted(conversationId: string, muted: boolean) {
+  return updateMySettings(conversationId, { muted: z.boolean().parse(muted) });
+}
+
+export async function setConversationPinned(conversationId: string, pinned: boolean) {
+  return updateMySettings(conversationId, { pinned_at: z.boolean().parse(pinned) ? new Date().toISOString() : null });
+}
+
+// "Delete for me": hides the chat and its history on my side only; the other person keeps it.
+export async function hideConversation(conversationId: string) {
+  const now = new Date().toISOString();
+  return updateMySettings(conversationId, { hidden_at: now, last_read_at: now, pinned_at: null });
 }
