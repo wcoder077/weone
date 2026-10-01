@@ -162,8 +162,10 @@
 - Migration 18: 4 `attachment_*` columns with all-or-none and path-format checks (path = `<sender>/<conversation>/<uuid>.<ext>`), bucket with 20 MB and a MIME allow-list, storage policies (owner uploads/deletes, conversation members read), insert policy requires an existing upload, edit policy excludes attachments. Tested on Postgres 16 with a Supabase shim (8 cases).
 - Changing limits later: edit `lib/attachments.ts` (ATTACHMENT_MAX_BYTES, ATTACHMENT_TYPES) and update the bucket with the SQL shown at the top of the migration.
 
-## Posts v2: media, likes, comments, views, reposts (code ready, migration 19 NOT applied yet)
+## Posts v2: media, likes, comments, views, reposts (done, migration 19 applied via SQL Editor)
 - Under each post: views (left), like, comments (→ `/posts/[id]` with comment list + form), "…" menu with Repost (optional own comment) and "Havolani nusxalash". Counts are compact (1,2K). Composer accepts one photo/video (≤ 20 MB, same limits as chat, `lib/attachments.ts`), uploaded to the private `post-media` bucket and shown through signed URLs.
 - Migration 19: media columns, `repost_of`, counters on `posts` kept by triggers (clients cannot write them), `post_likes` / `post_comments` / `post_views` with RLS, `record_post_views()` (first view per user only, never the author, returns the new ids), `post-media` bucket + policies, insert policy (media must exist; a repost must point at an original, not at another repost). Reposts are deleted with their original (cascade). Tested on Postgres 16 with a Supabase shim; the test found and fixed a policy bug (unqualified `repost_of` inside the subquery).
 - Not done: notifications for likes/comments, editing comments, comment replies, a repost counter in the UI (stored in `repost_count`).
-- Merge only after migration 19 is applied, or the feed query fails on the missing columns.
+
+## Profile stats open their lists (done)
+- Sidebar card now shows Post · Bog'lanish · Loyiha in one compact row (smaller boxes, 1,2K format). Each links to its tab with `#profile-tabs`, so on phones the page scrolls to the list instead of seeming to do nothing. New "Postlar" tab lists the person's posts and reposts (latest 50) with the full post card (likes, comments, views, menu).

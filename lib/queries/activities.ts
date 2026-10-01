@@ -47,15 +47,16 @@ export async function resolveActivities(supabase: Supabase, rows: ActivityRowDat
   });
 }
 
-// Profile sidebar: accepted connections count + the person's latest activities.
+// Profile sidebar: accepted connections and posts counts + the person's latest activities.
 export async function getProfileSummary(profileId: string, limit = 4) {
   const supabase = await createClient();
-  const [connections, activities] = await Promise.all([
+  const [connections, posts, activities] = await Promise.all([
     supabase
       .from("connections")
       .select("id", { count: "exact", head: true })
       .eq("status", "accepted")
       .or(`requester_id.eq.${profileId},addressee_id.eq.${profileId}`),
+    supabase.from("posts").select("id", { count: "exact", head: true }).eq("author_id", profileId),
     supabase
       .from("activities")
       .select(ACTIVITY_FIELDS)
@@ -64,10 +65,12 @@ export async function getProfileSummary(profileId: string, limit = 4) {
       .limit(limit),
   ]);
   if (connections.error) throw connections.error;
+  if (posts.error) throw posts.error;
   if (activities.error) throw activities.error;
 
   return {
     connections: connections.count ?? 0,
+    posts: posts.count ?? 0,
     activity: await resolveActivities(supabase, activities.data),
   };
 }
