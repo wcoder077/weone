@@ -87,10 +87,10 @@ export function SettingsForm({ profile }: { profile: MyProfile }) {
       <FormField id="bio" label="Haqida" errors={errors?.bio}>
         <Textarea id="bio" name="bio" maxLength={1000} rows={4} defaultValue={profile.bio ?? ""} />
       </FormField>
-      <FormField id="languages" label="Tillar" hint="Enter bilan qo'shing" errors={errors?.languages}>
+      <FormField id="languages" label="Tillar" hint="Yozing va «Qo'shish»ni bosing (yoki Enter / vergul)" errors={errors?.languages}>
         <TagInput id="languages" name="languages" initial={profile.languages} placeholder="Masalan: O'zbek" />
       </FormField>
-      <FormField id="interests" label="Qiziqishlar" hint="Enter bilan qo'shing" errors={errors?.interests}>
+      <FormField id="interests" label="Qiziqishlar" hint="Yozing va «Qo'shish»ni bosing (yoki Enter / vergul)" errors={errors?.interests}>
         <TagInput id="interests" name="interests" initial={profile.interests} placeholder="Masalan: Startaplar" />
       </FormField>
 

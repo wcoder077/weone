@@ -115,7 +115,17 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           <SectionCard title="Qidiryapti">
             <TagList items={page.profile.looking_for.map((v) => labelOf(LOOKING_FOR, v))} empty="Ko'rsatilmagan." />
           </SectionCard>
-          <SectionCard title="Tillar">
+          <SectionCard
+            title="Tillar"
+            action={
+              isMe ? (
+                <Link href="/settings/profile#languages" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <Plus data-icon="inline-start" />
+                  Qo&apos;shish
+                </Link>
+              ) : null
+            }
+          >
             <TagList items={page.profile.languages} empty="Ko'rsatilmagan." />
           </SectionCard>
           <SectionCard title="Qiziqishlar">

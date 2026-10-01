@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-// Free-text list (languages, interests). Enter or comma adds a tag;
-// each tag is submitted as a repeated `name` field.
+// Free-text list (languages, interests). The "Qo'shish" button, Enter or a comma
+// adds a tag; each tag is submitted as a repeated `name` field. Commas are also
+// split on input because Android keyboards don't report the comma key.
 export function TagInput({
   id,
   name,
@@ -22,14 +24,28 @@ export function TagInput({
   const [tags, setTags] = useState(initial);
   const [draft, setDraft] = useState("");
 
-  function add() {
-    const value = draft.trim().slice(0, 40);
-    if (value && !tags.includes(value) && tags.length < max) setTags([...tags, value]);
+  function addAll(values: string[]) {
+    const next = [...tags];
+    for (const raw of values) {
+      const value = raw.trim().slice(0, 40);
+      if (value && !next.includes(value) && next.length < max) next.push(value);
+    }
+    setTags(next);
     setDraft("");
   }
 
+  const add = () => addAll([draft]);
+
+  function onChange(value: string) {
+    if (!value.includes(",")) return setDraft(value);
+    const parts = value.split(",");
+    addAll(parts.slice(0, -1));
+    setDraft(parts.at(-1) ?? "");
+  }
+
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" || e.key === ",") {
+    if (e.nativeEvent.isComposing) return;
+    if (e.key === "Enter") {
       e.preventDefault();
       add();
     } else if (e.key === "Backspace" && !draft && tags.length) {
@@ -59,15 +75,28 @@ export function TagInput({
           ))}
         </ul>
       ) : null}
-      <Input
-        id={id}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={onKeyDown}
-        onBlur={add}
-        placeholder={placeholder}
-        disabled={tags.length >= max}
-      />
+      <div className="flex gap-2">
+        <Input
+          id={id}
+          value={draft}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={onKeyDown}
+          onBlur={add}
+          placeholder={placeholder}
+          enterKeyHint="done"
+          disabled={tags.length >= max}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 shrink-0"
+          onClick={add}
+          disabled={!draft.trim() || tags.length >= max}
+        >
+          <Plus data-icon="inline-start" />
+          Qo&apos;shish
+        </Button>
+      </div>
     </div>
   );
 }
