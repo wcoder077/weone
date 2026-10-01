@@ -30,6 +30,10 @@ export function hrefWith(
   return query ? `${path}?${query}` : path;
 }
 
+// Shown until the user uploads their own (files in public/defaults).
+export const DEFAULT_BANNER = "/defaults/banner.jpg";
+export const DEFAULT_AVATAR = "/defaults/avatar.svg";
+
 // Public URL of a profile banner in the public `banners` bucket.
 export function bannerUrl(path: string | null) {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
