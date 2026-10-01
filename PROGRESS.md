@@ -192,7 +192,7 @@
 - Top of `/discover` is now one row: live search (`UrlSearchInput`, 300 ms debounce, `router.replace` in a transition with a spinner, Enter applies at once) + "Filtrlar" button with the active-filter count. Role, skills, city, language, "Hamkorlikka ochiq", "Onlayn" (projects: skills, status) moved into a bottom sheet (`FiltersSheet`); active filters stay as removable chips.
 - With no search/filters on page 1 the People tab shows the "Siz uchun maqsaddoshlar" carousel first, then "Barcha maqsaddoshlar · N". The results Suspense has no key, so a new search keeps the current list until the new one arrives (no skeleton flash). The "/find" card moved under the results.
 
-## Chat list: dividers, swipe actions, mute / pin / delete for me (code ready, migration 20 NOT applied yet)
+## Chat list: dividers, swipe actions, mute / pin / delete for me (done, migration 20 applied via SQL Editor)
 - Thin dividers between chats. Swipe a chat left (touch) to reveal Ovozsiz / Qadash / O'chirish; mouse and keyboard get the same actions in a "…" menu. One row open at a time; a tap on an open row closes it. Rows are `data-no-swipe`, so the tab swipe doesn't fire on them.
 - Migration 20: `conversation_members.muted / pinned_at / hidden_at` (own row only, column grants), `my_unread_counts()` now also returns `muted`. Muted chats don't count in the nav badge (grey per-chat count, bell-off icon); pinned chats are listed first; "O'chirish" = delete for me (hides the chat and its older messages on my side only, marks read, unpins; a new message brings it back). Tested on Postgres 16 (6 cases).
 
@@ -214,7 +214,10 @@
 ## Compact person cards (done)
 - `PersonCard` (Discover, Find): 16 px padding, 40 px avatar, name + one line "headline · city", 2 small skill chips (matched first, highlighted, never wrapping) and "+N" in the same row as the connect button (40 px), so a card is about half its old height. "Profilni ko'rish" button removed: the whole card opens the profile (stretched link), the action buttons sit above it.
 
-## Chat background pattern + replies (code ready, migration 21 NOT applied yet)
+## Chat background pattern + replies (done, migration 21 applied via SQL Editor)
 - Chat background: soft top tint + a faint doodle pattern (chat, code, star, bulb, heart, send, coffee, music, bolt, smile; 240 px tile). Two files, `public/patterns/chat-dark.svg` (light strokes 7 %) and `chat-light.svg` (brand-blue strokes 10 %), switched by the `--chat-pattern` theme token.
 - Replies: "Javob berish" in the message menu (now on everyone's messages: reply, copy; own: edit, delete), long-press on touch, or swipe a bubble right (Telegram-style, icon fades in, light haptic). The composer shows "Name ga javob" with the quoted line (✕ or Esc cancels). Replies show the quote at the top of the bubble; tapping it scrolls to and highlights the original. Quotes outside the loaded 100 messages are fetched once; live replies resolve the quote from the list; deleting a quoted message drops the quote (`on delete set null`).
 - Migration 21: `messages.reply_to` + index; insert policy requires the quoted message to be in the same conversation. Tested on Postgres 16 (4 cases).
+
+## Default banner follows the theme (done)
+- `public/defaults/banner-light.jpg` (same composition on a light background) next to the dark one; the profile shows the light file in light mode and the dark one in dark mode (`dark:` variant), until the user uploads a banner.

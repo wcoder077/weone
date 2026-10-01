@@ -42,14 +42,23 @@ export function ProfileHeader({
     <section className="bg-card border-border rounded-card overflow-hidden border">
       {/* Banner behind the header; the avatar overlaps its bottom edge. */}
       <div className="bg-surface relative h-32 sm:h-44 lg:h-52">
-        {/* The user's own banner, or the default one until they upload theirs. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={banner ?? DEFAULT_BANNER}
-          alt=""
-          className="size-full object-cover"
-          style={banner ? { objectPosition: `50% ${profile.banner_position}%` } : undefined}
-        />
+        {banner ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={banner}
+            alt=""
+            className="size-full object-cover"
+            style={{ objectPosition: `50% ${profile.banner_position}%` }}
+          />
+        ) : (
+          // Default banner until the user uploads one; a light and a dark version follow the theme.
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={DEFAULT_BANNER.light} alt="" className="size-full object-cover dark:hidden" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={DEFAULT_BANNER.dark} alt="" className="hidden size-full object-cover dark:block" />
+          </>
+        )}
         {/* Bottom of the banner melts into the card colour, so it follows light/dark. */}
         <div
           aria-hidden
