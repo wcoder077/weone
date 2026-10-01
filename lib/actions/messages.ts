@@ -92,16 +92,19 @@ export async function sendProjectInvite(conversationId: string, projectId: strin
   return { message: toChatMessage(data) };
 }
 
-export async function markConversationRead(conversationId: string): Promise<void> {
+// Returns the new last_read_at (the chat shares it with the other person for ✓✓), or null.
+export async function markConversationRead(conversationId: string): Promise<string | null> {
   const userId = await requireUserId();
-  if (!idSchema.safeParse(conversationId).success) return;
+  if (!idSchema.safeParse(conversationId).success) return null;
 
   const supabase = await createClient();
-  await supabase
+  const readAt = new Date().toISOString();
+  const { error } = await supabase
     .from("conversation_members")
-    .update({ last_read_at: new Date().toISOString() })
+    .update({ last_read_at: readAt })
     .eq("conversation_id", conversationId)
     .eq("user_id", userId);
+  return error ? null : readAt;
 }
 
 type EditResult = { body: string; editedAt: string } | { error: string };

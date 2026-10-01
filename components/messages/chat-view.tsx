@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -11,6 +12,7 @@ import type { ChatMessage } from "@/lib/queries/messages";
 import type { ConnectionState } from "@/lib/queries/social";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 import { formatDay } from "@/lib/format";
+import { readStatus } from "@/lib/read-status";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ConnectButton } from "@/components/social/connect-button";
 import { ChatComposer } from "./chat-composer";
@@ -50,6 +52,7 @@ export function ChatView({
   meId,
   other,
   initialMessages,
+  otherReadAt: initialOtherReadAt,
   myProjects,
   myProjectIds,
   connection,
@@ -58,12 +61,17 @@ export function ChatView({
   meId: string;
   other: Person | null;
   initialMessages: ChatMessage[];
+  otherReadAt: string | null;
   myProjects: { id: string; name: string }[];
   myProjectIds: string[];
   connection: Connection;
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
+  // When the other person last read this chat; drives ✓ / ✓✓ on my messages.
+  const [otherReadAt, setOtherReadAt] = useState(initialOtherReadAt);
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const myReadAtRef = useRef<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollToEnd = useCallback(() => bottomRef.current?.scrollIntoView({ block: "end" }), []);
@@ -94,16 +102,35 @@ export function ChatView({
   }, [messages.length]);
 
   useEffect(() => {
-    // Read on open; refresh so the list's unread counts update.
-    void markConversationRead(conversationId).then(() => {
-      window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
-      router.refresh();
-    });
+    // Tells the other person (if they have this chat open) that I've read up to now.
+    function announceRead(channel: RealtimeChannel | null) {
+      const at = myReadAtRef.current;
+      if (channel && at) void channel.send({ type: "broadcast", event: "read", payload: { userId: meId, at } });
+    }
+    // Mark read, update the nav badge and list, and share the read time for ✓✓.
+    function markRead() {
+      void markConversationRead(conversationId).then((at) => {
+        myReadAtRef.current = at;
+        announceRead(channelRef.current);
+        window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
+        router.refresh();
+      });
+    }
+
+    markRead(); // on open
 
     const supabase = createClient();
-    const unsubscribe = subscribeWithAuth(supabase, () =>
+    const unsubscribe = subscribeWithAuth(
+      supabase,
+      () =>
       supabase
         .channel(`messages:${conversationId}`)
+        // The other person read the chat (sent by their open chat, see announceRead).
+        .on("broadcast", { event: "read" }, ({ payload }: { payload: { userId?: string; at?: string } }) => {
+          const at = payload.at;
+          if (payload.userId === meId || typeof at !== "string" || Number.isNaN(Date.parse(at))) return;
+          setOtherReadAt((prev) => (prev && Date.parse(prev) >= Date.parse(at) ? prev : at));
+        })
         .on<MessageInsert>(
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
@@ -132,12 +159,7 @@ export function ChatView({
                   ? { url: signedUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
                   : null,
             });
-            if (row.sender_id !== meId) {
-              void markConversationRead(conversationId).then(() => {
-                window.dispatchEvent(new Event(MESSAGES_READ_EVENT));
-                router.refresh();
-              });
-            }
+            if (row.sender_id !== meId) markRead();
           },
         )
         .on<MessageUpdate>(
@@ -155,9 +177,15 @@ export function ChatView({
           ({ old }) => {
             if (old.id) setMessages((prev) => prev.filter((m) => m.id !== old.id));
           },
-        )
+        ),
+      // Joined (or re-joined): repeat my read time in case the first announce went out too early.
+      (channel) => {
+        channelRef.current = channel;
+        announceRead(channel);
+      },
     );
     return () => {
+      channelRef.current = null;
       unsubscribe();
     };
   }, [conversationId, meId, router]);
@@ -214,6 +242,7 @@ export function ChatView({
                     message={m}
                     mine={mine}
                     editing={open && mine && !m.imageUrl ? editing : undefined}
+                    status={mine ? readStatus(m.createdAt, otherReadAt) : undefined}
                   />
                 )}
               </Fragment>

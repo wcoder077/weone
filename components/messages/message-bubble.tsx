@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import type { ChatMessage } from "@/lib/queries/messages";
+import { Check, CheckCheck } from "lucide-react";
 import { formatTime } from "@/lib/format";
+import type { ReadStatus } from "@/lib/read-status";
 import { cn } from "@/lib/utils";
 import { AttachmentView } from "./attachment-view";
 import { MessageActions } from "./message-actions";
@@ -20,10 +22,13 @@ export function MessageBubble({
   message,
   mine,
   editing,
+  status,
 }: {
   message: ChatMessage;
   mine: boolean;
   editing?: EditHandlers;
+  /** Own messages only: ✓ sent, ✓✓ read by the other person. */
+  status?: ReadStatus;
 }) {
   // Attachment messages can be deleted but not edited (delete and resend instead).
   const canEdit = !message.attachment;
@@ -66,11 +71,21 @@ export function MessageBubble({
           {message.body}
         </div>
       </div>
-      <span className="text-muted px-2 text-[11px]">
+      <span className="text-muted inline-flex items-center gap-1 px-2 text-[11px]">
         <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
         {message.editedAt ? " · tahrirlangan" : null}
+        {status ? <ReadMark status={status} /> : null}
       </span>
     </div>
+  );
+}
+
+// Telegram-style ticks: one grey tick = sent, two blue ticks = read.
+export function ReadMark({ status, className }: { status: ReadStatus; className?: string }) {
+  return status === "read" ? (
+    <CheckCheck className={cn("text-primary size-3.5", className)} aria-label="O'qildi" />
+  ) : (
+    <Check className={cn("size-3.5", className)} aria-label="Yuborildi" />
   );
 }
 
