@@ -14,3 +14,9 @@
 - Request tables (connections, collab, join) allow updating only `status`; accepting a join request adds the member by trigger. Editing a journey item's event fields resets `verified`.
 - Demo users have no password (`@demo.weone.example`), cannot sign in. Seed is not idempotent: run on an empty DB.
 - Types: `lib/types/database.ts` via `pnpm db:types`; both Supabase clients are typed. Migration 9 revokes EXECUTE on trigger functions and RLS helpers from anon (advisor 0028/0029). Remaining advisor warnings are intended (public previews, RLS helpers). Enable leaked password protection in the dashboard (Auth settings).
+
+## Phase 3 — Auth + onboarding (done)
+- Email/password + Google sign-in (`lib/actions/auth.ts`), `/auth/callback` (PKCE code exchange, safe `next`), proxy guards protected routes → `/login?next=…`; `(app)` layout sends non-onboarded users to `/onboarding`.
+- Onboarding `?step=1|2|3`: avatar upload straight to `avatars/<uid>/` (browser client, storage RLS; action re-checks URL prefix), live username check, city datalist, 3–10 skills with level picker, looking-for chips + online switch. Finish requires ≥3 skills, sets `onboarded`.
+- Navbar avatar menu (profile, settings, sign out); `/profile` redirects to `/u/[username]`. `typecheck` now runs `next typegen` first.
+- Project settings to check: email confirmation is ON (sign-up shows "check your email"); Google provider is OFF in Supabase Auth — enable it and add `<site>/auth/callback` to redirect URLs. Signed-in flows not yet clicked through (no test account); verified via build + route checks.

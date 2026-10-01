@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { HeaderActions } from "./header-actions";
 import { desktopNavItems, isActive } from "./nav-items";
+import type { Me } from "./types";
 
-export function Navbar() {
+export function Navbar({ me }: { me: Me }) {
   const pathname = usePathname();
 
   return (
@@ -50,7 +51,7 @@ export function Navbar() {
         </nav>
 
         <div className="ml-auto lg:ml-2">
-          <HeaderActions />
+          <HeaderActions me={me} />
         </div>
       </div>
     </header>

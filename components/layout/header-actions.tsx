@@ -1,9 +1,19 @@
-import Link from "next/link";
-import { Bell } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+"use client";
 
-// Static until auth (Phase 3) and notifications (Phase 7) exist.
-export function HeaderActions() {
+import Link from "next/link";
+import { Bell, LogOut, Settings, User } from "lucide-react";
+import { signOut } from "@/lib/actions/auth";
+import { UserAvatar } from "@/components/shared/user-avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import type { Me } from "./types";
+
+export function HeaderActions({ me }: { me: Me }) {
   return (
     <div className="flex items-center gap-1">
       <Link
@@ -13,15 +23,29 @@ export function HeaderActions() {
       >
         <Bell className="size-5" />
       </Link>
-      <Link
-        href="/profile"
-        aria-label="Sizning profilingiz"
-        className="inline-flex size-11 items-center justify-center rounded-full"
-      >
-        <Avatar>
-          <AvatarFallback>MEN</AvatarFallback>
-        </Avatar>
-      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          aria-label="Profil menyusi"
+          className="focus-visible:ring-ring/50 inline-flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3"
+        >
+          <UserAvatar name={me.fullName} url={me.avatarUrl} size="sm" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-52">
+          <DropdownMenuItem render={<Link href={`/u/${me.username}`} />}>
+            <User aria-hidden />
+            Profilim
+          </DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/settings/profile" />}>
+            <Settings aria-hidden />
+            Sozlamalar
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => void signOut()}>
+            <LogOut aria-hidden />
+            Chiqish
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

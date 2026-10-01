@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { isActive, navItems } from "./nav-items";
 
-export function MobileTabBar() {
+export function MobileTabBar({ username }: { username: string }) {
   const pathname = usePathname();
 
   return (
@@ -13,7 +13,8 @@ export function MobileTabBar() {
       aria-label="Asosiy menyu"
       className="glass fixed inset-x-4 bottom-4 z-40 flex justify-between rounded-full p-1.5 lg:hidden"
     >
-      {navItems.map(({ href, label, icon: Icon }) => {
+      {navItems.map(({ href: itemHref, label, icon: Icon }) => {
+        const href = itemHref === "/profile" ? `/u/${username}` : itemHref;
         const active = isActive(pathname, href);
         return (
           <Link
