@@ -5,7 +5,6 @@ import { PeopleCarousel } from "@/components/home/people-carousel";
 import { ProjectsStrip } from "@/components/home/projects-strip";
 import { FeedSkeleton } from "@/components/posts/feed-skeleton";
 import { PostCard } from "@/components/posts/post-card";
-import { PostComposer } from "@/components/posts/post-composer";
 import { SectionCard } from "@/components/profile/profile-sections";
 import { ActivityRow } from "@/components/shared/activity-row";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -33,9 +32,6 @@ export default async function HomePage() {
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div className="mx-auto flex w-full max-w-[680px] min-w-0 flex-col gap-4">
         <h1 className="text-xl font-bold lg:text-2xl">Salom, {firstName}</h1>
-        <section aria-label="Yangi post" className="bg-card border-border rounded-card border p-4">
-          <PostComposer userId={me.id} />
-        </section>
         <Suspense fallback={<FeedSkeleton />}>
           <HomeFeed me={me} />
         </Suspense>

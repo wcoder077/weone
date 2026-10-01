@@ -171,5 +171,5 @@
 - Sidebar card now shows Post · Bog'lanish · Loyiha in one compact row (smaller boxes, 1,2K format). Each links to its tab with `#profile-tabs`, so on phones the page scrolls to the list instead of seeming to do nothing. New "Postlar" tab lists the person's posts and reposts (latest 50) with the full post card (likes, comments, views, menu).
 
 ## Home = post feed with recommendations (done)
-- `/home` is now mostly posts: composer on top, the latest 20 posts, a swipeable "Siz uchun odamlar" row after the 3rd post (up to 8 small cards with reasons + Connect) and a "Siz uchun loyihalar" row after the 8th; short feeds get both after the last post; empty feed shows an empty state plus both rows. "Ko'proq postlar" continues on `/posts`. Sidebar (profile checklist, network) unchanged.
+- `/home` is now mostly posts (no composer: posting stays on `/posts`): the latest 20 posts, a swipeable "Siz uchun odamlar" row after the 3rd post (up to 8 small cards with reasons + Connect) and a "Siz uchun loyihalar" row after the 8th; short feeds get both after the last post; empty feed shows an empty state plus both rows. "Ko'proq postlar" continues on `/posts`. Sidebar (profile checklist, network) unchanged.
 - Recommendation errors don't break the feed (they just disappear). Shared `FeedSkeleton` for /home and /posts.
