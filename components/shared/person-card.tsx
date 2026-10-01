@@ -31,13 +31,13 @@ export function PersonCard({
   const matched = new Set(matchedSkills);
   // Matched skills first so the reason for showing this person is visible.
   const sorted = [...skills].sort((a, b) => Number(matched.has(b)) - Number(matched.has(a)));
-  const shown = sorted.slice(0, 3);
+  const shown = sorted.slice(0, 2);
   const subtitle = [person.headline, person.city].filter(Boolean).join(" · ");
 
   // Compact card: the whole card opens the profile (stretched link on the name);
   // the connect button sits above that link.
   return (
-    <article className="bg-card border-border hover:border-muted/40 relative flex flex-col gap-3 rounded-[20px] border p-4 transition-colors">
+    <article className="bg-card border-border hover:border-muted/40 relative flex flex-col gap-2.5 rounded-[20px] border px-4 py-3 transition-colors">
       <div className="flex items-center gap-3">
         <UserAvatar name={person.full_name} url={person.avatar_url} userId={person.id} />
         <div className="flex min-w-0 flex-1 flex-col">
@@ -49,26 +49,31 @@ export function PersonCard({
           {subtitle ? <p className="text-muted truncate text-[13px]">{subtitle}</p> : null}
         </div>
       </div>
-      {shown.length > 0 ? (
-        <ul className="flex flex-wrap gap-1.5" aria-label="Ko'nikmalar">
+      {/* One row: skills on the left (never wrap), the action on the right. */}
+      <div className="flex items-center gap-2">
+        <ul className="flex min-w-0 flex-1 gap-1.5 overflow-hidden" aria-label="Ko'nikmalar">
           {shown.map((name) => (
             <li
               key={name}
               className={cn(
-                "inline-flex h-7 items-center rounded-full border px-2.5 text-[12px]",
+                "inline-flex h-7 min-w-0 shrink items-center truncate rounded-full border px-2.5 text-[12px] whitespace-nowrap",
                 matched.has(name) ? "border-primary bg-primary/10 text-text" : "border-border text-muted",
               )}
             >
-              {name}
+              <span className="truncate">{name}</span>
             </li>
           ))}
           {sorted.length > shown.length ? (
-            <li className="text-muted inline-flex h-7 items-center px-1 text-[12px]">+{sorted.length - shown.length}</li>
+            <li className="text-muted inline-flex h-7 shrink-0 items-center px-0.5 text-[12px]">+{sorted.length - shown.length}</li>
           ) : null}
         </ul>
-      ) : null}
+        {actions ? (
+          <div className="relative z-10 flex shrink-0 gap-1.5 [&_button]:h-10 [&_button]:px-3.5 [&_button]:text-[14px]">
+            {actions}
+          </div>
+        ) : null}
+      </div>
       {reasons}
-      {actions ? <div className="relative z-10 mt-auto flex justify-end gap-2 [&>*]:px-4">{actions}</div> : null}
     </article>
   );
 }
