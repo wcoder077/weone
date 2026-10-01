@@ -18,7 +18,7 @@ export function Navbar({ me }: { me: Me }) {
         <Logo />
 
         {/* Mobile: logo left, actions right. Desktop: search + links + actions. */}
-        <form action="/find" role="search" className="hidden max-w-md flex-1 lg:block">
+        <form action="/discover" role="search" className="hidden max-w-md flex-1 lg:block">
           <label className="relative block">
             <span className="sr-only">{"Odamlar, ko'nikmalar va loyihalarni qidiring"}</span>
             <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />

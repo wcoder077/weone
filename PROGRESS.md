@@ -33,3 +33,9 @@
 - `/projects/[slug]`: header (logo, status, owner, links), about, stack, team, open roles with my matched skills highlighted, details. Join dialog (role + message); owner accepts/declines (trigger adds member), removes members, closes/reopens roles (keeps `is_looking` in sync); members can leave; two-step delete.
 - `/projects/new` + `/edit`: stack picker, roles editor (title, skills, open), logo upload on edit only (storage folder needs the project id). Slugs = name + 4-char suffix. Creator role stored as "Owner", shown as "Asoschi".
 - Verification: local Supabase stack (`supabase/config.toml`, ports +100 to avoid another local project) + headless Playwright click-through of signup → onboarding → journey → skill → project → settings at 390px. Dialog/sheet glass made opaque (`glass-panel`) after screenshots showed text bleeding through.
+
+## Phase 6 — Discover + Find people (done)
+- `/discover` People · Projects: full-text (`search` tsvector, websearch syntax) OR skill-name prefix match via join (FIX 1); filters in the URL: skills (must have all), city, role keyword (headline), language, available, online; projects: skills + status. 20 per page, removable active-filter chips, "Need someone specific?" card → `/find`.
+- `/find`: requirements form (role, for, skills, city, online, open-only) → `find_people()`; every result shows a "Nega mos" checklist (skills, role, hackathon experience, city/online, open, same goal). No percentages. Free text from Welcome (`?q=`) pre-fills purpose + role (filler words dropped).
+- Navbar search now goes to `/discover` (people, skills, projects); `/find` stays the requirement-based search. Shared `PersonCard`, `MatchReasons`, `Pagination`, URL helpers in `lib/url.ts`.
+- Connect / Collaborate buttons on cards arrive with Phase 7.

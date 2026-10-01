@@ -101,3 +101,11 @@ export function evidenceText(projects: number, events: number) {
 export function memberRoleLabel(role: string) {
   return role === "Owner" ? "Asoschi" : role;
 }
+
+// Find people "for" options; find_people() maps them onto looking_for values.
+export const FIND_PURPOSES = [
+  { value: "hackathon", label: "Hackathon" },
+  { value: "startup", label: "Startap" },
+  { value: "project", label: "Loyiha" },
+  { value: "learning", label: "O'qish" },
+] as const;
