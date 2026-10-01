@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { BarsVisibilityProvider } from "@/components/layout/bars-visibility";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { Navbar } from "@/components/layout/navbar";
 import { getUnreadCount } from "@/lib/queries/notifications";
@@ -18,12 +19,12 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
   };
 
   return (
-    <>
+    <BarsVisibilityProvider>
       <Navbar me={me} />
       <main className="mx-auto w-full max-w-[1200px] px-4 pt-6 pb-28 lg:px-8 lg:pb-12">
         {children}
       </main>
       <MobileTabBar username={me.username} />
-    </>
+    </BarsVisibilityProvider>
   );
 }

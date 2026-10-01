@@ -3,15 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useBarsVisibility } from "./bars-visibility";
 import { isActive, navItems } from "./nav-items";
 
 export function MobileTabBar({ username }: { username: string }) {
   const pathname = usePathname();
+  const { hidden, revealOnKeyboardFocus } = useBarsVisibility();
 
   return (
     <nav
       aria-label="Asosiy menyu"
-      className="glass fixed inset-x-4 bottom-4 z-40 flex justify-between rounded-full p-1.5 lg:hidden"
+      data-hidden={hidden}
+      onFocus={revealOnKeyboardFocus}
+      className={cn(
+        "glass fixed inset-x-4 bottom-4 z-40 flex justify-between rounded-full p-1.5 transition-transform duration-200 ease-out motion-reduce:transition-none lg:hidden",
+        hidden && "translate-y-[calc(100%+1.5rem)]",
+      )}
     >
       {navItems.map(({ href: itemHref, label, icon: Icon }) => {
         const href = itemHref === "/profile" ? `/u/${username}` : itemHref;

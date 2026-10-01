@@ -100,3 +100,7 @@
 - Buttons: primary now has a distinct hover colour (`--primary-hover`) and pressed state instead of fading; disabled = neutral fill + muted text (no 50 % wash); outline/ghost/destructive get their own disabled cue.
 - Fixed 390 px overflow on profile / project / find grids (`grid-cols-1`). Regression crawl (all pages, 390 light + 1440 dark): no console errors or failed requests.
 - Spec updated: posts, connections tab, themes in scope; Collaborate replaced by connection requests. CLAUDE.md left untouched (your staged edit) — its "No emojis" design rule now only applies to UI chrome, not user messages.
+
+## Round 3 / 1 — Hide-on-scroll fixed for both bars (done)
+- Why it failed: the old hook kept the header visible whenever focus was inside it; clicking any header link/button leaves focus there, so after normal navigation it never hid. The mobile tab bar never had the logic at all.
+- Now one `useScrollDirection` (rAF-throttled, 8 px threshold, always shown in the top 64 px, reset on route change, off with reduced motion) feeds a `BarsVisibilityProvider`; header slides up, tab bar slides down (translateY, 200 ms ease-out). Only keyboard focus (`:focus-visible`) reveals hidden bars. Chat pages scroll inside their own panel, so the bars stay put there.
