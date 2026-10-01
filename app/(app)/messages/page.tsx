@@ -9,7 +9,7 @@ export default function MessagesPage() {
     <EmptyState
       icon={MessageCircle}
       title="Suhbatni tanlang"
-      description="Yozishuv faqat bog'langan odamlar bilan ochiladi."
+      description="Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi."
       className="h-full justify-center"
     />
   );

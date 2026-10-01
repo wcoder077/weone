@@ -14,7 +14,7 @@ export const metadata = { title: "Profilni sozlash" };
 const STEPS = {
   1: {
     title: "O'zingiz haqingizda",
-    description: "Odamlar sizni shu ma'lumotlar orqali taniydi.",
+    description: "Maqsaddoshlar sizni shu ma'lumotlar orqali taniydi.",
   },
   2: {
     title: "Nimani yaxshi bilasiz?",
@@ -23,7 +23,7 @@ const STEPS = {
   },
   3: {
     title: "Nimani qidiryapsiz?",
-    description: "Sizga mos odamlar va loyihalarni shunga qarab ko'rsatamiz.",
+    description: "Sizga mos maqsaddoshlar va loyihalarni shunga qarab ko'rsatamiz.",
   },
 } as const;
 

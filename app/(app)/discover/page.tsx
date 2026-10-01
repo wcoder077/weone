@@ -86,7 +86,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
         label="Kashf etish bo'limlari"
         active={tab}
         tabs={[
-          { value: "people", label: "Odamlar", href: hrefWith("/discover", { q }, { tab: "people" }) },
+          { value: "people", label: "Maqsaddoshlar", href: hrefWith("/discover", { q }, { tab: "people" }) },
           { value: "projects", label: "Loyihalar", href: hrefWith("/discover", { q }, { tab: "projects" }) },
         ]}
       />
@@ -129,11 +129,11 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
       {tab === "people" ? (
         <div className="bg-card border-border rounded-card flex flex-col gap-3 border p-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[15px]">
-            <span className="font-semibold">Loyiha yoki hackathon uchun odam kerakmi?</span>{" "}
+            <span className="font-semibold">Loyiha yoki hackathon uchun maqsaddosh kerakmi?</span>{" "}
             <span className="text-muted">Kimni qidirayotganingizni yozing.</span>
           </p>
           <Link href="/find" className={buttonVariants()}>
-            Odam topish
+            Maqsaddosh topish
           </Link>
         </div>
       ) : null}
@@ -202,8 +202,8 @@ async function PeopleResults({
       <EmptyState
         icon={Users}
         title="Hech kim topilmadi"
-        description="Filtrlarni kamaytiring yoki «Odam topish» orqali talablaringizni yozing."
-        action={{ label: "Odam topish", href: "/find" }}
+        description="Filtrlarni kamaytiring yoki «Maqsaddosh topish» orqali talablaringizni yozing."
+        action={{ label: "Maqsaddosh topish", href: "/find" }}
       />
     );
   }

@@ -10,7 +10,7 @@ export default function SignupPage() {
     <>
       <header className="flex flex-col gap-2 text-center">
         <h1 className="text-2xl font-bold sm:text-[28px]">WeOne&apos;ga qo&apos;shiling</h1>
-        <p className="text-muted">O&apos;z odamlaringizni 2 daqiqada toping</p>
+        <p className="text-muted">O&apos;z maqsaddoshlaringizni 2 daqiqada toping</p>
       </header>
       {ENABLE_GOOGLE_AUTH ? (
         <>

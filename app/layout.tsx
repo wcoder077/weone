@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: { default: "we1", template: "%s · we1" },
-  description: "Odamlarni toping. Birga yarating. Birga o'sing.",
+  description: "Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
   icons: { apple: "/icons/apple-touch-icon.png" },
   // Installed on iOS: full-screen, content draws under a translucent status bar
   // (bars pad themselves with env(safe-area-inset-top)).

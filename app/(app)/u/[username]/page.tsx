@@ -200,7 +200,7 @@ async function JourneyTab({
         description={
           isMe
             ? "Hackathon, amaliyot yoki kurslaringizni qo'shing — bu sizning isbotingiz."
-            : "Bu odam hali hech narsa qo'shmagan."
+            : "Bu maqsaddosh hali hech narsa qo'shmagan."
         }
       />
     );
@@ -264,7 +264,7 @@ async function PostsTab({ authorId, viewerId, isMe }: { authorId: string; viewer
       <EmptyState
         icon={Newspaper}
         title="Hali postlar yo'q"
-        description={isMe ? "Nima ustida ishlayotganingizni yozing." : "Bu odam hali post joylamagan."}
+        description={isMe ? "Nima ustida ishlayotganingizni yozing." : "Bu maqsaddosh hali post joylamagan."}
         action={isMe ? { label: "Post yozish", href: "/posts" } : undefined}
       />
     );
@@ -305,7 +305,7 @@ function ProjectsTab({
       <EmptyState
         icon={FolderKanban}
         title="Loyihalar yo'q"
-        description={isMe ? "Loyiha yarating yoki jamoaga qo'shiling." : "Bu odam hali loyihada qatnashmagan."}
+        description={isMe ? "Loyiha yarating yoki jamoaga qo'shiling." : "Bu maqsaddosh hali loyihada qatnashmagan."}
         action={isMe ? { label: "Loyiha yaratish", href: "/projects/new" } : undefined}
       />
     );
