@@ -12,7 +12,7 @@ import { getAllSkills } from "@/lib/queries/skills";
 import { many, single } from "@/lib/url";
 import { BackLink } from "@/components/shared/back-link";
 
-export const metadata = { title: "Odam topish" };
+export const metadata = { title: "Maqsaddosh topish" };
 
 // Words that carry no role meaning in a free-text request.
 const FILLER = new Set([
@@ -84,7 +84,7 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
     <div className="flex flex-col gap-6">
       <BackLink fallback="/discover" />
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold lg:text-[32px]">Odam topish</h1>
+        <h1 className="text-2xl font-bold lg:text-[32px]">Maqsaddosh topish</h1>
         <p className="text-muted">Kim kerakligini yozing — har bir natija nega mos ekanini ko&apos;rasiz.</p>
       </div>
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
@@ -109,7 +109,7 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
             <EmptyState
               icon={UserSearch}
               title="Talablarni yozing"
-              description="Rol, maqsad va kerakli ko'nikmalarni tanlang — mos odamlarni sabablari bilan ko'rsatamiz."
+              description="Rol, maqsad va kerakli ko'nikmalarni tanlang — mos maqsaddoshlarni sabablari bilan ko'rsatamiz."
             />
           )}
         </section>
@@ -125,7 +125,7 @@ async function FindResults({ params }: { params: FindParams }) {
     return (
       <EmptyState
         icon={SearchX}
-        title="Mos odam topilmadi"
+        title="Mos maqsaddosh topilmadi"
         description="Talablarni kamaytirib ko'ring: kamroq ko'nikma yoki «Onlayn ham bo'ladi»."
       />
     );

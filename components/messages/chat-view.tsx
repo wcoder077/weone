@@ -232,7 +232,7 @@ export function ChatView({
               ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."
               : pending?.state === "incoming"
                 ? "Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi."
-                : "Yozishuv faqat bog'langan odamlar bilan ochiladi."}
+                : "Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi."}
           </p>
           {pending && other ? (
             <ConnectButton meId={meId} userId={other.id} name={other.full_name} connection={pending} />

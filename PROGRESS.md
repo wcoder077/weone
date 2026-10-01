@@ -178,3 +178,6 @@
 - On Asosiy / Kashf / Postlar / Xabarlar / own Profil, a sideways swipe moves to the next/previous tab (`SwipeNavigation` in the (app) layout). The page follows the finger (half speed, rubber band at the ends), switches past 22 % of the width or on a quick flick, and the new page slides in from that side. Neighbour tabs are prefetched.
 - Smoothness: passive touch listeners, styles written in requestAnimationFrame (no React re-render while dragging), direction locked after 10 px so vertical scrolling is untouched. Ignored: 24 px screen edges (browser back gesture), carousels and other horizontal scrollers, inputs, video, `[data-no-swipe]`, inner pages (post, chat, other profiles). Reduced motion: switches without the slide.
 - Not tested on a real phone from the cloud container.
+
+## Wording: "odam" → "maqsaddosh" (done)
+- Every UI string that said odam/odamlar (landing hero and footer, metadata/manifest, signup, onboarding, Discover tab and CTA, Find page, home carousel and empty states, messages, profile empty states, project form, navbar search) now says maqsaddosh/maqsaddoshlar. Landing hero is 34 px below 400 px width so "Maqsaddoshlarni" fits at 390 px.

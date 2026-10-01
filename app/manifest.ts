@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "WeOne",
     short_name: "we1",
-    description: "Odamlarni toping. Birga yarating. Birga o'sing.",
+    description: "Maqsaddoshlarni toping. Birga yarating. Birga o'sing.",
     lang: "uz",
     start_url: "/",
     scope: "/",

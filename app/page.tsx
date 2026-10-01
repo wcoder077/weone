@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 const STEPS = [
   { title: "Ko'nikmalaringizni ko'rsating", text: "Har bir ko'nikma loyiha va tadbirlar bilan isbotlanadi." },
-  { title: "O'z odamlaringizni toping", text: "Kim kerakligini yozing — har bir moslik sababini ko'rasiz." },
+  { title: "O'z maqsaddoshlaringizni toping", text: "Kim kerakligini yozing — har bir moslik sababini ko'rasiz." },
   { title: "Birga yarating", text: "Jamoa yig'ing, loyihani boshlang va yo'lingiz o'sib boradi." },
 ];
 
@@ -40,8 +40,8 @@ export default async function WelcomePage() {
       <main className="mx-auto flex w-full max-w-[1200px] flex-1 flex-col gap-20 px-4 py-12 lg:gap-28 lg:px-8 lg:py-20">
         <section className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-6">
-            <h1 className="text-[40px] leading-[1.05] font-bold tracking-tight sm:text-[56px] lg:text-[64px]">
-              Odamlarni toping.
+            <h1 className="text-[34px] leading-[1.05] font-bold tracking-tight break-words min-[400px]:text-[40px] sm:text-[56px] lg:text-[64px]">
+              Maqsaddoshlarni toping.
               <br />
               Birga yarating.
               <br />
@@ -62,7 +62,7 @@ export default async function WelcomePage() {
                 />
               </label>
               <button type="submit" className={cn(buttonVariants(), "shrink-0")}>
-                Odam topish
+                Maqsaddosh topish
               </button>
             </form>
           </div>
@@ -90,7 +90,7 @@ export default async function WelcomePage() {
       <footer className="border-border border-t">
         <div className="text-muted mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-4 py-8 text-[14px] lg:px-8">
           <Logo />
-          <span>Odamlarni toping. Birga yarating. Birga o&apos;sing.</span>
+          <span>Maqsaddoshlarni toping. Birga yarating. Birga o&apos;sing.</span>
         </div>
       </footer>
     </div>
@@ -113,7 +113,7 @@ async function Previews() {
   if (people.length + projects.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-4" aria-label="WeOne'dagi odamlar va loyihalar">
+    <div className="flex flex-col gap-4" aria-label="WeOne'dagi maqsaddoshlar va loyihalar">
       {projects.map((p) => (
         <Link key={p.slug} href="/signup" className="bg-card border-border rounded-card hover:border-muted/40 flex flex-col gap-4 border p-5 transition-colors">
           <div className="flex items-start gap-3">

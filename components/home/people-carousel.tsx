@@ -16,7 +16,7 @@ export function PeopleCarousel({ meId, picks, relationships }: { meId: string; p
     <section aria-labelledby="people-for-you" className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-4">
         <h2 id="people-for-you" className="text-lg font-semibold whitespace-nowrap">
-          Siz uchun odamlar
+          Siz uchun maqsaddoshlar
         </h2>
         <Link href="/find" className="text-muted hover:text-text inline-flex min-h-11 items-center gap-1 text-[14px] whitespace-nowrap">
           Ko&apos;proq

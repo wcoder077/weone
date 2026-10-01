@@ -29,7 +29,7 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
         <h1 className="px-5 pt-5 pb-3 text-xl font-bold">Xabarlar</h1>
         {conversations.length === 0 ? (
           <p className="text-muted px-5 pb-5 text-[14px]">
-            Hali suhbat yo&apos;q. Bog&apos;langan odamingiz profilida «Xabar yozish» tugmasini bosing.
+            Hali suhbat yo&apos;q. Bog&apos;langan maqsaddoshingiz profilida «Xabar yozish» tugmasini bosing.
           </p>
         ) : (
           <ul className="flex min-h-0 flex-col overflow-y-auto px-2 pb-2">

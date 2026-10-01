@@ -76,7 +76,7 @@ async function HomeFeed({ me }: { me: MyProfile }) {
         <EmptyState
           icon={Newspaper}
           title="Hali postlar yo'q"
-          description="Birinchi bo'lib yozing yoki odamlar bilan bog'laning: ularning postlari shu yerda chiqadi."
+          description="Birinchi bo'lib yozing yoki maqsaddoshlar bilan bog'laning: ularning postlari shu yerda chiqadi."
         />
         {people}
         {projectStrip}
@@ -160,7 +160,7 @@ async function Network({ userId }: { userId: string }) {
     <SectionCard title="Tarmog'ingizdan">
       {activities.length === 0 ? (
         <p className="text-muted text-[14px]">
-          Bog&apos;langan odamlaringiz loyiha boshlasa yoki qo&apos;shilsa, shu yerda ko&apos;rinadi.
+          Bog&apos;langan maqsaddoshlaringiz loyiha boshlasa yoki qo&apos;shilsa, shu yerda ko&apos;rinadi.
         </p>
       ) : (
         <ul className="flex flex-col gap-4">

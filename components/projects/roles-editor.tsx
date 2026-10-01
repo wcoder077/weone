@@ -61,7 +61,7 @@ export function RolesEditor({
             max={8}
           />
           <label className="flex min-h-11 items-center justify-between gap-3 text-[14px]">
-            Rol ochiq — odamlar so&apos;rov yubora oladi
+            Rol ochiq — maqsaddoshlar so&apos;rov yubora oladi
             <Switch checked={role.is_open} onCheckedChange={(is_open) => update(role.key, { is_open })} />
           </label>
         </fieldset>

@@ -124,7 +124,7 @@ export function ProjectForm({
 
       <section className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">Kim kerak?</h2>
-        <p className="text-muted text-[14px]">Ochiq rollar loyihani mos odamlarga ko&apos;rsatadi.</p>
+        <p className="text-muted text-[14px]">Ochiq rollar loyihani mos maqsaddoshlarga ko&apos;rsatadi.</p>
         <RolesEditor roles={roles} onChange={setRoles} skills={skills} />
         {errors?.roles ? <p className="text-danger text-[13px]">{errors.roles[0]}</p> : null}
       </section>
