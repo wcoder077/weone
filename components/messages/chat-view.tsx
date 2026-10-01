@@ -151,7 +151,7 @@ export function ChatView({
         <Link
           href="/messages"
           aria-label="Suhbatlarga qaytish"
-          className="text-text hover:bg-surface inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full pr-3 pl-2 text-[15px] font-medium transition-colors duration-150 lg:hidden"
+          className="text-text hover:bg-surface inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full pr-3 pl-2 text-[15px] font-medium transition-colors duration-150"
         >
           <ArrowLeft className="size-5" aria-hidden />
           Orqaga
