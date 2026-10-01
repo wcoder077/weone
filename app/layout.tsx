@@ -10,8 +10,7 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const DESCRIPTION =
-  "Gen Z uchun professional tarmoq: ko'nikmalaringizni isbot bilan ko'rsating, maqsaddoshlarni toping va birga loyiha quring.";
+const DESCRIPTION = "Maqsaddoshlar tarmog'i: toping, bog'laning, birga quring.";
 
 // Absolute URLs for link previews (Telegram, etc.). On Vercel the production domain is
 // provided at build time; NEXT_PUBLIC_SITE_URL overrides it for a custom domain.
