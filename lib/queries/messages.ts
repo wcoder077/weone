@@ -39,26 +39,18 @@ export async function getConversations(userId: string) {
       .select(`conversation_id, user_id, last_read_at, profiles(${PROFILE_FIELDS})`)
       .in("conversation_id", ids)
       .neq("user_id", userId),
-    // Recent messages across the user's chats; enough for previews.
-    supabase
-      .from("messages")
-      .select("conversation_id, sender_id, body, kind, attachment_type, created_at")
-      .in("conversation_id", ids)
-      .order("created_at", { ascending: false })
-      .limit(500),
+    // The last message of each chat (already after "deleted for me"), body shortened.
+    supabase.rpc("my_conversation_previews"),
     getUnreadCounts(),
   ]);
   if (others.error) throw others.error;
   if (messages.error) throw messages.error;
+  const lastByChat = new Map(messages.data.map((msg) => [msg.conversation_id, msg]));
 
   return mine
     .map((m) => {
       const other = others.data.find((o) => o.conversation_id === m.conversation_id);
-      // "Deleted for me": only messages after hidden_at exist for me.
-      const own = messages.data.filter(
-        (msg) => msg.conversation_id === m.conversation_id && (!m.hidden_at || msg.created_at > m.hidden_at),
-      );
-      const last = own[0];
+      const last = lastByChat.get(m.conversation_id);
       return {
         id: m.conversation_id,
         other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,

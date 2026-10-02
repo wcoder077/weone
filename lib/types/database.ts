@@ -1026,6 +1026,17 @@ export type Database = {
         Returns: boolean
       }
       is_project_owner: { Args: { p_project_id: string }; Returns: boolean }
+      my_conversation_previews: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          sender_id: string
+          body: string
+          kind: string
+          attachment_type: string | null
+          created_at: string
+        }[]
+      }
       my_unread_counts: {
         Args: never
         Returns: {

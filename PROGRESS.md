@@ -271,3 +271,4 @@
 - `subscribeWithAuth` leaves its channel after a tab is hidden for 60 s (the socket closes once no channel is left) and rejoins on return with `resumed = true`; the bell, unread badge, conversation list and open chat re-fetch what they missed. Presence uses the same helper.
 - ChatView merges messages from a refreshed server render (adds missing ones, keeps those on screen).
 - Migration 24: `enforce_rate_limit()` trigger caps inserts per user (posts 10/10 min, comments 20/5 min, messages 30/min, connections 30/h, projects 5/h). Rows without a session are not limited. Actions show "Juda tez…" on `rate_limited`. Tested on Postgres 16.
+- Conversation list reads `my_conversation_previews()` (migration 24): one last message per chat, body cut to 120 chars, instead of up to 500 full messages per refresh.

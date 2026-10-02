@@ -45,3 +45,36 @@ create trigger projects_rate_limit before insert on public.projects
 
 -- Comments are counted per author over time; this index keeps that check fast.
 create index post_comments_author_id_created_at_idx on public.post_comments (author_id, created_at desc);
+
+-- Conversation list previews: only the last message of each of my chats (after
+-- "deleted for me"), body cut to 120 characters. Replaces reading up to 500 full
+-- messages on every list refresh. Runs as the caller, so messages RLS applies.
+create function public.my_conversation_previews()
+returns table (
+  conversation_id uuid,
+  sender_id uuid,
+  body text,
+  kind text,
+  attachment_type text,
+  created_at timestamptz
+)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select l.conversation_id, l.sender_id, l.body, l.kind, l.attachment_type, l.created_at
+  from public.conversation_members cm
+  cross join lateral (
+    select m.conversation_id, m.sender_id, left(m.body, 120) as body, m.kind, m.attachment_type, m.created_at
+    from public.messages m
+    where m.conversation_id = cm.conversation_id
+      and (cm.hidden_at is null or m.created_at > cm.hidden_at)
+    order by m.created_at desc
+    limit 1
+  ) l
+  where cm.user_id = (select auth.uid());
+$$;
+
+revoke execute on function public.my_conversation_previews() from public, anon;
+grant execute on function public.my_conversation_previews() to authenticated;
