@@ -72,7 +72,7 @@ export function ProfileHeader({
         {bannerEditor ? <div className="absolute top-3 right-3">{bannerEditor}</div> : null}
       </div>
       <div className="relative flex flex-col gap-4 px-5 pb-5 sm:flex-row sm:gap-5 sm:px-6 sm:pb-6">
-        <div className="ring-card bg-card relative -mt-12 w-fit shrink-0 rounded-full ring-4">
+        <div className="ring-card relative -mt-12 flex h-fit w-fit shrink-0 self-start rounded-full ring-4">
           <UserAvatar name={profile.full_name} url={profile.avatar_url} size="xl" userId={profile.id} />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:pt-4">
