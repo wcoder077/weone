@@ -1,6 +1,7 @@
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { messagePreview } from "@/lib/message-preview";
 import { readStatus } from "@/lib/read-status";
+import { signedUrls } from "@/lib/signed-urls";
 import { createClient } from "@/lib/supabase/server";
 
 const PROFILE_FIELDS = "username, full_name, avatar_url";
@@ -107,21 +108,13 @@ export async function getConversation(conversationId: string, userId: string) {
   // "Deleted for me": older messages are gone from my side only.
   const visible = mine.hidden_at ? messages.data.filter((m) => m.created_at > mine.hidden_at!) : messages.data;
 
-  // First-message images live in a private bucket: sign them for an hour.
+  // First-message images and attachments are private: signed links, reused while fresh.
   const imagePaths = visible.flatMap((m) => (m.image_path ? [m.image_path] : []));
-  const signed = imagePaths.length
-    ? (await supabase.storage.from("message-images").createSignedUrls(imagePaths, 60 * 60)).data ?? []
-    : [];
-  const imageUrls = new Map(signed.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])));
-
-  // Attachments are private too: sign them for an hour.
   const attachmentPaths = visible.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
-  const signedAttachments = attachmentPaths.length
-    ? ((await supabase.storage.from(ATTACHMENT_BUCKET).createSignedUrls(attachmentPaths, 60 * 60)).data ?? [])
-    : [];
-  const attachmentUrls = new Map(
-    signedAttachments.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])),
-  );
+  const [imageUrls, attachmentUrls] = await Promise.all([
+    imagePaths.length ? signedUrls(supabase, "message-images", imagePaths) : new Map<string, string>(),
+    attachmentPaths.length ? signedUrls(supabase, ATTACHMENT_BUCKET, attachmentPaths) : new Map<string, string>(),
+  ]);
 
   // Quoted messages for replies; older ones outside the loaded page are fetched once.
   const loaded = new Map(visible.map((m) => [m.id, m]));

@@ -275,3 +275,4 @@
 
 ## Backups
 - Weekly GitHub Actions backup (`db-backup.yml`): Supabase CLI dumps roles, schema and data, encrypts with `BACKUP_PASSPHRASE` (gpg AES256), keeps a 90-day artifact. Needs secrets `SUPABASE_DB_URL` (session pooler) and `BACKUP_PASSPHRASE`. Restore steps in `docs/BACKUP.md`. Storage files are not included.
+- Chat images and attachments: signed links reused for 45 min per server instance (`lib/signed-urls.ts`), so reopening a chat does not re-download its files.
