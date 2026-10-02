@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
+import { markStale } from "@/lib/stale-pages";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 
 // Unread badge that counts new notifications live (Realtime respects RLS:
@@ -34,11 +35,15 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
         .on(
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
-          () => setCount((n) => n + 1),
+          () => {
+            markStale("/notifications");
+            setCount((n) => n + 1);
+          },
         ),
       // Back from a hidden tab: re-count what arrived meanwhile.
       async (_, resumed) => {
         if (!resumed) return;
+        markStale("/notifications");
         const { count: unread } = await supabase
           .from("notifications")
           .select("id", { count: "exact", head: true })

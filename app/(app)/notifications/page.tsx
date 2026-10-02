@@ -3,6 +3,7 @@ import { Bell } from "lucide-react";
 import { MarkNotificationsRead } from "@/components/notifications/mark-read";
 import { NotificationRow } from "@/components/notifications/notification-row";
 import { EmptyState } from "@/components/shared/empty-state";
+import { RefreshIfStale } from "@/components/shared/refresh-if-stale";
 import { LinkTabs } from "@/components/shared/link-tabs";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { requireUserId } from "@/lib/auth";
@@ -31,6 +32,7 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/no
         <NotificationList onlyRequests={tab === "requests"} />
       </Suspense>
       <MarkNotificationsRead />
+      <RefreshIfStale path="/notifications" />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { markStale } from "@/lib/stale-pages";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 
 // Fired by the chat after it marks a conversation read.
@@ -50,11 +51,15 @@ export function UnreadMessagesProvider({
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "messages" },
           ({ new: row }) => {
-            if (row.sender_id !== meId) scheduleRecount();
+            if (row.sender_id === meId) return;
+            markStale("/messages");
+            scheduleRecount();
           },
         ),
       (_, resumed) => {
-        if (resumed) void recount();
+        if (!resumed) return;
+        markStale("/messages");
+        void recount();
       },
     );
     window.addEventListener(MESSAGES_READ_EVENT, scheduleRecount);
