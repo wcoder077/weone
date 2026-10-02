@@ -47,7 +47,7 @@ export function Navbar({ me }: { me: Me }) {
         </form>
 
         <nav aria-label="Asosiy menyu" className="ml-auto hidden items-center gap-1 lg:flex">
-          {desktopNavItems.map(({ href, label }) => {
+          {desktopNavItems.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href);
             return (
               <Link
@@ -56,10 +56,11 @@ export function Navbar({ me }: { me: Me }) {
                 aria-current={active ? "page" : undefined}
                 aria-label={href === "/messages" && unreadMessages > 0 ? `${label}, ${unreadMessages} ta o'qilmagan` : undefined}
                 className={cn(
-                  "relative inline-flex min-h-11 items-center rounded-full px-4 text-[15px] font-medium transition-colors",
+                  "relative inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-[15px] font-medium transition-colors",
                   active ? "text-text" : "text-muted hover:text-text",
                 )}
               >
+                <Icon className="size-[18px]" aria-hidden />
                 {label}
                 {href === "/messages" ? <UnreadBadge count={unreadMessages} className="ml-1.5" /> : null}
                 <LinkPending />
