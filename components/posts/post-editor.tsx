@@ -7,6 +7,7 @@ import { formatBytes } from "@/lib/attachments";
 import type { PostMediaInput } from "@/lib/actions/posts";
 import type { ActionState } from "@/lib/actions/types";
 import { POST_MEDIA_ACCEPT, POST_MEDIA_BUCKET, postMediaKindOf, postMediaPath, postMediaProblem, type PostMediaKind } from "@/lib/post-media";
+import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { graphemeLength } from "@/lib/text";
 import { POST_MAX } from "@/lib/validation/post";
@@ -41,11 +42,12 @@ export function PostEditor({
 }) {
   const [body, setBody] = useState(initial);
   const [staged, setStaged] = useState<Staged | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [pending, startTransition] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const count = graphemeLength(body.trim());
-  const invalid = count > POST_MAX || (count === 0 && !staged && !allowEmpty);
+  const invalid = preparing || count > POST_MAX || (count === 0 && !staged && !allowEmpty);
 
   // Free the thumbnail's object URL when it is replaced, removed or the editor closes.
   useEffect(() => {
@@ -55,7 +57,11 @@ export function PostEditor({
     };
   }, [staged]);
 
-  function stage(file: File) {
+  // Photos are shrunk in the browser first (WebP, ≤ 1600 px), then checked against the limit.
+  async function stage(picked: File) {
+    setPreparing(true);
+    const file = postMediaKindOf(picked.type) === "image" ? await shrinkImage(picked, PHOTO_MAX_SIDE) : picked;
+    setPreparing(false);
     const problem = postMediaProblem(file);
     const kind = postMediaKindOf(file.type);
     if (problem || !kind) {
@@ -64,6 +70,7 @@ export function PostEditor({
     }
     setStaged({ file, kind, previewUrl: kind === "image" ? URL.createObjectURL(file) : null });
   }
+
 
   function submit() {
     if (invalid || pending) return;
@@ -139,7 +146,7 @@ export function PostEditor({
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 e.target.value = ""; // the same file can be picked again
-                if (file) stage(file);
+                if (file) void stage(file);
               }}
             />
           </>
@@ -148,7 +155,7 @@ export function PostEditor({
           <CharCounter id={`${id}-count`} count={count} max={POST_MAX} />
         </span>
         <Button type="submit" disabled={invalid || pending}>
-          {pending ? (staged ? "Yuklanmoqda…" : "Saqlanmoqda…") : submitLabel}
+          {preparing ? "Tayyorlanmoqda…" : pending ? (staged ? "Yuklanmoqda…" : "Saqlanmoqda…") : submitLabel}
         </Button>
       </div>
     </form>

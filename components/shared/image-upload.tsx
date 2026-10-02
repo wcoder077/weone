@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from "react";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
+import { AVATAR_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -27,11 +28,16 @@ export function ImageUpload({
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function upload(file: File) {
-    if (!TYPES.includes(file.type)) return toast.error("Faqat PNG, JPG yoki WEBP rasm");
-    if (file.size > MAX_BYTES) return toast.error("Rasm 2 MB dan kichik bo'lsin");
+  async function upload(picked: File) {
+    if (!TYPES.includes(picked.type)) return toast.error("Faqat PNG, JPG yoki WEBP rasm");
 
     setUploading(true);
+    // Avatars and logos are shown small: 512 px WebP is plenty (tens of KB instead of MBs).
+    const file = await shrinkImage(picked, AVATAR_MAX_SIDE);
+    if (file.size > MAX_BYTES) {
+      setUploading(false);
+      return toast.error("Rasm 2 MB dan kichik bo'lsin");
+    }
     const supabase = createClient();
     const path = `${folder}/${Date.now()}.${file.type.split("/")[1]}`;
     const { error } = await supabase.storage.from(bucket).upload(path, file);

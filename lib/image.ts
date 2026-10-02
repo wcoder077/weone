@@ -29,3 +29,22 @@ export async function compressImage(file: File, maxWidth: number, maxHeight: num
   if (!blob) throw new Error("Rasmni tayyorlab bo'lmadi");
   return { blob, width, height };
 }
+
+// Upload sizes: photos in chats and posts, avatars and project logos (shown small).
+export const PHOTO_MAX_SIDE = 1600;
+export const AVATAR_MAX_SIDE = 512;
+
+// Shrinks a photo before upload: fits it inside maxSide × maxSide and re-encodes it as WebP
+// (quality 0.82 keeps photos sharp at a fraction of the size, typically 5 MB → 200–400 KB).
+// GIFs keep their animation and are returned as they are; so is anything the browser can't
+// decode, or a file the re-encode wouldn't make smaller.
+export async function shrinkImage(file: File, maxSide: number, quality = 0.82): Promise<File> {
+  if (file.type === "image/gif" || !file.type.startsWith("image/")) return file;
+  try {
+    const { blob } = await compressImage(file, maxSide, maxSide, quality);
+    if (blob.size >= file.size) return file;
+    return new File([blob], `${file.name.replace(/\.[^.]+$/, "") || "rasm"}.webp`, { type: "image/webp" });
+  } catch {
+    return file;
+  }
+}
