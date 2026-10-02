@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from "react";
-import { createPortal } from "react-dom";
+import { useCallback, useEffect, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from "react";
+import { MediaOverlay } from "./media-overlay";
 
 const HOLD_MS = 500; // how long to hold before the photo opens
 const MOVE_TOLERANCE_PX = 10; // moving more than this (scrolling, swiping) cancels the hold
 
 // Press and hold an avatar to see the photo large and round over a blurred, see-through
-// backdrop. Tap anywhere (or Esc) closes it. A hold never also opens the link around the
+// backdrop (MediaOverlay). Tap anywhere (or Esc) closes it. A hold never also opens the link around the
 // avatar: the click that follows it is swallowed.
 export function AvatarPreview({ url, name, children }: { url: string; name: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -21,12 +21,7 @@ export function AvatarPreview({ url, name, children }: { url: string; name: stri
     origin.current = null;
   }
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => cancel, []);
 
@@ -62,32 +57,17 @@ export function AvatarPreview({ url, name, children }: { url: string; name: stri
       }}
     >
       {children}
-      {open
-        ? createPortal(
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-label={name}
-              // The overlay lives in a portal but React events still bubble to the avatar's
-              // parents (e.g. a profile link): keep taps on the overlay to itself.
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="animate-in fade-in-0 fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 bg-black/40 p-6 backdrop-blur-md duration-150"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={url}
-                alt={name}
-                className="animate-in zoom-in-90 size-[min(78vw,340px)] rounded-full object-cover shadow-2xl ring-4 ring-white/15 duration-200"
-              />
-              <p className="max-w-[80vw] truncate text-lg font-semibold text-white drop-shadow">{name}</p>
-            </div>,
-            document.body,
-          )
-        : null}
+      {open ? (
+        <MediaOverlay label={name} onClose={close}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={url}
+            alt={name}
+            className="animate-in zoom-in-90 size-[min(78vw,340px)] rounded-full object-cover shadow-2xl ring-4 ring-white/15 duration-200"
+          />
+          <p className="max-w-[80vw] truncate text-lg font-semibold text-white drop-shadow">{name}</p>
+        </MediaOverlay>
+      ) : null}
     </span>
   );
 }

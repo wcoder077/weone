@@ -6,6 +6,7 @@ import { Check, CheckCheck, Reply } from "lucide-react";
 import { formatTime } from "@/lib/format";
 import type { ReadStatus } from "@/lib/read-status";
 import { cn } from "@/lib/utils";
+import { ImageLightbox } from "@/components/shared/image-lightbox";
 import { AttachmentView } from "./attachment-view";
 import { MessageActions } from "./message-actions";
 import { useLongPress } from "./use-long-press";
@@ -122,9 +123,10 @@ export function MessageBubble({
             </button>
           ) : null}
           {message.imageUrl ? (
-            // Signed URL of a private first-message image.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={message.imageUrl} alt="Xabardagi rasm" className="mb-2 max-h-64 rounded-2xl object-cover" />
+            // Signed URL of a private first-message image; tap opens it large.
+            <div className="mb-2">
+              <ImageLightbox src={message.imageUrl} alt="Xabardagi rasm" className="max-h-64 rounded-2xl object-cover" />
+            </div>
           ) : null}
           {message.attachment ? (
             <div className={cn(message.body && "mb-2", "-mx-1 -mt-1 first:mt-0")}>

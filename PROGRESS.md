@@ -224,3 +224,6 @@
 
 ## Hold an avatar to see the photo (done)
 - `AvatarPreview` (used by `UserAvatar` whenever there is a real photo): press and hold 0.5 s (touch or mouse) → the photo opens large and round (min(78vw, 340 px)) with the name, over a see-through blurred backdrop; tap anywhere or Esc closes. Moving > 10 px cancels (scrolling/swiping still work). The click after a hold is swallowed, so the link around the avatar doesn't open; overlay events don't bubble to parent links. Native long-press menu is suppressed on avatars. Default-avatar users get no preview.
+
+## Images open in the same blurred viewer (done)
+- Shared `MediaOverlay` (portal, see-through blurred backdrop, tap/Esc closes, events kept from reaching parent links/bubbles) now backs the avatar preview and the new `ImageLightbox`. Chat photo attachments, first-message images and post photos open large (`max-h-85dvh`, rounded, object-contain) on tap instead of a new tab.
