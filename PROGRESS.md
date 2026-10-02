@@ -289,3 +289,4 @@
 - User text links: `LinkifiedText` turns http(s) and www. links into real links (new tab, noopener, never raw HTML) in posts, comments, chat, requests, bio, project description, journey items.
 - Desktop navbar links show their icons (same as the mobile tab bar).
 - Hashtags: migration 26 `post_tags` (filled by a trigger from the post text, backfilled for existing posts; 10 per post, lower-cased, >= 2 chars, not digits only). `#tag` in posts links to `/tag/<tag>` (newest first, paged). `LinkifiedText tags` is used for posts only; rules shared in lib/hashtag.ts.
+- Navigation feel: `NavProgress` (thin top bar, shown only after 150 ms of waiting, finishes in ~0.3 s) and loading skeletons fade in after 150 ms (CSS on `[role=status][aria-label=Yuklanmoqda]`), so fast navigations show no loader at all.
