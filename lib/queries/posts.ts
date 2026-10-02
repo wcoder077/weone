@@ -153,6 +153,33 @@ export async function getHomeFeed(userId: string, seenAt?: string) {
   return { posts: await hydrate(supabase, rows, userId), nextBefore: null, shuffled: true, newest };
 }
 
+// Posts that carry a hashtag, newest first. `tag` must already be normalized (lib/hashtag.ts).
+export async function getTagPosts(tag: string, userId: string, before?: string) {
+  const supabase = await createClient();
+  let query = supabase
+    .from("post_tags")
+    .select("post_id, created_at", { count: "exact" })
+    .eq("tag", tag)
+    .order("created_at", { ascending: false })
+    .limit(FEED_PAGE + 1);
+  if (before) query = query.lt("created_at", before);
+
+  const { data: refs, error, count } = await query;
+  if (error) throw error;
+  const page = refs.slice(0, FEED_PAGE);
+  if (page.length === 0) return { posts: [], nextBefore: null, total: count ?? 0 };
+
+  const { data, error: postsError } = await supabase.from("posts").select(POST_FIELDS).in("id", page.map((r) => r.post_id));
+  if (postsError) throw postsError;
+  const order = new Map(page.map((r, i) => [r.post_id, i]));
+  const rows = data.toSorted((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  return {
+    posts: await hydrate(supabase, rows, userId),
+    nextBefore: refs.length > FEED_PAGE ? page[page.length - 1].created_at : null,
+    total: count ?? 0,
+  };
+}
+
 export const PROFILE_POSTS_LIMIT = 50;
 
 // One person's own posts or their reposts, newest first (profile "Postlar" / "Repostlar" tabs).
