@@ -51,7 +51,8 @@ export function MessageBubble({
   const longPress = useLongPress(() => setMenuOpen(true));
   const bubbleRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLSpanElement>(null);
-  const swipeHandlers = useSwipeToReply(bubbleRef, iconRef, onReply);
+  // My messages (right side) swipe left, the other person's swipe right.
+  const swipeHandlers = useSwipeToReply(bubbleRef, iconRef, mine ? -1 : 1, onReply);
   const hasMenu = Boolean(onReply || editing);
   const actions = hasMenu ? (
     <MessageActions
@@ -80,7 +81,11 @@ export function MessageBubble({
     >
       <div className="relative flex max-w-full items-center gap-1">
         {onReply ? (
-          <span ref={iconRef} aria-hidden className="text-primary absolute top-1/2 -left-8 -translate-y-1/2 opacity-0">
+          <span
+            ref={iconRef}
+            aria-hidden
+            className={cn("text-primary absolute top-1/2 -translate-y-1/2 opacity-0", mine ? "-right-8" : "-left-8")}
+          >
             <Reply className="size-5" />
           </span>
         ) : null}
@@ -89,6 +94,16 @@ export function MessageBubble({
           ref={bubbleRef}
           {...(hasMenu ? longPress : {})}
           {...(onReply ? swipeHandlers : {})}
+          // Desktop (mouse): double-click any message to reply; the first mousedown of a
+          // double-click doesn't select a word.
+          onDoubleClick={
+            onReply
+              ? () => {
+                  if (window.matchMedia("(pointer: fine)").matches) onReply();
+                }
+              : undefined
+          }
+          onMouseDown={onReply ? (e) => e.detail > 1 && e.preventDefault() : undefined}
           className={cn(
             "min-w-0 rounded-3xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-[0_1px_0_rgb(0_0_0/0.04)]",
             mine ? "bg-bubble-mine rounded-br-lg" : "bg-card border-border rounded-bl-lg border",
@@ -129,11 +144,12 @@ export function MessageBubble({
   );
 }
 
-// Touch: drag a bubble to the right to reply (Telegram-style). Styles are written
-// directly to the element, so dragging never re-renders React.
+// Touch: drag a bubble sideways to reply (Telegram-style); `direction` 1 = right, -1 = left.
+// Styles are written directly to the element, so dragging never re-renders React.
 function useSwipeToReply(
   bubbleRef: RefObject<HTMLDivElement | null>,
   iconRef: RefObject<HTMLSpanElement | null>,
+  direction: 1 | -1,
   onReply: (() => void) | undefined,
 ) {
   const start = useRef<{ x: number; y: number } | null>(null);
@@ -145,7 +161,7 @@ function useSwipeToReply(
     const icon = iconRef.current;
     if (!bubble) return;
     bubble.style.transition = animate ? "transform 180ms ease-out" : "";
-    bubble.style.transform = x ? `translateX(${x}px)` : "";
+    bubble.style.transform = x ? `translateX(${x * direction}px)` : "";
     if (icon) icon.style.opacity = String(Math.min(1, x / SWIPE_REPLY_PX));
   }
 
@@ -163,10 +179,10 @@ function useSwipeToReply(
       const y = t.clientY - start.current.y;
       if (!axis.current) {
         if (Math.abs(x) < 8 && Math.abs(y) < 8) return;
-        axis.current = x > 0 && Math.abs(x) > Math.abs(y) ? "x" : "y";
+        axis.current = x * direction > 0 && Math.abs(x) > Math.abs(y) ? "x" : "y";
       }
       if (axis.current !== "x") return;
-      dx.current = Math.max(0, Math.min(SWIPE_MAX_PX, x));
+      dx.current = Math.max(0, Math.min(SWIPE_MAX_PX, x * direction)); // distance in the reply direction
       paint(dx.current, false);
     },
     onTouchEnd: finish,

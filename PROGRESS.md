@@ -216,7 +216,7 @@
 
 ## Chat background pattern + replies (done, migration 21 applied via SQL Editor)
 - Chat background: soft top tint + a faint doodle pattern (chat, code, star, bulb, heart, send, coffee, music, bolt, smile; 240 px tile). Two files, `public/patterns/chat-dark.svg` (light strokes 7 %) and `chat-light.svg` (brand-blue strokes 10 %), switched by the `--chat-pattern` theme token.
-- Replies: "Javob berish" in the message menu (now on everyone's messages: reply, copy; own: edit, delete), long-press on touch, or swipe a bubble right (Telegram-style, icon fades in, light haptic). The composer shows "Name ga javob" with the quoted line (✕ or Esc cancels). Replies show the quote at the top of the bubble; tapping it scrolls to and highlights the original. Quotes outside the loaded 100 messages are fetched once; live replies resolve the quote from the list; deleting a quoted message drops the quote (`on delete set null`).
+- Replies: "Javob berish" in the message menu (now on everyone's messages: reply, copy; own: edit, delete), long-press on touch, or swipe a bubble (own messages left, the other person's right; icon fades in, light haptic); on desktop double-click any message. The composer shows "Name ga javob" with the quoted line (✕ or Esc cancels). Replies show the quote at the top of the bubble; tapping it scrolls to and highlights the original. Quotes outside the loaded 100 messages are fetched once; live replies resolve the quote from the list; deleting a quoted message drops the quote (`on delete set null`).
 - Migration 21: `messages.reply_to` + index; insert policy requires the quoted message to be in the same conversation. Tested on Postgres 16 (4 cases).
 
 ## Default banner follows the theme (done)
