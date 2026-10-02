@@ -30,7 +30,7 @@ export function HeaderActions({ me }: { me: Me }) {
             <User aria-hidden />
             Profilim
           </DropdownMenuItem>
-          <DropdownMenuItem render={<Link href="/settings/profile" />}>
+          <DropdownMenuItem render={<Link href="/settings" />}>
             <Settings aria-hidden />
             Sozlamalar
           </DropdownMenuItem>

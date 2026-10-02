@@ -285,3 +285,4 @@
 - Email delivery needs custom SMTP in Supabase (the built-in sender only reaches team members); email templates should use `token_hash` links so they open on any device.
 - Removed `staleTimes.dynamic = 30`: the cached page hid new messages (badge showed them, list didn't until reload). Every navigation now fetches fresh data.
 - `staleTimes.dynamic = 30` is back with `RefreshIfStale`: a new message / notification over Realtime marks /messages or /notifications stale (`lib/stale-pages.ts`), and opening that page reloads its data once.
+- /settings is now site settings only (theme, edit-profile link, sign out); the header menu "Sozlamalar" opens it. Profile editing stays on /settings/profile ("Profilni tahrirlash") with the Save button at the very bottom (`form` attribute). `SectionCard` moved to components/shared.
