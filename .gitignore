@@ -43,3 +43,6 @@ next-env.d.ts
 
 # supabase cli
 supabase/.temp/
+
+# storage maintenance backups (scripts/compress-storage.mjs) — originals, never commit
+/storage-backup/
