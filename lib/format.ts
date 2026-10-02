@@ -64,3 +64,9 @@ export function formatCount(n: number) {
   const text = value >= 10 ? Math.round(value).toString() : value.toFixed(1).replace(/\.0$/, "").replace(".", ",");
   return `${text}${suffix}`;
 }
+
+// "12 Oktabr" (no year): chart axis and tooltip labels.
+export function formatDayMonth(iso: string) {
+  const date = new Date(iso);
+  return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+}
