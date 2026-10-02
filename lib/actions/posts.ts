@@ -6,7 +6,7 @@ import { requireUserId } from "@/lib/auth";
 import { POST_MEDIA_BUCKET } from "@/lib/post-media";
 import { createClient } from "@/lib/supabase/server";
 import { commentSchema, postBodySchema, postCaptionSchema } from "@/lib/validation/post";
-import { insertError } from "@/lib/rate-limit";
+import { insertError, POST_LIMIT_TEXT } from "@/lib/rate-limit";
 import type { ActionState } from "./types";
 
 const idSchema = z.guid();
@@ -44,7 +44,7 @@ export async function createPost(body: string, media?: PostMediaInput): Promise<
   if (error) {
     // Don't leave an unused upload behind.
     if (mediaFields?.success) await supabase.storage.from(POST_MEDIA_BUCKET).remove([mediaFields.data.path]);
-    return { error: insertError(error, FAILED) };
+    return { error: insertError(error, FAILED, POST_LIMIT_TEXT) };
   }
 
   refresh();
@@ -68,7 +68,7 @@ export async function repostPost(postId: string, comment: string): Promise<Actio
   const { error } = await supabase
     .from("posts")
     .insert({ author_id: userId, body: text.data, repost_of: target.repost_of ?? target.id });
-  if (error) return { error: insertError(error, FAILED) };
+  if (error) return { error: insertError(error, FAILED, POST_LIMIT_TEXT) };
 
   refresh();
   return { message: "Repost qilindi" };
