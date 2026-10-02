@@ -1,5 +1,6 @@
 "use client";
 
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import { useRef, useState, type RefObject, type TouchEvent } from "react";
 import type { ChatMessage } from "@/lib/queries/messages";
 import { Check, CheckCheck, Reply } from "lucide-react";
@@ -134,7 +135,7 @@ export function MessageBubble({
               <AttachmentView attachment={message.attachment} />
             </div>
           ) : null}
-          {message.body}
+          {message.body ? <LinkifiedText text={message.body} /> : null}
         </div>
         {mine ? null : actions}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import { toast } from "sonner";
 import {
   getConnectionRequest,
@@ -229,7 +230,7 @@ function ReviewBody({ connectionId, onDone }: { connectionId: string; onDone: ()
 export function FirstMessageBubble({ details }: { details: ConnectionRequestDetails }) {
   return (
     <div className="bg-surface border-border flex flex-col gap-3 rounded-2xl border p-4">
-      {details.body ? <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap">{details.body}</p> : null}
+      {details.body ? <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap"><LinkifiedText text={details.body} /></p> : null}
       {details.imageUrl ? (
         // Signed URL of a private image, valid for an hour.
         // eslint-disable-next-line @next/next/no-img-element

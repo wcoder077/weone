@@ -1,3 +1,4 @@
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -103,7 +104,7 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           </Suspense>
           <SectionCard title="Haqida">
             {page.profile.bio ? (
-              <p className="text-[15px] leading-relaxed whitespace-pre-line">{page.profile.bio}</p>
+              <p className="text-[15px] leading-relaxed whitespace-pre-line"><LinkifiedText text={page.profile.bio} /></p>
             ) : (
               <p className="text-muted text-[14px]">Hali yozilmagan.</p>
             )}

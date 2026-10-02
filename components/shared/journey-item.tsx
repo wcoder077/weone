@@ -1,3 +1,4 @@
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import type { ReactNode } from "react";
 import { BadgeCheck } from "lucide-react";
 import { JOURNEY_TYPES, labelOf } from "@/lib/constants";
@@ -41,7 +42,7 @@ export function JourneyItem({ item, actions }: { item: JourneyItemData; actions?
         </h3>
         {meta ? <p className="text-muted text-[14px]">{meta}</p> : null}
         {item.description ? (
-          <p className="text-[14px] leading-relaxed whitespace-pre-line">{item.description}</p>
+          <p className="text-[14px] leading-relaxed whitespace-pre-line"><LinkifiedText text={item.description} /></p>
         ) : null}
         {item.skills.length > 0 ? (
           <div className="flex flex-wrap gap-2 pt-1">
