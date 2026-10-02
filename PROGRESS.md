@@ -262,3 +262,7 @@
 - Post views go to the server in one batched request (1.5 s window) instead of one per post; `staleTimes.dynamic = 30` reuses recently visited pages.
 - `app/favicon.ico` rebuilt with RGBA PNGs (Turbopack refused the RGB ones).
 - Migration 22 makes the `post-media` bucket public: post media now uses stable public URLs (CDN-cached) instead of signed links; write policies unchanged.
+- Avatars, logos and banners are uploaded with a 1-year cache header (new path per upload).
+- Post videos limited to 10 MB (client + migration 23 bucket limit).
+- Home recommendations (people, projects) memoized per user for 5 minutes per server instance (`lib/memo.ts`).
+- Chat file sending paused: `ATTACHMENTS_ENABLED = false` hides the paperclip and the action refuses; migration 23 sets the bucket limit to 1 byte. Old files stay readable.

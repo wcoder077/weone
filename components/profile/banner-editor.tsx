@@ -5,6 +5,7 @@ import { Camera, ImagePlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { saveBanner } from "@/lib/actions/profile";
 import { compressImage, IMAGE_TYPES, imageProblem } from "@/lib/image";
+import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
 import { createClient } from "@/lib/supabase/client";
 import { bannerUrl } from "@/lib/url";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
@@ -49,7 +50,7 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
       const path = `${userId}/${crypto.randomUUID()}.webp`;
       const { error } = await createClient()
         .storage.from("banners")
-        .upload(path, blob, { contentType: "image/webp" });
+        .upload(path, blob, { contentType: "image/webp", cacheControl: IMMUTABLE_CACHE });
       if (error) throw error;
       discardUpload();
       setUnsavedUpload(path);

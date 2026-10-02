@@ -5,6 +5,7 @@ import { FileText, Loader2, Reply, Send, Video, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   ATTACHMENT_BUCKET,
+  ATTACHMENTS_ENABLED,
   attachmentKindOf,
   attachmentPath,
   attachmentProblem,
@@ -161,7 +162,7 @@ export function ChatComposer({
             placeholder={staged ? "Izoh qo'shing…" : "Xabar yozing…"}
             className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-[15px] leading-snug outline-none"
           />
-          <AttachMenu onPick={(file) => void stage(file)} disabled={sending || preparing} />
+          {ATTACHMENTS_ENABLED ? <AttachMenu onPick={(file) => void stage(file)} disabled={sending || preparing} /> : null}
         </div>
         <Button type="submit" size="icon" aria-label="Yuborish" disabled={sending || preparing || (!draft.trim() && !staged)}>
           {sending || preparing ? <Loader2 className="animate-spin" /> : <Send />}

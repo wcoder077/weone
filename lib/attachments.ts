@@ -4,6 +4,9 @@
 // enforcement, this file gives the user a friendly message before uploading.
 
 export const ATTACHMENT_BUCKET = "message-attachments";
+// Sending files in chats is paused to save storage and traffic. Flip to true to turn it back on
+// (and restore the bucket size limit, see migration 23).
+export const ATTACHMENTS_ENABLED = false;
 export const ATTACHMENT_MAX_BYTES = 20 * 1024 * 1024; // 20 MB
 
 export const ATTACHMENT_TYPES = {

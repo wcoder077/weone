@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireUserId } from "@/lib/auth";
-import { ATTACHMENT_BUCKET, ATTACHMENT_KINDS, ATTACHMENT_MAX_BYTES } from "@/lib/attachments";
+import { ATTACHMENT_BUCKET, ATTACHMENT_KINDS, ATTACHMENT_MAX_BYTES, ATTACHMENTS_ENABLED } from "@/lib/attachments";
 import { toChatMessage, type ChatMessage } from "@/lib/queries/messages";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,6 +48,7 @@ export async function sendAttachment(
   replyTo?: string,
 ): Promise<SendResult> {
   const userId = await requireUserId();
+  if (!ATTACHMENTS_ENABLED) return { error: "Fayl yuborish vaqtincha o'chirilgan." };
   const parsed = z
     .object({
       conversationId: idSchema,
