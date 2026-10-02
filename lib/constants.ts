@@ -41,6 +41,7 @@ export const CITIES = [
   "Andijon",
   "Qarshi",
   "Nukus",
+  "Qoraqalpog'iston",
   "Urganch",
   "Navoiy",
   "Jizzax",
