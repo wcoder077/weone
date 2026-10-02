@@ -241,3 +241,6 @@
 
 ## Browser tab icon (done)
 - The scaffold's default Next.js/Vercel `app/favicon.ico` is gone; `app/icon.png` (the we1 app icon, 192 px) is now the tab icon via the Next icon file convention.
+
+## Profile avatar ring fix (done)
+- On wide screens the avatar wrapper (flex row) stretched to the header's height, so its white card background showed as a tall pill under the avatar once the banner glow tinted the card. The wrapper is now `self-start`, `h-fit`, `flex` (no baseline gap) and has no background; only the card-coloured ring remains.
