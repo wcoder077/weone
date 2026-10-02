@@ -28,7 +28,7 @@ export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
   return (
     <div className="mx-auto flex w-full max-w-[680px] flex-col gap-4">
       <BackLink fallback="/posts" />
-      <PostCard post={post} isMine={post.author.id === userId} />
+      <PostCard post={post} isMine={post.author.id === userId} expanded />
       <section aria-labelledby="comments-title" className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
         <h2 id="comments-title" className="text-lg font-bold">
           Izohlar · {post.commentCount}

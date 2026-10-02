@@ -1,8 +1,10 @@
 import { Fragment, Suspense, type ReactNode } from "react";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { ChevronRight, CircleCheck, Newspaper } from "lucide-react";
 import { PeopleCarousel } from "@/components/home/people-carousel";
 import { ProjectsStrip } from "@/components/home/projects-strip";
+import { FeedSeenMarker } from "@/components/posts/feed-seen-marker";
 import { FeedSkeleton } from "@/components/posts/feed-skeleton";
 import { PostCard } from "@/components/posts/post-card";
 import { SectionCard } from "@/components/profile/profile-sections";
@@ -11,8 +13,9 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { buttonVariants } from "@/components/ui/button";
+import { FEED_SEEN_COOKIE } from "@/lib/feed";
 import { getNetworkActivity, getPeopleForYou, getProfileChecklist } from "@/lib/queries/home";
-import { getFeed } from "@/lib/queries/posts";
+import { getHomeFeed } from "@/lib/queries/posts";
 import { getMyProfile, type MyProfile } from "@/lib/queries/profiles";
 import { listProjects } from "@/lib/queries/projects";
 import { getRelationships } from "@/lib/queries/social";
@@ -59,8 +62,10 @@ async function optional<T>(promise: Promise<T>, fallback: T) {
 }
 
 async function HomeFeed({ me }: { me: MyProfile }) {
+  const seen = (await cookies()).get(FEED_SEEN_COOKIE)?.value;
+  const seenAt = seen && !Number.isNaN(Date.parse(seen)) ? seen : undefined;
   const [feed, picks, relationships, projects] = await Promise.all([
-    getFeed(me.id).catch(() => null),
+    getHomeFeed(me.id, seenAt).catch(() => null),
     optional(getPeopleForYou(me, 8), []),
     getRelationships(me.id),
     optional(listProjects(me.id, "for-you", {}), []),
@@ -100,15 +105,16 @@ async function HomeFeed({ me }: { me: MyProfile }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {feed.newest ? <FeedSeenMarker newest={feed.newest} /> : null}
       {feed.posts.map((post, i) => (
         <Fragment key={post.id}>
           <PostCard post={post} isMine={post.author.id === me.id} />
           {slots.get(i)}
         </Fragment>
       ))}
-      {feed.nextBefore ? (
+      {feed.nextBefore || feed.shuffled ? (
         <Link
-          href={`/posts?before=${encodeURIComponent(feed.nextBefore)}`}
+          href={feed.nextBefore ? `/posts?before=${encodeURIComponent(feed.nextBefore)}` : "/posts"}
           className={buttonVariants({ variant: "outline", className: "self-center" })}
         >
           Ko&apos;proq postlar

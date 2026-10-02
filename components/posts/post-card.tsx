@@ -4,14 +4,14 @@ import { formatCount, formatRelative } from "@/lib/format";
 import type { EmbeddedPost, FeedPost, PostAuthor } from "@/lib/queries/posts";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { LikeButton } from "./like-button";
+import { PostBody } from "./post-body";
 import { PostActions } from "./post-actions";
 import { PostMediaView } from "./post-media-view";
 import { PostMoreMenu } from "./post-more-menu";
 import { PostViews } from "./post-views";
 
-// User text is rendered as a plain React text node (escaped, never HTML);
-// whitespace-pre-wrap keeps the author's line breaks.
-export function PostCard({ post, isMine }: { post: FeedPost; isMine: boolean }) {
+// `expanded` opens long posts fully (the post's own page).
+export function PostCard({ post, isMine, expanded = false }: { post: FeedPost; isMine: boolean; expanded?: boolean }) {
   return (
     <article className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
       <header className="flex items-start gap-3">
@@ -29,7 +29,7 @@ export function PostCard({ post, isMine }: { post: FeedPost; isMine: boolean }) 
         {isMine ? <PostActions postId={post.id} body={post.body} /> : null}
       </header>
 
-      {post.body ? <p className="max-w-[65ch] text-base leading-[1.6] break-words whitespace-pre-wrap">{post.body}</p> : null}
+      {post.body ? <PostBody body={post.body} expanded={expanded} /> : null}
       {post.media ? <PostMediaView media={post.media} /> : null}
       {post.original ? <EmbeddedOriginal original={post.original} /> : null}
 
@@ -71,7 +71,7 @@ function EmbeddedOriginal({ original }: { original: EmbeddedPost }) {
           {formatRelative(original.createdAt)}
         </time>
       </Link>
-      {original.body ? <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap">{original.body}</p> : null}
+      {original.body ? <PostBody body={original.body} small /> : null}
       {original.media ? <PostMediaView media={original.media} /> : null}
     </div>
   );
