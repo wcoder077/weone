@@ -11,13 +11,13 @@ import {
   signInSchema,
   signUpSchema,
 } from "@/lib/validation/auth";
+import { EMAIL_NOT_CONFIRMED } from "@/lib/auth-messages";
 import { fieldErrorsOf, type ActionState } from "./types";
 
 // Supabase Auth error codes → specific Uzbek messages.
 const AUTH_ERRORS: Record<string, string> = {
   invalid_credentials: "Email yoki parol noto'g'ri.",
-  email_not_confirmed:
-    "Bu hisob hali tasdiqlanmagan. \"Parolni unutdingizmi?\" orqali yangi parol o'rnating — hisob ham tasdiqlanadi.",
+  email_not_confirmed: EMAIL_NOT_CONFIRMED,
   user_already_exists: "Bu email bilan hisob allaqachon bor. Kirish sahifasidan kiring.",
   email_exists: "Bu email bilan hisob allaqachon bor. Kirish sahifasidan kiring.",
   email_address_invalid: "Bu email manzilini qabul qilib bo'lmadi. Boshqa email kiriting.",
@@ -80,10 +80,12 @@ export async function signUp(_prev: ActionState, formData: FormData): Promise<Ac
     return { error: authErrorMessage(error, "Hisob yaratib bo'lmadi. Qayta urinib ko'ring.") };
   }
 
-  // Email confirmation is off, so signUp returns a session and the user is signed in.
-  // Without one (confirmation switched back on) the account exists: don't invite a resubmit.
+  // Email confirmation on: the account exists but stays locked until the link in the email is opened.
+  // (With confirmation off, signUp returns a session and the user goes straight on.)
   if (!data.session) {
-    return { message: "Hisob yaratildi. Emailingizdagi havolani ochib, davom eting." };
+    return {
+      message: `Tasdiqlash xati ${parsed.data.email} manziliga yuborildi. Xatdagi havolani oching (Spam papkasini ham tekshiring).`,
+    };
   }
   redirect("/onboarding");
 }
@@ -108,6 +110,23 @@ export async function requestPasswordReset(
     message:
       "Agar bu email bilan hisob bo'lsa, parolni tiklash havolasini yubordik. Pochtangizni (va Spam papkasini) tekshiring.",
   };
+}
+
+// Sends the sign-up confirmation email again. Same answer for any address, so emails can't be probed.
+export async function resendConfirmation(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const parsed = forgotPasswordSchema.safeParse({ email: text(formData, "email") });
+  if (!parsed.success) return fieldErrorsOf(parsed.error);
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: parsed.data.email,
+    options: { emailRedirectTo: `${await siteOrigin()}/auth/callback?next=/onboarding` },
+  });
+  if (error && error.code && error.code.startsWith("over_")) {
+    return { error: authErrorMessage(error, "Xat yuborib bo'lmadi. Keyinroq urinib ko'ring.") };
+  }
+  return { message: "Agar hisob hali tasdiqlanmagan bo'lsa, xatni qayta yubordik. Pochtangizni tekshiring." };
 }
 
 export async function updatePassword(_prev: ActionState, formData: FormData): Promise<ActionState> {
