@@ -288,3 +288,4 @@
 - /settings is now site settings only (theme, edit-profile link, sign out); the header menu "Sozlamalar" opens it. Profile editing stays on /settings/profile ("Profilni tahrirlash") with the Save button at the very bottom (`form` attribute). `SectionCard` moved to components/shared.
 - User text links: `LinkifiedText` turns http(s) and www. links into real links (new tab, noopener, never raw HTML) in posts, comments, chat, requests, bio, project description, journey items.
 - Desktop navbar links show their icons (same as the mobile tab bar).
+- Hashtags: migration 26 `post_tags` (filled by a trigger from the post text, backfilled for existing posts; 10 per post, lower-cased, >= 2 chars, not digits only). `#tag` in posts links to `/tag/<tag>` (newest first, paged). `LinkifiedText tags` is used for posts only; rules shared in lib/hashtag.ts.

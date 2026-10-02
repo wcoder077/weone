@@ -1,9 +1,15 @@
 import { Fragment, type ReactNode } from "react";
+import Link from "next/link";
+import { hashtagHref } from "@/lib/hashtag";
 
-// http(s):// or www. followed by non-space characters.
-const URL_PATTERN = /\b(?:https?:\/\/|www\.)[^\s<>"']+/gi;
+// A link (http(s):// or www.) OR a hashtag: "#" at the start or after whitespace/"(", then 2-50
+// letters, digits or "_" (no lookbehind: older Safari cannot parse it). Links come first in the
+// pattern, so a "#fragment" inside a URL stays part of the link.
+const TOKEN =
+  /\b(?:https?:\/\/|www\.)[^\s<>"']+|(^|[\s(])#([^\s#.,;:!?(){}\[\]<>"'/\\|@$%^&*+=~`-]{2,50})/gi;
 // Punctuation that usually ends a sentence, not the link: "see https://a.com."
 const TRAILING = /[.,;:!?)\]}»”’]+$/;
+const LINK_CLASS = "text-primary underline-offset-2 hover:underline";
 
 function hrefOf(raw: string) {
   const href = /^www\./i.test(raw) ? `https://${raw}` : raw;
@@ -15,17 +21,36 @@ function hrefOf(raw: string) {
   }
 }
 
+// Stops the click from reaching a clickable or long-press area around the text (chat bubble, card).
+const stop = (e: { stopPropagation: () => void }) => e.stopPropagation();
+
 // Plain text with real, clickable links. Built from React elements (never HTML), so user text
 // stays escaped; only http(s) links are made, and they open in a new tab without referrer access.
-export function LinkifiedText({ text }: { text: string }) {
+// With `tags`, "#hashtags" link to their tag page (posts only: that is where tags are indexed).
+export function LinkifiedText({ text, tags = false }: { text: string; tags?: boolean }) {
   const parts: ReactNode[] = [];
   let last = 0;
 
-  for (const match of text.matchAll(URL_PATTERN)) {
-    const trimmed = match[0].replace(TRAILING, "");
+  for (const match of text.matchAll(TOKEN)) {
+    const [whole, before, tag] = match;
+
+    if (tag !== undefined) {
+      const href = tags ? hashtagHref(tag) : null;
+      if (!href) continue;
+      const start = match.index + before.length;
+      if (start > last) parts.push(text.slice(last, start));
+      parts.push(
+        <Link key={start} href={href} onClick={stop} className={LINK_CLASS}>
+          #{tag}
+        </Link>,
+      );
+      last = start + 1 + tag.length;
+      continue;
+    }
+
+    const trimmed = whole.replace(TRAILING, "");
     const href = hrefOf(trimmed);
     if (!href) continue;
-
     if (match.index > last) parts.push(text.slice(last, match.index));
     parts.push(
       <a
@@ -33,9 +58,8 @@ export function LinkifiedText({ text }: { text: string }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer nofollow ugc"
-        // The text may sit inside a clickable or long-press area (chat bubble, card).
-        onClick={(e) => e.stopPropagation()}
-        className="text-primary underline underline-offset-2 break-all hover:opacity-80"
+        onClick={stop}
+        className={`${LINK_CLASS} underline break-all`}
       >
         {trimmed}
       </a>,

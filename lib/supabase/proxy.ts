@@ -10,6 +10,7 @@ const PROTECTED_PREFIXES = [
   "/find",
   "/projects",
   "/posts",
+  "/tag",
   "/messages",
   "/notifications",
   "/profile",

@@ -577,6 +577,24 @@ export type Database = {
         }
         Relationships: []
       }
+      post_tags: {
+        Row: {
+          created_at: string
+          post_id: string
+          tag: string
+        }
+        Insert: {
+          created_at: string
+          post_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          post_id?: string
+          tag?: string
+        }
+        Relationships: []
+      }
       post_views: {
         Row: {
           created_at: string
