@@ -26,6 +26,17 @@ function matches(pathname: string, prefixes: string[]) {
 
 // Refreshes the auth session cookie and guards routes.
 export async function updateSession(request: NextRequest) {
+  // An email or Google link whose redirect Supabase did not accept lands on the
+  // Site URL ("/") with the code attached: finish the sign-in at the callback.
+  const { searchParams } = request.nextUrl;
+  if (request.nextUrl.pathname === "/" && (searchParams.has("code") || searchParams.has("token_hash"))) {
+    const callback = new URL(`/auth/callback${request.nextUrl.search}`, request.url);
+    if (!callback.searchParams.has("next")) {
+      callback.searchParams.set("next", searchParams.get("type") === "recovery" ? "/reset-password" : "/home");
+    }
+    return NextResponse.redirect(callback);
+  }
+
   let response = NextResponse.next({ request });
 
   const env = getSupabaseEnv();
