@@ -13,6 +13,7 @@ import {
 } from "@/lib/attachments";
 import { sendAttachment, sendMessage } from "@/lib/actions/messages";
 import type { ChatMessage, ChatReply } from "@/lib/queries/messages";
+import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ export function ChatComposer({
 }) {
   const [draft, setDraft] = useState("");
   const [staged, setStaged] = useState<Staged | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [sending, startSending] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
 
@@ -55,7 +57,11 @@ export function ChatComposer({
     };
   }, [staged]);
 
-  function stage(file: File) {
+  // Photos are shrunk in the browser first (WebP, ≤ 1600 px), then checked against the limit.
+  async function stage(picked: File) {
+    setPreparing(true);
+    const file = attachmentKindOf(picked.type) === "image" ? await shrinkImage(picked, PHOTO_MAX_SIDE) : picked;
+    setPreparing(false);
     const problem = attachmentProblem(file);
     const kind = attachmentKindOf(file.type);
     if (problem || !kind) {
@@ -66,9 +72,10 @@ export function ChatComposer({
     fieldRef.current?.focus();
   }
 
+
   function send() {
     const body = draft.trim();
-    if ((!body && !staged) || sending) return;
+    if ((!body && !staged) || sending || preparing) return;
     startSending(async () => {
       const result = staged
         ? await uploadAndSend(staged, body)
@@ -154,10 +161,10 @@ export function ChatComposer({
             placeholder={staged ? "Izoh qo'shing…" : "Xabar yozing…"}
             className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-[15px] leading-snug outline-none"
           />
-          <AttachMenu onPick={stage} disabled={sending} />
+          <AttachMenu onPick={(file) => void stage(file)} disabled={sending || preparing} />
         </div>
-        <Button type="submit" size="icon" aria-label="Yuborish" disabled={sending || (!draft.trim() && !staged)}>
-          {sending ? <Loader2 className="animate-spin" /> : <Send />}
+        <Button type="submit" size="icon" aria-label="Yuborish" disabled={sending || preparing || (!draft.trim() && !staged)}>
+          {sending || preparing ? <Loader2 className="animate-spin" /> : <Send />}
         </Button>
       </div>
     </form>

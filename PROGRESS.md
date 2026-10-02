@@ -244,3 +244,9 @@
 
 ## Profile avatar ring fix (done)
 - On wide screens the avatar wrapper (flex row) stretched to the header's height, so its white card background showed as a tall pill under the avatar once the banner glow tinted the card. The wrapper is now `self-start`, `h-fit`, `flex` (no baseline gap) and has no background; only the card-coloured ring remains.
+
+## Images are shrunk before upload (done)
+- `shrinkImage()` (lib/image.ts): fits a photo inside N×N and re-encodes it as WebP 0.82 in the browser; GIFs, undecodable files and anything that wouldn't get smaller are kept as they are. Measured in Chromium: a 4000×3000 JPEG of 3.97 MB → 1600×1200 WebP of 285 KB (≈14× smaller); 512 px avatar ≈ 48 KB.
+- Used for chat photos and post photos (1600 px; shrunk when picked, then checked against the limit, send disabled while "Tayyorlanmoqda…"), first-message images (1600 px), avatars and project logos (512 px; they were uploaded at up to 2 MB and shown at 40 px). Banners already used the same compression.
+- Videos in posts and chats use `preload="none"`: nothing downloads until play.
+- Not done: existing files stay as uploaded (would need a one-off script with the service key); thumbnails and cacheable public post-media URLs (needs a migration).

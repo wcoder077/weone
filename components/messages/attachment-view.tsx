@@ -12,7 +12,7 @@ export function AttachmentView({ attachment }: { attachment: ChatAttachment }) {
 
   if (attachment.kind === "video") {
     return (
-      <video src={attachment.url} controls preload="metadata" playsInline aria-label={attachment.name} className="max-h-80 max-w-full rounded-2xl bg-black" />
+      <video src={attachment.url} controls preload="none" playsInline aria-label={attachment.name} className="max-h-80 max-w-full rounded-2xl bg-black" />
     );
   }
 

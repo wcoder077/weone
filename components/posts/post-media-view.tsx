@@ -8,7 +8,7 @@ export function PostMediaView({ media }: { media: PostMedia }) {
       <video
         src={media.url}
         controls
-        preload="metadata"
+        preload="none"
         playsInline
         aria-label={media.name}
         className="max-h-[28rem] w-full rounded-2xl bg-black"

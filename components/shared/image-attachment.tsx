@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
+import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 
 export const MESSAGE_IMAGE = {
@@ -21,12 +22,16 @@ export function useImageAttachment(userId: string, initial: Attachment | null) {
   // Uploads made in this session; removed again if they end up unused.
   const uploaded = useRef(new Set<string>());
 
-  async function attach(file: File) {
-    const ext = MESSAGE_IMAGE.types[file.type];
-    if (!ext) return toast.error("Faqat JPG, PNG yoki WEBP rasm");
-    if (file.size > MESSAGE_IMAGE.maxBytes) return toast.error("Rasm 5 MB dan kichik bo'lsin");
+  async function attach(picked: File) {
+    if (!MESSAGE_IMAGE.types[picked.type]) return toast.error("Faqat JPG, PNG yoki WEBP rasm");
 
     setUploading(true);
+    const file = await shrinkImage(picked, PHOTO_MAX_SIDE);
+    const ext = MESSAGE_IMAGE.types[file.type] ?? "webp";
+    if (file.size > MESSAGE_IMAGE.maxBytes) {
+      setUploading(false);
+      return toast.error("Rasm 5 MB dan kichik bo'lsin");
+    }
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
     const { error } = await createClient().storage.from("message-images").upload(path, file, { contentType: file.type });
     setUploading(false);
