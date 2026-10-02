@@ -3,6 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export const FEED_PAGE = 20;
 const MEDIA_URL_SECONDS = 60 * 60;
+// A signed link is reused while it has at least this long to live. The same URL
+// on every render lets the browser cache the file instead of downloading it again.
+const MEDIA_URL_REUSE_MS = 45 * 60 * 1000;
+const MEDIA_URL_CACHE_MAX = 5000;
+// Random older posts are picked from this many of the newest ones.
+const RANDOM_POOL = 100;
 
 const AUTHOR = "author:profiles!posts_author_id_fkey(id, username, full_name, avatar_url, headline)";
 const POST_FIELDS = `id, body, created_at, edited_at, media_path, media_type, media_name, repost_of, like_count, comment_count, view_count, repost_count, ${AUTHOR}`;
@@ -51,6 +57,32 @@ export type FeedPost = {
   liked: boolean;
 };
 
+// Signed links, shared by every visitor on this server instance. Safe to share:
+// every signed-in user may read any post's media (bucket policy).
+const signedUrlCache = new Map<string, { url: string; signedAt: number }>();
+
+// Private bucket: one signing request for the files of this page that are not cached yet.
+async function signMedia(supabase: Supabase, paths: string[]) {
+  const now = Date.now();
+  const urls = new Map<string, string>();
+  const missing: string[] = [];
+  for (const path of new Set(paths)) {
+    const hit = signedUrlCache.get(path);
+    if (hit && now - hit.signedAt < MEDIA_URL_REUSE_MS) urls.set(path, hit.url);
+    else missing.push(path);
+  }
+  if (missing.length === 0) return urls;
+
+  const { data } = await supabase.storage.from(POST_MEDIA_BUCKET).createSignedUrls(missing, MEDIA_URL_SECONDS);
+  if (signedUrlCache.size > MEDIA_URL_CACHE_MAX) signedUrlCache.clear();
+  for (const s of data ?? []) {
+    if (!s.path || !s.signedUrl) continue;
+    urls.set(s.path, s.signedUrl);
+    signedUrlCache.set(s.path, { url: s.signedUrl, signedAt: now });
+  }
+  return urls;
+}
+
 // Adds signed media links, the reposted originals and "did I like it" to raw rows.
 async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Promise<FeedPost[]> {
   const originalIds = [...new Set(rows.flatMap((r) => (r.repost_of ? [r.repost_of] : [])))];
@@ -65,12 +97,8 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
   const originals = new Map((originalsRes.data ?? []).map((o) => [o.id, o]));
   const liked = new Set((likesRes.data ?? []).map((l) => l.post_id));
 
-  // Private bucket: sign every media file of this page in one request.
   const paths = [...rows, ...originals.values()].flatMap((p) => (p.media_path ? [p.media_path] : []));
-  const signed = paths.length
-    ? ((await supabase.storage.from(POST_MEDIA_BUCKET).createSignedUrls(paths, MEDIA_URL_SECONDS)).data ?? [])
-    : [];
-  const urls = new Map(signed.flatMap((s) => (s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [])));
+  const urls = await signMedia(supabase, paths);
 
   function mediaOf(p: PostRow): PostMedia | null {
     const kind = p.media_type === "image" || p.media_type === "video" ? p.media_type : null;
@@ -115,6 +143,39 @@ export async function getFeed(userId: string, before?: string) {
     posts: await hydrate(supabase, page, userId),
     nextBefore: data.length > FEED_PAGE ? data[FEED_PAGE - 1].created_at : null,
   };
+}
+
+function shuffle<T>(items: T[]) {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+// Home feed. New posts (written after `seenAt`, the newest post the viewer was
+// last shown) come first, newest first. With nothing new, the viewer gets a
+// random mix of recent posts instead of the same page again.
+export async function getHomeFeed(userId: string, seenAt?: string) {
+  const feed = await getFeed(userId);
+  const newest = feed.posts[0]?.createdAt;
+  if (!seenAt || !newest || Date.parse(newest) > Date.parse(seenAt)) return { ...feed, shuffled: false, newest };
+
+  const supabase = await createClient();
+  const { data: pool, error: poolError } = await supabase
+    .from("posts")
+    .select("id")
+    .order("created_at", { ascending: false })
+    .limit(RANDOM_POOL);
+  if (poolError) throw poolError;
+  const ids = shuffle(pool.map((p) => p.id)).slice(0, FEED_PAGE);
+
+  const { data, error } = await supabase.from("posts").select(POST_FIELDS).in("id", ids);
+  if (error) throw error;
+  const order = new Map(ids.map((id, i) => [id, i]));
+  const rows = data.toSorted((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  return { posts: await hydrate(supabase, rows, userId), nextBefore: null, shuffled: true, newest };
 }
 
 export const PROFILE_POSTS_LIMIT = 50;

@@ -254,3 +254,10 @@
 ## Storage maintenance script (done, run locally)
 - `scripts/compress-storage.mjs` (service-role key from env, never in the app; `sharp` added as a devDependency, ffmpeg for videos). Default = report only. `--apply`: backs up every original to `storage-backup/<run>/`, uploads the smaller file to the same path (no database change), re-downloads and size-checks it (restores the original on mismatch), and writes manifest + ledger after every change. Photos: EXIF-rotated, fit 512/1600/1800 px per bucket, WebP 82, metadata (GPS) dropped. Videos: longer side ≤ 1280, H.264 CRF 26, AAC 96k, faststart. Only replaces when ≥ 20 % smaller; GIFs, small files and already-processed files are skipped, so it can be re-run (e.g. monthly) for new uploads. `--orphans` lists files no row references (older than 24 h); `--apply --delete-orphans` backs them up and deletes them (orphans are never re-encoded). `--restore <manifest>` puts everything back.
 - Tested against an in-memory fake Storage: report changes nothing; apply shrinks (photo 4.4 MB → 0.46 MB, avatar 0.9 MB → 40 KB, synthetic 1080p video 13.5 MB → 0.9 MB), deletes the orphan; a second run touches nothing; restore brings every original back byte-for-byte. The test caught a backup-overwrite bug (orphan compressed then deleted), fixed before shipping.
+
+## Feed refresh, read-more, fewer requests
+- Home feed: new posts first; when nothing is new since the last visit (`feed_seen` cookie), a random mix of the 100 newest posts is shown.
+- Long posts: the first paragraph (before a blank line) is the title, the rest folds behind "Yana". Display-only, so old posts get it too; the post page shows it open.
+- Post media signed links are reused for 45 min per server instance, so the browser caches images instead of downloading them on every render; new uploads are sent with a 1-year cache header.
+- Post views go to the server in one batched request (1.5 s window) instead of one per post; `staleTimes.dynamic = 30` reuses recently visited pages.
+- `app/favicon.ico` rebuilt with RGBA PNGs (Turbopack refused the RGB ones).

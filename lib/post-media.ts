@@ -3,6 +3,8 @@ import { ATTACHMENT_MAX_BYTES, ATTACHMENT_TYPES, attachmentKindOf, extensionOf, 
 // One photo or video per post. Same size limit and types as chat photos/videos
 // (see lib/attachments.ts); the `post-media` bucket enforces the limit in the database.
 export const POST_MEDIA_BUCKET = "post-media";
+// Media files never change (each upload gets a new path), so browsers may keep them a year.
+export const IMMUTABLE_CACHE = "31536000";
 export const POST_MEDIA_ACCEPT = [...ATTACHMENT_TYPES.image, ...ATTACHMENT_TYPES.video].join(",");
 
 export type PostMediaKind = "image" | "video";

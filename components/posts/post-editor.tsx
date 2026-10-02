@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { formatBytes } from "@/lib/attachments";
 import type { PostMediaInput } from "@/lib/actions/posts";
 import type { ActionState } from "@/lib/actions/types";
-import { POST_MEDIA_ACCEPT, POST_MEDIA_BUCKET, postMediaKindOf, postMediaPath, postMediaProblem, type PostMediaKind } from "@/lib/post-media";
+import { IMMUTABLE_CACHE, POST_MEDIA_ACCEPT, POST_MEDIA_BUCKET, postMediaKindOf, postMediaPath, postMediaProblem, type PostMediaKind } from "@/lib/post-media";
 import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { graphemeLength } from "@/lib/text";
@@ -80,7 +80,7 @@ export function PostEditor({
         const path = postMediaPath(media.userId, staged.file.type);
         const { error } = await createClient()
           .storage.from(POST_MEDIA_BUCKET)
-          .upload(path, staged.file, { contentType: staged.file.type });
+          .upload(path, staged.file, { contentType: staged.file.type, cacheControl: IMMUTABLE_CACHE });
         if (error) {
           toast.error("Faylni yuklab bo'lmadi. Qayta urinib ko'ring.");
           return;
