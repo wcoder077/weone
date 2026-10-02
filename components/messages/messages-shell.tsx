@@ -5,6 +5,7 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import type { ConversationSummary } from "@/lib/queries/messages";
 import { cn } from "@/lib/utils";
 import { ConversationRow } from "./conversation-row";
+import { RefreshIfStale } from "@/components/shared/refresh-if-stale";
 import { LiveConversationRefresh } from "./live-refresh";
 
 // Desktop: list + chat side by side. Mobile: list on /messages, chat alone on /messages/[id].
@@ -38,6 +39,7 @@ export function MessagesShell({ conversations, children }: { conversations: Conv
       </aside>
       <section className={cn("min-h-0 min-w-0", !inChat && "hidden lg:block")}>{children}</section>
       <LiveConversationRefresh />
+      <RefreshIfStale path="/messages" />
     </div>
   );
 }

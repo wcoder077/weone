@@ -12,6 +12,9 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  // Going back to a page seen in the last 30 s reuses it instead of asking the server again.
+  // Pages fed by Realtime (messages, notifications) reload when something new arrived: see RefreshIfStale.
+  experimental: { staleTimes: { dynamic: 30 } },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
