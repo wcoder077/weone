@@ -3,8 +3,8 @@ import { ATTACHMENT_MAX_BYTES, ATTACHMENT_TYPES, attachmentKindOf, extensionOf, 
 // One photo or video per post. Same size limit and types as chat photos/videos
 // (see lib/attachments.ts); the `post-media` bucket enforces the limit in the database.
 export const POST_MEDIA_BUCKET = "post-media";
-// Media files never change (each upload gets a new path), so browsers may keep them a year.
-export const IMMUTABLE_CACHE = "31536000";
+// Videos are not compressed in the browser, so they get a tighter limit than photos.
+export const POST_VIDEO_MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 export const POST_MEDIA_ACCEPT = [...ATTACHMENT_TYPES.image, ...ATTACHMENT_TYPES.video].join(",");
 
 export type PostMediaKind = "image" | "video";
@@ -15,7 +15,9 @@ export function postMediaKindOf(mime: string): PostMediaKind | null {
 }
 
 export function postMediaProblem(file: File): string | null {
-  if (!postMediaKindOf(file.type)) return "Faqat rasm yoki video yuborish mumkin";
+  const kind = postMediaKindOf(file.type);
+  if (!kind) return "Faqat rasm yoki video yuborish mumkin";
+  if (kind === "video" && file.size > POST_VIDEO_MAX_BYTES) return `Video ${formatBytes(POST_VIDEO_MAX_BYTES)} dan kichik bo'lsin`;
   if (file.size > ATTACHMENT_MAX_BYTES) return `Fayl ${formatBytes(ATTACHMENT_MAX_BYTES)} dan kichik bo'lsin`;
   return null;
 }

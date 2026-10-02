@@ -4,6 +4,7 @@ import { useRef, useState, type ReactNode } from "react";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
 import { AVATAR_MAX_SIDE, shrinkImage } from "@/lib/image";
+import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
 import { createClient } from "@/lib/supabase/client";
 
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -40,7 +41,7 @@ export function ImageUpload({
     }
     const supabase = createClient();
     const path = `${folder}/${Date.now()}.${file.type.split("/")[1]}`;
-    const { error } = await supabase.storage.from(bucket).upload(path, file);
+    const { error } = await supabase.storage.from(bucket).upload(path, file, { cacheControl: IMMUTABLE_CACHE });
     setUploading(false);
     if (error) return toast.error("Rasmni yuklab bo'lmadi");
 

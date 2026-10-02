@@ -14,6 +14,7 @@ import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { ListRowSkeleton } from "@/components/shared/skeletons";
 import { buttonVariants } from "@/components/ui/button";
 import { FEED_SEEN_COOKIE } from "@/lib/feed";
+import { memoize } from "@/lib/memo";
 import { getNetworkActivity, getPeopleForYou, getProfileChecklist } from "@/lib/queries/home";
 import { getHomeFeed } from "@/lib/queries/posts";
 import { getMyProfile, type MyProfile } from "@/lib/queries/profiles";
@@ -25,6 +26,8 @@ export const metadata = { title: "Asosiy" };
 // Recommendations are slotted in after these posts, so the feed stays mostly posts.
 const PEOPLE_AFTER = 3;
 const PROJECTS_AFTER = 8;
+// Recommendations change slowly: recompute them at most every 5 minutes per person.
+const RECOMMENDATIONS_TTL_MS = 5 * 60 * 1000;
 
 export default async function HomePage() {
   const me = await getMyProfile();
@@ -66,9 +69,9 @@ async function HomeFeed({ me }: { me: MyProfile }) {
   const seenAt = seen && !Number.isNaN(Date.parse(seen)) ? seen : undefined;
   const [feed, picks, relationships, projects] = await Promise.all([
     getHomeFeed(me.id, seenAt).catch(() => null),
-    optional(getPeopleForYou(me, 8), []),
+    optional(memoize(`people-for-you:${me.id}`, RECOMMENDATIONS_TTL_MS, () => getPeopleForYou(me, 8)), []),
     getRelationships(me.id),
-    optional(listProjects(me.id, "for-you", {}), []),
+    optional(memoize(`projects-for-you:${me.id}`, RECOMMENDATIONS_TTL_MS, () => listProjects(me.id, "for-you", {})), []),
   ]);
   if (!feed) return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
 
