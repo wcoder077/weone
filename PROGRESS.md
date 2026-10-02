@@ -283,3 +283,4 @@
 ## Email confirmation
 - Sign-up with "Confirm email" on: the form says where the email went and offers "Xatni qayta yuborish" (`resendConfirmation`, generic answer so emails can't be probed). Login with an unconfirmed account shows the same resend option.
 - Email delivery needs custom SMTP in Supabase (the built-in sender only reaches team members); email templates should use `token_hash` links so they open on any device.
+- Removed `staleTimes.dynamic = 30`: the cached page hid new messages (badge showed them, list didn't until reload). Every navigation now fetches fresh data.

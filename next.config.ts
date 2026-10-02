@@ -12,8 +12,6 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
-  // Going back to a page seen in the last 30 s reuses it instead of asking the server again.
-  experimental: { staleTimes: { dynamic: 30 } },
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },
