@@ -1,0 +1,69 @@
+# Weekly encrypted database backup (roles, schema, data incl. auth users).
+# The dump is encrypted with BACKUP_PASSPHRASE before it leaves the runner and is
+# kept as a workflow artifact for 90 days. It is never committed to the repo.
+# Restore steps: docs/BACKUP.md.
+name: Database backup
+
+on:
+  schedule:
+    - cron: "0 2 * * 0" # Sundays 02:00 UTC (07:00 Tashkent)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Check secrets
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::Add SUPABASE_DB_URL and BACKUP_PASSPHRASE in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dump roles, schema and data
+        run: |
+          mkdir backup
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/roles.sql --role-only
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backup/data.sql --use-copy --data-only
+
+      # Sizes and table names only; no row data is printed to the public log.
+      - name: Sanity check
+        run: |
+          ls -lh backup
+          test -s backup/schema.sql
+          test -s backup/data.sql
+          grep -c '^COPY ' backup/data.sql | xargs echo "tables with data:"
+          grep -q '^COPY "auth"."users"' backup/data.sql && echo "auth.users included" || echo "::warning::auth.users not found in data.sql"
+
+      - name: Encrypt
+        run: |
+          stamp=$(date -u +%Y-%m-%d)
+          tar -czf "weone-db-$stamp.tar.gz" backup
+          gpg --batch --yes --pinentry-mode loopback --symmetric --cipher-algo AES256 \
+            --passphrase "$BACKUP_PASSPHRASE" -o "weone-db-$stamp.tar.gz.gpg" "weone-db-$stamp.tar.gz"
+          shred -u "weone-db-$stamp.tar.gz"
+          rm -rf backup
+          echo "STAMP=$stamp" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weone-db-${{ env.STAMP }}
+          path: weone-db-${{ env.STAMP }}.tar.gz.gpg
+          retention-days: 90
+          if-no-files-found: error

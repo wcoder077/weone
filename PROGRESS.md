@@ -272,3 +272,6 @@
 - ChatView merges messages from a refreshed server render (adds missing ones, keeps those on screen).
 - Migration 24: `enforce_rate_limit()` trigger caps inserts per user from the `public.rate_limits` table (posts 1/h incl. reposts, comments 20/5 min, messages 30/min, connections 30/h, projects 5/h); edit or delete a row to change a limit. Rows without a session are not limited. Actions show "Juda tez…" on `rate_limited`. Tested on Postgres 16.
 - Conversation list reads `my_conversation_previews()` (migration 24): one last message per chat, body cut to 120 chars, instead of up to 500 full messages per refresh.
+
+## Backups
+- Weekly GitHub Actions backup (`db-backup.yml`): Supabase CLI dumps roles, schema and data, encrypts with `BACKUP_PASSPHRASE` (gpg AES256), keeps a 90-day artifact. Needs secrets `SUPABASE_DB_URL` (session pooler) and `BACKUP_PASSPHRASE`. Restore steps in `docs/BACKUP.md`. Storage files are not included.
