@@ -18,7 +18,11 @@ export function LiveConversationRefresh() {
         .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, () => {
           clearTimeout(timer);
           timer = setTimeout(() => router.refresh(), 400);
-        })
+        }),
+      // Back from a hidden tab: reload the list once for anything missed.
+      (_, resumed) => {
+        if (resumed) router.refresh();
+      },
     );
     return () => {
       clearTimeout(timer);

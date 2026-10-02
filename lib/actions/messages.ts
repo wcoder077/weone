@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireUserId } from "@/lib/auth";
 import { ATTACHMENT_BUCKET, ATTACHMENT_KINDS, ATTACHMENT_MAX_BYTES, ATTACHMENTS_ENABLED } from "@/lib/attachments";
 import { toChatMessage, type ChatMessage } from "@/lib/queries/messages";
+import { insertError } from "@/lib/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 const idSchema = z.guid();
@@ -35,7 +36,7 @@ export async function sendMessage(conversationId: string, body: string, replyTo?
     })
     .select(MESSAGE_FIELDS)
     .single();
-  if (error) return { error: "Xabarni yuborib bo'lmadi." };
+  if (error) return { error: insertError(error, "Xabarni yuborib bo'lmadi.") };
   return { message: toChatMessage(data) };
 }
 
@@ -100,7 +101,7 @@ export async function sendProjectInvite(conversationId: string, projectId: strin
     .insert({ conversation_id: conversationId, sender_id: userId, kind: "project_invite", project_id: projectId })
     .select(MESSAGE_FIELDS)
     .single();
-  if (error) return { error: "Taklifni yuborib bo'lmadi." };
+  if (error) return { error: insertError(error, "Taklifni yuborib bo'lmadi.") };
   return { message: toChatMessage(data) };
 }
 

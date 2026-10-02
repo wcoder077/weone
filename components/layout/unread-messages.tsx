@@ -52,7 +52,10 @@ export function UnreadMessagesProvider({
           ({ new: row }) => {
             if (row.sender_id !== meId) scheduleRecount();
           },
-        )
+        ),
+      (_, resumed) => {
+        if (resumed) void recount();
+      },
     );
     window.addEventListener(MESSAGES_READ_EVENT, scheduleRecount);
 
