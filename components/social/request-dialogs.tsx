@@ -19,6 +19,9 @@ import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Sent as the first message when someone connects without writing one.
+const QUICK_GREETING = "Salom! Siz bilan bog'lanmoqchiman.";
+
 function report(result: ActionState) {
   if (result?.error) toast.error(result.error);
   else if (result?.message) toast.success(result.message);
@@ -48,7 +51,7 @@ export function RequestComposeDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={mode.kind === "new" ? `${recipientName} bilan bog'lanish` : "Xabarni tahrirlash"}
-      description="Qisqacha o'zingizni tanishtiring. So'rov qabul qilinmaguncha boshqa xabar yubora olmaysiz."
+      description="Xohlasangiz, qisqacha o'zingizni tanishtiring. So'rov qabul qilinmaguncha boshqa xabar yubora olmaysiz."
     >
       {open ? <ComposeBody meId={meId} mode={mode} onDone={() => onOpenChange(false)} /> : null}
     </ResponsiveDialog>
@@ -90,10 +93,12 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
   const count = graphemeLength(body.trim());
   const over = count > FIRST_MESSAGE_MAX;
   const empty = body.trim().length === 0 && !image.attachment;
+  // A new request may go without a message: the chat then opens with a short greeting.
+  const quick = empty && mode.kind === "new";
 
   function submit() {
-    if (over || empty || image.uploading) return;
-    const input = { body, imagePath: image.attachment?.path ?? null };
+    if (over || (empty && !quick) || image.uploading) return;
+    const input = { body: quick ? QUICK_GREETING : body, imagePath: image.attachment?.path ?? null };
     startTransition(async () => {
       const result =
         mode.kind === "new"
@@ -148,8 +153,16 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
           <CharCounter id="first-message-count" count={count} max={FIRST_MESSAGE_MAX} />
         </span>
       </div>
-      <Button type="submit" size="lg" disabled={pending || over || empty || image.uploading}>
-        {pending ? "Yuborilmoqda…" : image.uploading ? "Rasm yuklanmoqda…" : mode.kind === "new" ? "So'rov yuborish" : "Saqlash"}
+      <Button type="submit" size="lg" disabled={pending || over || (empty && !quick) || image.uploading}>
+        {pending
+          ? "Yuborilmoqda…"
+          : image.uploading
+            ? "Rasm yuklanmoqda…"
+            : quick
+              ? "Xabarsiz yuborish"
+              : mode.kind === "new"
+                ? "So'rov yuborish"
+                : "Saqlash"}
       </Button>
     </form>
   );
