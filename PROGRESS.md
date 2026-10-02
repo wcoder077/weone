@@ -278,3 +278,4 @@
 - Chat images and attachments: signed links reused for 45 min per server instance (`lib/signed-urls.ts`), so reopening a chat does not re-download its files.
 - Connect dialog: a request can be sent without a message ("Xabarsiz yuborish"); the first message is then a short greeting, so the DB rule "text or image" still holds.
 - Proxy: a link that lands on "/" with `code` or `token_hash` (Supabase fell back to the Site URL) is forwarded to /auth/callback.
+- Posts up to 2000 graphemes (migration 25, `POST_MAX`); comments stay at 500.
