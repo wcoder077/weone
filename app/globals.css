@@ -187,6 +187,17 @@
     240px 240px;
 }
 
+/* Loading skeletons fade in after a short delay: a page that arrives within ~150 ms
+   never shows one (no flash), a slow one gets a smooth placeholder. */
+[role="status"][aria-label="Yuklanmoqda"] {
+  animation: skeleton-in 160ms ease-out 150ms backwards;
+}
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* Respect reduced motion everywhere: no slides, fades or smooth scrolling. */
 @media (prefers-reduced-motion: reduce) {
   *,
