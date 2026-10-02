@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, LogOut, UserPen } from "lucide-react";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { BackLink } from "@/components/shared/back-link";
 import { SectionCard } from "@/components/shared/section-card";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -19,6 +20,12 @@ export default async function SettingsPage() {
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <BackLink fallback="/home" />
       <h1 className="text-2xl font-bold lg:text-[32px]">{t("Sozlamalar")}</h1>
+      <SectionCard title={t("Sayt tili")}>
+        <div className="flex flex-col gap-3">
+          <p className="text-muted text-[14px]">{t("Tanlov shu qurilmada saqlanadi.")}</p>
+          <LanguageSwitcher />
+        </div>
+      </SectionCard>
       <SectionCard title={t("Ko'rinish")}>
         <div className="flex flex-col gap-3">
           <p className="text-muted text-[14px]">{t("Mavzu. «Tizim» qurilmangiz sozlamasiga qarab o'zgaradi.")}</p>

@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Search } from "lucide-react";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { Logo } from "@/components/layout/logo";
 import { ProjectLogo, StatusBadge } from "@/components/shared/project-card";
 import { SkillChip } from "@/components/shared/skill-chip";
@@ -72,9 +74,9 @@ export default async function WelcomePage() {
           <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {STEPS.map((step, i) => (
               <li key={step.title} className="bg-card border-border rounded-card flex flex-col gap-3 border p-6">
-                <span className="text-muted text-[14px]">{i + 1}{t("-qadam")}</span>
-                <h3 className="text-xl font-semibold">{step.title}</h3>
-                <p className="text-muted">{step.text}</p>
+                <span className="text-muted text-[14px]">{t("{n}-qadam", { n: i + 1 })}</span>
+                <h3 className="text-xl font-semibold">{t(step.title)}</h3>
+                <p className="text-muted">{t(step.text)}</p>
               </li>
             ))}
           </ol>
@@ -85,6 +87,7 @@ export default async function WelcomePage() {
         <div className="text-muted mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-4 py-8 text-[14px] lg:px-8">
           <Logo />
           <span>{t("Maqsaddoshlarni toping. Birga yarating. Birga o'sing.")}</span>
+          <LanguageSwitcher />
         </div>
       </footer>
     </div>
@@ -93,11 +96,11 @@ export default async function WelcomePage() {
 
 function PreviewSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-4">
+    <LoadingRegion className="flex flex-col gap-4">
       <Skeleton className="rounded-card h-44" />
       <Skeleton className="rounded-card h-20" />
       <Skeleton className="rounded-card h-20" />
-    </div>
+    </LoadingRegion>
   );
 }
 
@@ -131,7 +134,7 @@ async function Previews() {
           <UserAvatar name={p.full_name} url={p.avatar_url} size="lg" />
           <div className="flex min-w-0 flex-col">
             <span className="truncate font-semibold">{p.full_name}</span>
-            <span className="text-muted truncate text-[14px]">{[p.headline, p.city].filter(Boolean).join(" · ")}</span>
+            <span className="text-muted truncate text-[14px]">{[p.headline, p.city ? t(p.city) : null].filter(Boolean).join(" · ")}</span>
           </div>
         </Link>
       ))}

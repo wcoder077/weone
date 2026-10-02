@@ -34,10 +34,10 @@ export function StepHeader({
         />
       </div>
       <p className="text-muted text-[15px]">
-        {step}{t("-qadam, jami")}{" "}{ONBOARDING_STEPS}
+        {t("{step}-qadam, jami {total}", { step, total: ONBOARDING_STEPS })}
       </p>
-      <h1 className="text-2xl font-bold lg:text-[32px]">{title}</h1>
-      <p className="text-muted text-[15px]">{description}</p>
+      <h1 className="text-2xl font-bold lg:text-[32px]">{t(title)}</h1>
+      <p className="text-muted text-[15px]">{t(description)}</p>
     </header>
   );
 }
@@ -68,7 +68,7 @@ export function StepFooter({
           <span />
         )}
         <button type="submit" disabled={pending} className={buttonVariants({ size: "lg" })}>
-          {pending ? t("Saqlanmoqda…") : submitLabel}
+          {pending ? t("Saqlanmoqda…") : t(submitLabel)}
         </button>
       </div>
     </div>

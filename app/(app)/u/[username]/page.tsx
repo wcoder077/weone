@@ -1,4 +1,5 @@
 import { LinkifiedText } from "@/components/shared/linkified-text";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -296,7 +297,7 @@ async function PostsTab({
         <PostCard key={post.id} post={post} isMine={isMe} />
       ))}
       {posts.length === PROFILE_POSTS_LIMIT ? (
-        <p className="text-muted text-center text-[13px]">{t("Oxirgi")}{" "}{PROFILE_POSTS_LIMIT} {" "}{t("tasi ko'rsatilgan.")}</p>
+        <p className="text-muted text-center text-[13px]">{t("Oxirgi {n} tasi ko'rsatilgan.", { n: PROFILE_POSTS_LIMIT })}</p>
       ) : null}
     </div>
   );
@@ -304,11 +305,11 @@ async function PostsTab({
 
 function PostsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }
 
@@ -411,10 +412,10 @@ async function SkillDialogLoader({ page, viewerId }: { page: ProfilePage; viewer
 
 function ConnectionsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }

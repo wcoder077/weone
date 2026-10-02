@@ -1,4 +1,5 @@
 import { Fragment, Suspense, type ReactNode } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { ChevronRight, CircleCheck, Newspaper } from "lucide-react";
@@ -42,7 +43,7 @@ export default async function HomePage() {
   return (
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div className="mx-auto flex w-full max-w-[680px] min-w-0 flex-col gap-4">
-        <h1 className="text-xl font-bold lg:text-2xl">{t("Salom,")}{" "}{firstName}</h1>
+        <h1 className="text-xl font-bold lg:text-2xl">{t("Salom, {name}", { name: firstName })}</h1>
         <Suspense fallback={<FeedSkeleton />}>
           <HomeFeed me={me} />
         </Suspense>
@@ -134,11 +135,11 @@ async function HomeFeed({ me }: { me: MyProfile }) {
 
 function SidebarSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-5">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-5">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }
 
@@ -157,7 +158,7 @@ async function Checklist({ me }: { me: MyProfile }) {
             <li key={item.label}>
               <Link href={item.href} className="hover:text-text text-muted flex min-h-11 items-center gap-3 text-[14px]">
                 <span className="border-border size-5 shrink-0 rounded-md border" aria-hidden />
-                <span className="flex-1">{item.label}</span>
+                <span className="flex-1">{t(item.label)}</span>
                 <ChevronRight className="size-4" aria-hidden />
               </Link>
             </li>

@@ -34,7 +34,7 @@ export async function PersonCard({
   // Matched skills first so the reason for showing this person is visible.
   const sorted = [...skills].sort((a, b) => Number(matched.has(b)) - Number(matched.has(a)));
   const shown = sorted.slice(0, 2);
-  const subtitle = [person.headline, person.city].filter(Boolean).join(" · ");
+  const subtitle = [person.headline, person.city ? t(person.city) : null].filter(Boolean).join(" · ");
 
   // Compact card: the whole card opens the profile (stretched link on the name);
   // the connect button sits above that link.
@@ -81,16 +81,17 @@ export async function PersonCard({
 }
 
 // "Why this person matches" checklist. No percentages, only readable reasons.
-export function MatchReasons({ reasons, title = "Nega mos" }: { reasons: string[]; title?: string }) {
+export async function MatchReasons({ reasons, title = "Nega mos" }: { reasons: string[]; title?: string }) {
+  const t = await getT();
   if (reasons.length === 0) return null;
   return (
     <div className="bg-surface border-border flex flex-col gap-2 rounded-2xl border p-4">
-      <p className="text-muted text-[13px]">{title}</p>
+      <p className="text-muted text-[13px]">{t(title)}</p>
       <ul className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
         {reasons.map((reason) => (
           <li key={reason} className="flex items-start gap-2 text-[14px]">
             <Check className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
-            {reason}
+            {t(reason)}
           </li>
         ))}
       </ul>
@@ -107,7 +108,7 @@ export async function InlineReasons({ reasons }: { reasons: string[] }) {
       {reasons.map((reason) => (
         <li key={reason} className="inline-flex items-center gap-1">
           <Check className="text-primary size-3.5" aria-hidden />
-          {reason}
+          {t(reason)}
         </li>
       ))}
     </ul>

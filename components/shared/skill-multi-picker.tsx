@@ -40,13 +40,13 @@ export function SkillMultiPicker({
   return (
     <div className="flex flex-col gap-3">
       {value.length > 0 ? (
-        <ul className="flex flex-wrap gap-2" aria-label={label}>
+        <ul className="flex flex-wrap gap-2" aria-label={t(label)}>
           {value.map((id) => (
             <li key={id}>
               <button
                 type="button"
                 onClick={() => onChange(value.filter((v) => v !== id))}
-                aria-label={t("{v0} — olib tashlash", { v0: byId.get(id)?.name ?? "" })}
+                aria-label={t("{name} — olib tashlash", { name: byId.get(id)?.name ?? "" })}
                 className="bg-primary text-primary-foreground inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[14px] font-medium"
               >
                 {byId.get(id)?.name}
@@ -60,9 +60,9 @@ export function SkillMultiPicker({
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={full ? t("Ko'pi bilan {max} ta", { max }) : placeholder}
+        placeholder={full ? t("Ko'pi bilan {max} ta", { max }) : t(placeholder)}
         disabled={full}
-        aria-label={label}
+        aria-label={t(label)}
       />
       {suggestions.length > 0 ? (
         <div className="flex flex-wrap gap-2">

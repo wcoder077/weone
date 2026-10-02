@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { Camera } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { AVATAR_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
 import { createClient } from "@/lib/supabase/client";

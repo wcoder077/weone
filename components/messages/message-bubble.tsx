@@ -219,9 +219,10 @@ export function ReadMark({ status, className }: { status: ReadStatus; className?
 }
 
 export function DaySeparator({ label }: { label: string }) {
+  const t = useT();
   return (
-    <div className="my-2 flex justify-center" role="separator" aria-label={label}>
-      <span className="bg-card border-border text-muted rounded-full border px-3 py-1 text-[12px] font-medium">{label}</span>
+    <div className="my-2 flex justify-center" role="separator" aria-label={t(label)}>
+      <span className="bg-card border-border text-muted rounded-full border px-3 py-1 text-[12px] font-medium">{t(label)}</span>
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function LevelPicker({
             value === level.value ? "bg-primary text-primary-foreground" : "text-muted hover:text-text",
           )}
         >
-          {level.label}
+          {t(level.label)}
         </button>
       ))}
     </div>

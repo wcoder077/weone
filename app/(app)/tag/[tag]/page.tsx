@@ -23,7 +23,8 @@ function tagFrom(raw: string) {
 
 export async function generateMetadata({ params }: PageProps<"/tag/[tag]">) {
   const tag = tagFrom((await params).tag);
-  return { title: tag ? `#${tag}` : "Teg" };
+  const t = await getT();
+  return { title: tag ? `#${tag}` : t("Teg") };
 }
 
 export default async function TagPage({ params, searchParams }: PageProps<"/tag/[tag]">) {
@@ -60,7 +61,7 @@ async function TagFeed({ tag, userId, before }: { tag: string; userId: string; b
     <>
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold break-all lg:text-[32px]">#{tag}</h1>
-        <p className="text-muted text-[14px]">{feed.total} {" "}{t("ta post")}</p>
+        <p className="text-muted text-[14px]">{t("{n} ta post", { n: feed.total })}</p>
       </header>
       {feed.posts.length === 0 ? (
         <EmptyState icon={Hash} title={t("Bu teg bilan post yo'q")} description={t("Post yozayotganda #teg qo'shing: u shu yerda chiqadi.")} />

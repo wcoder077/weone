@@ -1,3 +1,5 @@
+import type { TFunction } from "@/lib/i18n/core";
+
 const MONTHS = [
   "Yanvar",
   "Fevral",
@@ -14,30 +16,30 @@ const MONTHS = [
 ];
 
 // "2026-03-14" -> "Mart 2026"
-export function formatMonth(date: string) {
+export function formatMonth(date: string, t: TFunction) {
   const [year, month] = date.split("-");
-  return `${MONTHS[Number(month) - 1]} ${year}`;
+  return `${t(MONTHS[Number(month) - 1])} ${year}`;
 }
 
-export function formatDateRange(start: string | null, end: string | null) {
+export function formatDateRange(start: string | null, end: string | null, t: TFunction) {
   if (!start) return null;
-  if (!end) return `${formatMonth(start)} – hozir`;
-  if (start.slice(0, 7) === end.slice(0, 7)) return formatMonth(start);
-  return `${formatMonth(start)} – ${formatMonth(end)}`;
+  if (!end) return `${formatMonth(start, t)} – ${t("hozir")}`;
+  if (start.slice(0, 7) === end.slice(0, 7)) return formatMonth(start, t);
+  return `${formatMonth(start, t)} – ${formatMonth(end, t)}`;
 }
 
 // Relative time for feeds and notifications: "hozirgina", "5 daqiqa oldin", "3 kun oldin", "12 Mart".
-export function formatRelative(iso: string, now = Date.now()) {
+export function formatRelative(iso: string, t: TFunction, now = Date.now()) {
   const seconds = Math.max(0, Math.round((now - new Date(iso).getTime()) / 1000));
-  if (seconds < 60) return "hozirgina";
+  if (seconds < 60) return t("hozirgina");
   const minutes = Math.round(seconds / 60);
-  if (minutes < 60) return `${minutes} daqiqa oldin`;
+  if (minutes < 60) return t("{n} daqiqa oldin", { n: minutes });
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `${hours} soat oldin`;
+  if (hours < 24) return t("{n} soat oldin", { n: hours });
   const days = Math.round(hours / 24);
-  if (days < 7) return `${days} kun oldin`;
+  if (days < 7) return t("{n} kun oldin", { n: days });
   const date = new Date(iso);
-  return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  return `${date.getDate()} ${t(MONTHS[date.getMonth()])}`;
 }
 
 // "14:05" for chat bubbles.
@@ -47,13 +49,13 @@ export function formatTime(iso: string) {
 }
 
 // Day separators in chat: "Bugun", "Kecha", "12 Mart" (+ year when not this year).
-export function formatDay(iso: string, now = new Date()) {
+export function formatDay(iso: string, t: TFunction, now = new Date()) {
   const date = new Date(iso);
   const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
   const days = Math.round((startOf(now) - startOf(date)) / 86_400_000);
-  if (days === 0) return "Bugun";
-  if (days === 1) return "Kecha";
-  const label = `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  if (days === 0) return t("Bugun");
+  if (days === 1) return t("Kecha");
+  const label = `${date.getDate()} ${t(MONTHS[date.getMonth()])}`;
   return date.getFullYear() === now.getFullYear() ? label : `${label} ${date.getFullYear()}`;
 }
 
@@ -66,7 +68,7 @@ export function formatCount(n: number) {
 }
 
 // "12 Oktabr" (no year): chart axis and tooltip labels.
-export function formatDayMonth(iso: string) {
+export function formatDayMonth(iso: string, t: TFunction) {
   const date = new Date(iso);
-  return `${date.getDate()} ${MONTHS[date.getMonth()]}`;
+  return `${date.getDate()} ${t(MONTHS[date.getMonth()])}`;
 }

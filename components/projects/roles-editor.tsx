@@ -36,27 +36,27 @@ export function RolesEditor({
     <div className="flex flex-col gap-4">
       {roles.map((role, index) => (
         <fieldset key={role.key} className="border-border flex flex-col gap-3 rounded-2xl border p-4">
-          <legend className="sr-only">{t("{v0}-rol", { v0: index + 1 })}</legend>
+          <legend className="sr-only">{t("{n}-rol", { n: index + 1 })}</legend>
           <div className="flex items-center gap-2">
             <Input
               value={role.title}
               onChange={(e) => update(role.key, { title: e.target.value })}
               placeholder={t("Rol nomi, masalan Frontend dasturchi")}
               maxLength={60}
-              aria-label={t("{v0}-rol nomi", { v0: index + 1 })}
+              aria-label={t("{n}-rol nomi", { n: index + 1 })}
             />
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              aria-label={t("{v0}-rolni o'chirish", { v0: index + 1 })}
+              aria-label={t("{n}-rolni o'chirish", { n: index + 1 })}
               onClick={() => onChange(roles.filter((r) => r.key !== role.key))}
             >
               <Trash2 />
             </Button>
           </div>
           <SkillMultiPicker
-            label={t("{v0}-rol uchun ko'nikmalar", { v0: index + 1 })}
+            label={t("{n}-rol uchun ko'nikmalar", { n: index + 1 })}
             skills={skills}
             value={role.skill_ids}
             onChange={(skill_ids) => update(role.key, { skill_ids })}

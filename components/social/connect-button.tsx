@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ChevronDown, MessageCircle, Pencil, UserPlus, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { cancelConnectionRequest, openConversation, respondConnectionRequest } from "@/lib/actions/connections";
 import type { ActionState } from "@/lib/actions/types";
 import type { ConnectionState } from "@/lib/queries/social";

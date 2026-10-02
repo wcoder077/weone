@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState, type ReactNode } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { checkUsername, type UsernameStatus } from "@/lib/actions/onboarding";
 import { saveSettings } from "@/lib/actions/profile";
 import type { ActionState } from "@/lib/actions/types";
@@ -63,7 +63,7 @@ export function SettingsForm({ profile, children }: { profile: MyProfile; childr
       <SectionCard title={t("Asosiy")}>
         <form id={FORM_ID} action={action} className="flex flex-col gap-5" noValidate>
           <AvatarUpload userId={profile.id} name={name} initialUrl={profile.avatar_url} />
-          {errors?.avatar_url ? <p className="text-danger text-[13px]">{errors.avatar_url[0]}</p> : null}
+          {errors?.avatar_url ? <p className="text-danger text-[13px]">{t(errors.avatar_url[0])}</p> : null}
 
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField id="full_name" label={t("Ism va familiya")} errors={errors?.full_name}>
@@ -119,7 +119,7 @@ export function SettingsForm({ profile, children }: { profile: MyProfile; childr
                   selected={lookingFor.has(option.value)}
                   onClick={() => toggleLookingFor(option.value)}
                 >
-                  {option.label}
+                  {t(option.label)}
                 </ToggleChip>
               ))}
             </div>
@@ -153,10 +153,11 @@ function SwitchRow({
   hint: string;
   defaultChecked: boolean;
 }) {
+  const t = useT();
   return (
     <label className="bg-surface border-border flex min-h-11 cursor-pointer items-center justify-between gap-4 rounded-2xl border p-4">
       <span className="flex flex-col gap-1">
-        <span className="font-medium">{label}</span>
+        <span className="font-medium">{t(label)}</span>
         <span className="text-muted text-[14px]">{hint}</span>
       </span>
       <Switch name={name} defaultChecked={defaultChecked} />

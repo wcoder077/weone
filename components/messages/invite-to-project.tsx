@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { FolderPlus } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { sendProjectInvite } from "@/lib/actions/messages";
 import type { ChatMessage } from "@/lib/queries/messages";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";

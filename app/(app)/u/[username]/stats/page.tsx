@@ -21,7 +21,8 @@ import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata({ params }: PageProps<"/u/[username]/stats">) {
   const { username } = await params;
-  return { title: `@${username} · statistika` };
+  const t = await getT();
+  return { title: t("@{username} · statistika", { username }) };
 }
 
 const ICONS: Record<ActivityKind, LucideIcon> = {
@@ -73,7 +74,7 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
           <section aria-label={t("Asosiy ko'rsatkichlar")} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Tile value={recent} label={t("So'nggi {ACTIVITY_WEEKS} hafta", { ACTIVITY_WEEKS })} />
             <Tile value={stats.activeDays} label={t("Faol kunlar")} />
-            <Tile value={best.count} label={best.count ? t("Eng faol hafta · {v0}", { v0: formatDayMonth(best.start) }) : t("Eng faol hafta")} />
+            <Tile value={best.count} label={best.count ? t("Eng faol hafta · {date}", { date: formatDayMonth(best.start, t) }) : t("Eng faol hafta")} />
             <Tile value={allTime} label={t("Jami faoliyat")} />
           </section>
 
@@ -82,7 +83,7 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
             <div className="flex items-baseline justify-between gap-3">
               <h2 id="weekly-title" className="text-[15px] font-semibold">
                 {t("Haftalik faoliyat")}</h2>
-              <span className="text-muted text-[13px]">{t("So'nggi")}{" "}{ACTIVITY_WEEKS} {" "}{t("hafta")}</span>
+              <span className="text-muted text-[13px]">{t("So'nggi {n} hafta", { n: ACTIVITY_WEEKS })}</span>
             </div>
             <ActivityBars weeks={stats.weeks} className="h-40" axis />
             <WeeklyTable stats={stats} />
@@ -99,12 +100,12 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
                   <div className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-2 text-[14px] font-medium">
                       <Icon className="text-primary size-4" aria-hidden />
-                      {ACTIVITY_LABELS[kind]}
+                      {t(ACTIVITY_LABELS[kind])}
                     </span>
                     <span className="text-lg font-bold tabular-nums">{stats.totals[kind]}</span>
                   </div>
                   <ActivityBars weeks={weeks} className="h-12" />
-                  <span className="text-muted text-[12px]">{t("So'nggi")}{" "}{ACTIVITY_WEEKS} {" "}{t("haftada:")}{" "}{lately}</span>
+                  <span className="text-muted text-[12px]">{t("So'nggi {n} haftada: {count}", { n: ACTIVITY_WEEKS, count: lately })}</span>
                 </div>
               );
             })}
@@ -122,11 +123,12 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
   );
 }
 
-function Tile({ value, label }: { value: number; label: string }) {
+async function Tile({ value, label }: { value: number; label: string }) {
+  const t = await getT();
   return (
     <div className="bg-card border-border flex flex-col gap-0.5 rounded-[20px] border px-4 py-3">
       <span className="text-2xl font-bold tabular-nums">{value}</span>
-      <span className="text-muted truncate text-[12px]">{label}</span>
+      <span className="text-muted truncate text-[12px]">{t(label)}</span>
     </div>
   );
 }
@@ -144,7 +146,7 @@ async function WeeklyTable({ stats }: { stats: ActivityStats }) {
               <th className="py-1.5 pr-3 font-medium">{t("Hafta")}</th>
               {ACTIVITY_KINDS.map((k) => (
                 <th key={k} className="py-1.5 pr-3 font-medium">
-                  {ACTIVITY_LABELS[k]}
+                  {t(ACTIVITY_LABELS[k])}
                 </th>
               ))}
               <th className="py-1.5 font-medium">{t("Jami")}</th>
@@ -153,7 +155,7 @@ async function WeeklyTable({ stats }: { stats: ActivityStats }) {
           <tbody>
             {stats.weeks.map((w, i) => (
               <tr key={w.start} className="border-border border-t">
-                <td className="py-1.5 pr-3">{formatDayMonth(w.start)}</td>
+                <td className="py-1.5 pr-3">{formatDayMonth(w.start, t)}</td>
                 {ACTIVITY_KINDS.map((k) => (
                   <td key={k} className="py-1.5 pr-3">
                     {stats.weeksByKind[k][i]}
@@ -174,7 +176,7 @@ async function Timeline({ stats }: { stats: ActivityStats }) {
   const events = stats.events.slice(0, TIMELINE_LIMIT);
   const byDay = new Map<string, typeof events>();
   for (const e of events) {
-    const day = formatDay(e.at);
+    const day = formatDay(e.at, t);
     byDay.set(day, [...(byDay.get(day) ?? []), e]);
   }
   return (
@@ -188,7 +190,7 @@ async function Timeline({ stats }: { stats: ActivityStats }) {
               const body = (
                 <>
                   <Icon className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
-                  <span className="min-w-0 flex-1 text-[14px] leading-snug">{e.text}</span>
+                  <span className="min-w-0 flex-1 text-[14px] leading-snug">{t(e.text)}</span>
                   <time dateTime={e.at} className="text-muted shrink-0 text-[12px]">
                     {formatTime(e.at)}
                   </time>
@@ -210,7 +212,7 @@ async function Timeline({ stats }: { stats: ActivityStats }) {
         </div>
       ))}
       {stats.events.length > TIMELINE_LIMIT ? (
-        <p className="text-muted text-[13px]">{t("Oxirgi")}{" "}{TIMELINE_LIMIT} {" "}{t("ta voqea ko'rsatilgan.")}</p>
+        <p className="text-muted text-[13px]">{t("Oxirgi {n} ta voqea ko'rsatilgan.", { n: TIMELINE_LIMIT })}</p>
       ) : null}
     </div>
   );

@@ -40,7 +40,7 @@ export function AttachMenu({ onPick, disabled }: { onPick: (file: File) => void;
               className="hover:bg-surface flex min-h-11 items-center gap-3 rounded-xl px-3 text-[15px] transition-colors duration-150"
             >
               <Icon className="text-primary size-5" aria-hidden />
-              {ATTACHMENT_LABELS[kind]}
+              {t(ATTACHMENT_LABELS[kind])}
             </button>
           ))}
         </PopoverContent>

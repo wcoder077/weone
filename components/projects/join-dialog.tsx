@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { requestToJoin } from "@/lib/actions/projects";
 import type { ActionState } from "@/lib/actions/types";
 import { FormField, FormMessage } from "@/components/shared/form-field";
@@ -40,7 +40,7 @@ export function JoinDialog({
   return (
     <>
       <Button variant={variant} onClick={() => setOpen(true)} className={variant === "outline" ? "w-full" : undefined}>
-        {label}
+        {t(label)}
       </Button>
       <ResponsiveDialog
         open={open}

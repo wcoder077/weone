@@ -41,7 +41,7 @@ export function ThemeToggle() {
             )}
           >
             <Icon className="size-4" aria-hidden />
-            {label}
+            {t(label)}
           </button>
         );
       })}

@@ -290,3 +290,10 @@
 - Desktop navbar links show their icons (same as the mobile tab bar).
 - Hashtags: migration 26 `post_tags` (filled by a trigger from the post text, backfilled for existing posts; 10 per post, lower-cased, >= 2 chars, not digits only). `#tag` in posts links to `/tag/<tag>` (newest first, paged). `LinkifiedText tags` is used for posts only; rules shared in lib/hashtag.ts.
 - Navigation feel: `NavProgress` (thin top bar, shown only after 150 ms of waiting, finishes in ~0.3 s) and loading skeletons fade in after 150 ms (CSS on `[role=status][aria-label=Yuklanmoqda]`), so fast navigations show no loader at all.
+
+## Languages (uz / en / ru)
+- Whole site is translatable. The Uzbek text in the code is the key: `t("Saqlash")`. `lib/i18n/{core,server,dictionaries,en,ru}.ts`, `components/i18n/*` (provider + `LanguageSwitcher`), cookie `lang`, `setLanguage` action. Default Uzbek; the switcher is in Settings, on the auth pages and the landing footer.
+- A codemod wrapped ~620 texts (JSX text, text attributes, `.label`); sentences with names/counts use placeholders (`{name}`, plural `{n|post|posts}`); notifications use `richText`. Dates/relative times take `t`. Server action errors and validation messages are translated where shown (`FormMessage`, `FormField`, `toast` wrapper in `lib/toast.ts`); pre-filled strings match templates (`"Ko'pi bilan {n} ta belgi"`).
+- Server components that use `t` became `async` (`await getT()`); shared files imported by client code got `"use client"`. Loading skeletons use `LoadingRegion`.
+- `node scripts/i18n-keys.mjs` (also `pnpm i18n`) lists every UI text missing from `en.ts` / `ru.ts` (currently none). Metadata (title, description, link preview) follows the language; Telegram previews stay Uzbek (no cookie).
+- Not translated: user content (posts, names, bios), skill names, city names inside sentences, email templates in Supabase.

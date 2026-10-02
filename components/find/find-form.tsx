@@ -62,7 +62,7 @@ export function FindForm({
               selected={values.purpose === p.value}
               onClick={() => set("purpose", values.purpose === p.value ? "" : p.value)}
             >
-              {p.label}
+              {t(p.label)}
             </ToggleChip>
           ))}
         </div>

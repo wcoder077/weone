@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { deletePost, updatePost } from "@/lib/actions/posts";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";

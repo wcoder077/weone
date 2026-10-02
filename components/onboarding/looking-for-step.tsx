@@ -40,7 +40,7 @@ export function LookingForStep({
               selected={selected.has(option.value)}
               onClick={() => toggle(option.value)}
             >
-              {option.label}
+              {t(option.label)}
             </ToggleChip>
           ))}
         </div>

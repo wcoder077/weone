@@ -95,7 +95,7 @@ export function ProjectForm({
           <NativeSelect id="status" name="status" defaultValue={initial?.status ?? "idea"}>
             {PROJECT_STATUSES.map((s) => (
               <option key={s.value} value={s.value}>
-                {s.label}
+                {t(s.label)}
               </option>
             ))}
           </NativeSelect>
@@ -127,7 +127,7 @@ export function ProjectForm({
         <h2 className="text-base font-semibold">{t("Kim kerak?")}</h2>
         <p className="text-muted text-[14px]">{t("Ochiq rollar loyihani mos maqsaddoshlarga ko'rsatadi.")}</p>
         <RolesEditor roles={roles} onChange={setRoles} skills={skills} />
-        {errors?.roles ? <p className="text-danger text-[13px]">{errors.roles[0]}</p> : null}
+        {errors?.roles ? <p className="text-danger text-[13px]">{t(errors.roles[0])}</p> : null}
       </section>
 
       <FormMessage error={state?.error} />

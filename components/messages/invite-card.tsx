@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { requestToJoin } from "@/lib/actions/projects";
 import type { ChatMessage } from "@/lib/queries/messages";
 import { formatTime } from "@/lib/format";

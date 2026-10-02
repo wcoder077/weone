@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState, useTransition } from "react";
 import { Camera, ImagePlus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { saveBanner } from "@/lib/actions/profile";
 import { compressImage, IMAGE_TYPES, imageProblem } from "@/lib/image";
 import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
@@ -123,7 +123,7 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
                 value={draft.position}
                 onChange={(e) => setDraft((d) => ({ ...d, position: Number(e.target.value) }))}
                 className="accent-primary h-11 w-full"
-                aria-valuetext={draft.position < 34 ? "Yuqori qism" : draft.position > 66 ? "Pastki qism" : "O'rta"}
+                aria-valuetext={draft.position < 34 ? t("Yuqori qism") : draft.position > 66 ? t("Pastki qism") : t("O'rta")}
               />
             </div>
           ) : null}

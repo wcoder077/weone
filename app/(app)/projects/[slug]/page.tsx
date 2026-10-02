@@ -26,7 +26,8 @@ import { getT } from "@/lib/i18n/server";
 export async function generateMetadata({ params }: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
   const project = await getProject(slug);
-  return { title: project?.name ?? "Loyiha" };
+  const t = await getT();
+  return { title: project?.name ?? t("Loyiha") };
 }
 
 async function getViewerSkillIds(userId: string) {
@@ -119,7 +120,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           ) : null}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">{t("Jamoa ·")}{" "}{project.project_members.length}</h2>
+            <h2 className="text-lg font-semibold">{t("Jamoa · {n}", { n: project.project_members.length })}</h2>
             <ul className="flex flex-col gap-2">
               {project.project_members.map((m) => (
                 <li key={m.user_id} className="flex items-center gap-3">
@@ -178,7 +179,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           <SectionCard title={t("Tafsilotlar")}>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 text-[14px]">
               {project.category ? <DetailRow term={t("Soha")} value={project.category} /> : null}
-              <DetailRow term={t("Boshlangan")} value={formatMonth(project.created_at.slice(0, 10))} />
+              <DetailRow term={t("Boshlangan")} value={formatMonth(project.created_at.slice(0, 10), t)} />
               <DetailRow
                 term={t("Qayerda")}
                 value={[project.city, project.is_online ? "Onlayn" : null].filter(Boolean).join(" / ") || "—"}
@@ -214,7 +215,7 @@ async function ProjectHeader({ project, children }: { project: ProjectDetails; c
         <p className="text-muted flex flex-wrap items-center gap-x-2 text-[14px]">
           {project.owner ? (
             <Link href={`/u/${project.owner.username}`} className="hover:text-text whitespace-nowrap">
-              {project.owner.full_name} {" "}{t("tomonidan")}</Link>
+              {t("{name} tomonidan", { name: project.owner.full_name })}</Link>
           ) : null}
           {project.github_url ? (
             <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-text">

@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Copy, MoreHorizontal, Pencil, Reply, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { deleteMessage, editMessage } from "@/lib/actions/messages";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";

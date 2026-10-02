@@ -130,7 +130,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
                 scroll={false}
                 className="border-primary bg-primary/10 inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-[14px]"
               >
-                {f.label}
+                {t(f.label)}
                 <X className="size-3.5" aria-label={t("olib tashlash")} />
               </Link>
             </li>
@@ -265,7 +265,7 @@ async function ProjectResults({
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-muted text-[14px]">{total} {" "}{t("ta loyiha")}</p>
+      <p className="text-muted text-[14px]">{t("{n} ta loyiha", { n: total })}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => (
           <ProjectCard

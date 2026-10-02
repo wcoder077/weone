@@ -1,3 +1,4 @@
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { Logo } from "@/components/layout/logo";
 
 // Mobile: full-width card. From sm: wider card with more room; logo sits above it.
@@ -8,6 +9,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
       <div className="bg-card border-border rounded-card shadow-bar flex w-full max-w-[420px] flex-col gap-6 border px-6 py-8 sm:max-w-[500px] sm:gap-7 sm:px-12 sm:py-12">
         {children}
       </div>
+      <LanguageSwitcher />
     </main>
   );
 }

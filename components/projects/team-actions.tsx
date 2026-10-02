@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   cancelJoinRequest,
   decideJoinRequest,
@@ -38,9 +38,10 @@ function ActionButton({
   size?: "sm" | "default";
   label?: string;
 }) {
+  const t = useT();
   const { pending, run } = useAction();
   return (
-    <Button variant={variant} size={size} disabled={pending} aria-label={label} onClick={() => run(onRun)}>
+    <Button variant={variant} size={size} disabled={pending} aria-label={label ? t(label) : undefined} onClick={() => run(onRun)}>
       {children}
     </Button>
   );

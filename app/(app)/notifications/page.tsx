@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { Bell } from "lucide-react";
 import { MarkNotificationsRead } from "@/components/notifications/mark-read";
 import { NotificationRow } from "@/components/notifications/notification-row";
@@ -44,11 +45,11 @@ export default async function NotificationsPage({ searchParams }: PageProps<"/no
 
 function ListSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-2">
+    <LoadingRegion className="flex flex-col gap-2">
       {Array.from({ length: 6 }, (_, i) => (
         <ListRowSkeleton key={i} />
       ))}
-    </div>
+    </LoadingRegion>
   );
 }
 

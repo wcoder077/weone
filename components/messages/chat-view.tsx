@@ -22,6 +22,7 @@ import { InviteToProject } from "./invite-to-project";
 import { DaySeparator, MessageBubble } from "./message-bubble";
 import { useVisualViewportFit } from "./use-visual-viewport-fit";
 import { useT } from "@/components/i18n/i18n-provider";
+import type { TFunction } from "@/lib/i18n/core";
 
 type Person = { id: string; username: string; full_name: string; avatar_url: string | null; headline: string | null };
 
@@ -44,11 +45,11 @@ type MessageUpdate = { id: string; body: string; edited_at: string | null };
 type Connection = { id: string; status: string; requestedByMe: boolean } | null;
 
 // Quote data for a reply to `m`.
-function replyFrom(m: ChatMessage): ChatReply {
+function replyFrom(m: ChatMessage, t: TFunction): ChatReply {
   return {
     id: m.id,
     senderId: m.senderId,
-    preview: messagePreview({ body: m.body, kind: m.kind, attachment_type: m.attachment?.kind, image_path: m.imageUrl }),
+    preview: messagePreview({ body: m.body, kind: m.kind, attachment_type: m.attachment?.kind, image_path: m.imageUrl }, t),
   };
 }
 
@@ -99,7 +100,7 @@ export function ChatView({
   const [otherReadAt, setOtherReadAt] = useState(initialOtherReadAt);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const [replyingTo, setReplyingTo] = useState<ChatReply | null>(null);
-  const nameOf = (senderId: string) => (senderId === meId ? "Siz" : (other?.full_name ?? "Suhbatdosh"));
+  const nameOf = (senderId: string) => (senderId === meId ? t("Siz") : (other?.full_name ?? t("Suhbatdosh")));
   const myReadAtRef = useRef<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -195,8 +196,8 @@ export function ChatView({
               const quoted = row.reply_to ? prev.find((m) => m.id === row.reply_to) : undefined;
               const replyTo = row.reply_to
                 ? quoted
-                  ? replyFrom(quoted)
-                  : { id: row.reply_to, senderId: "", preview: "Xabar" }
+                  ? replyFrom(quoted, t)
+                  : { id: row.reply_to, senderId: "", preview: t("Xabar") }
                 : null;
               return [...prev, { ...message, replyTo }];
             });
@@ -235,7 +236,7 @@ export function ChatView({
       channelRef.current = null;
       unsubscribe();
     };
-  }, [conversationId, meId, router]);
+  }, [conversationId, meId, router, t]);
 
   return (
     // Below lg the chat is a full-screen view (the app bars are hidden, see isConversationPath).
@@ -277,8 +278,8 @@ export function ChatView({
           <p className="text-muted m-auto text-center text-[14px]">{t("Birinchi xabarni yozing.")}</p>
         ) : (
           messages.map((m, i) => {
-            const day = formatDay(m.createdAt);
-            const newDay = i === 0 || formatDay(messages[i - 1].createdAt) !== day;
+            const day = formatDay(m.createdAt, t);
+            const newDay = i === 0 || formatDay(messages[i - 1].createdAt, t) !== day;
             const mine = m.senderId === meId;
             return (
               <Fragment key={m.id}>
@@ -295,7 +296,7 @@ export function ChatView({
                     mine={mine}
                     editing={open && mine && !m.imageUrl ? editing : undefined}
                     status={mine ? readStatus(m.createdAt, otherReadAt) : undefined}
-                    onReply={open ? () => setReplyingTo(replyFrom(m)) : undefined}
+                    onReply={open ? () => setReplyingTo(replyFrom(m, t)) : undefined}
                     replyName={m.replyTo ? nameOf(m.replyTo.senderId) : undefined}
                   />
                 )}

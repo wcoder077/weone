@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { BadgeCheck, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { confirmJourneyItem, deleteJourneyItem } from "@/lib/actions/profile";
 import type { ActionState } from "@/lib/actions/types";
 import { Button } from "@/components/ui/button";

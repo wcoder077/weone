@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { removeSkill, updateSkillLevel } from "@/lib/actions/profile";
 import type { ActionState } from "@/lib/actions/types";
 import type { SkillLevel } from "@/lib/constants";
@@ -15,7 +15,7 @@ type Row = { skill_id: string; name: string; level: SkillLevel };
 export function SkillsManager({ skills }: { skills: Row[] }) {
   const t = useT();
   if (skills.length === 0) {
-    return <p className="text-muted text-[14px]">{t("Ko'nikmalarni profilingizdagi &laquo;Ko'nikma&raquo; tugmasi orqali qo'shing.")}</p>;
+    return <p className="text-muted text-[14px]">{t("Ko'nikmalarni profilingizdagi «Ko'nikma» tugmasi orqali qo'shing.")}</p>;
   }
   return (
     <ul className="flex flex-col gap-3">

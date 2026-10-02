@@ -1,6 +1,7 @@
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { messagePreview } from "@/lib/message-preview";
 import { readStatus } from "@/lib/read-status";
+import { getT } from "@/lib/i18n/server";
 import { signedUrls } from "@/lib/signed-urls";
 import { createClient } from "@/lib/supabase/server";
 
@@ -83,6 +84,7 @@ const MESSAGE_FIELDS =
 
 // Null when the conversation does not exist or the user is not a member (RLS).
 export async function getConversation(conversationId: string, userId: string) {
+  const t = await getT();
   const supabase = await createClient();
   const [members, messages, conversation] = await Promise.all([
     supabase
@@ -127,7 +129,7 @@ export async function getConversation(conversationId: string, userId: string) {
   );
   const replyOf = (id: string | null): ChatReply | null => {
     const q = id ? quoted.get(id) : undefined;
-    return q ? { id: q.id, senderId: q.sender_id, preview: messagePreview(q) } : null;
+    return q ? { id: q.id, senderId: q.sender_id, preview: messagePreview(q, t) } : null;
   };
 
   const connection = conversation.data?.connections ?? null;

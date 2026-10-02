@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { Bell, BellOff, MoreHorizontal, Pin, PinOff, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { hideConversation, setConversationMuted, setConversationPinned } from "@/lib/actions/messages";
 import { ATTACHMENT_LABELS, type AttachmentKind } from "@/lib/attachments";
 import { formatRelative } from "@/lib/format";
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import type { TFunction } from "@/lib/i18n/core";
 import { useT } from "@/components/i18n/i18n-provider";
 
 const ACTION_WIDTH = 72;
@@ -31,10 +32,10 @@ const LOCK = 8;
 // Only one row stays swiped open at a time (identified by its element, which is stable across renders).
 let openRow: { el: HTMLElement; close: () => void } | null = null;
 
-function previewOf(last: NonNullable<ConversationSummary["last"]>) {
-  if (last.kind === "project_invite") return "Loyihaga taklif";
+function previewOf(last: NonNullable<ConversationSummary["last"]>, t: TFunction) {
+  if (last.kind === "project_invite") return t("Loyihaga taklif");
   if (last.body) return last.body;
-  return ATTACHMENT_LABELS[last.attachment_type as AttachmentKind] ?? "Xabar";
+  return t(ATTACHMENT_LABELS[last.attachment_type as AttachmentKind] ?? "Xabar");
 }
 
 // A chat in the list. Touch: swipe left to reveal Ovozsiz / Qadash / O'chirish.
@@ -48,7 +49,7 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
   const contentRef = useRef<HTMLDivElement>(null);
   const openRef = useRef(false);
   const draggedRef = useRef(false);
-  const name = c.other?.full_name ?? "Suhbat";
+  const name = c.other?.full_name ?? t("Suhbat");
 
   function slideTo(x: number) {
     const el = contentRef.current;
@@ -199,12 +200,12 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
               <span className="text-muted flex shrink-0 items-center gap-1 text-[12px]">
                 {c.pinnedAt ? <Pin className="size-3.5" aria-label={t("Qadalgan")} /> : null}
                 {c.lastStatus ? <ReadMark status={c.lastStatus} /> : null}
-                {c.last ? formatRelative(c.last.created_at) : null}
+                {c.last ? formatRelative(c.last.created_at, t) : null}
               </span>
             </span>
             <span className="flex items-center justify-between gap-2">
               <span className={cn("truncate text-[14px]", c.unread > 0 ? "text-text" : "text-muted")}>
-                {c.last ? previewOf(c.last) : t("Yangi suhbat")}
+                {c.last ? previewOf(c.last, t) : t("Yangi suhbat")}
               </span>
               <UnreadBadge
                 count={c.unread}
@@ -266,6 +267,7 @@ function SwipeAction({
   onClick: () => void;
   children: React.ReactNode;
 }) {
+  const t = useT();
   return (
     <button
       type="button"
@@ -275,7 +277,7 @@ function SwipeAction({
       className={cn("flex flex-col items-center justify-center gap-1 text-[12px] font-medium", className)}
     >
       {children}
-      {label}
+      {t(label)}
     </button>
   );
 }

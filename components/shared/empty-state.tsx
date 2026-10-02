@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 
 type EmptyStateProps = {
   icon?: LucideIcon;
@@ -11,7 +12,8 @@ type EmptyStateProps = {
   className?: string;
 };
 
-export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
+export async function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
+  const t = await getT();
   return (
     <div
       className={cn(
@@ -24,11 +26,11 @@ export function EmptyState({ icon: Icon, title, description, action, className }
           <Icon className="size-5" aria-hidden />
         </span>
       ) : null}
-      <h2 className="text-base font-semibold">{title}</h2>
-      <p className="text-muted max-w-sm text-[15px]">{description}</p>
+      <h2 className="text-base font-semibold">{t(title)}</h2>
+      <p className="text-muted max-w-sm text-[15px]">{t(description)}</p>
       {action ? (
         <Link href={action.href} className={cn(buttonVariants(), "mt-2")}>
-          {action.label}
+          {t(action.label)}
         </Link>
       ) : null}
     </div>

@@ -54,11 +54,11 @@ export function EmojiPicker({ onPick, disabled }: { onPick: (emoji: string) => v
                 group === i ? "bg-surface text-text" : "text-muted hover:text-text",
               )}
             >
-              {g.label}
+              {t(g.label)}
             </button>
           ))}
         </div>
-        <div role="tabpanel" aria-label={GROUPS[group].label} className="grid grid-cols-8 gap-0.5">
+        <div role="tabpanel" aria-label={t(GROUPS[group].label)} className="grid grid-cols-8 gap-0.5">
           {GROUPS[group].emojis.map((emoji) => (
             <button
               key={emoji}

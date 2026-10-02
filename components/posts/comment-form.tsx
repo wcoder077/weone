@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Send } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { addComment } from "@/lib/actions/posts";
 import { graphemeLength } from "@/lib/text";
 import { COMMENT_MAX } from "@/lib/validation/post";

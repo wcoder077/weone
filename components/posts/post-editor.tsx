@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ImagePlus, Video, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { formatBytes } from "@/lib/attachments";
 import type { PostMediaInput } from "@/lib/actions/posts";
 import type { ActionState } from "@/lib/actions/types";
@@ -119,7 +119,7 @@ export function PostEditor({
         onChange={(e) => setBody(e.target.value)}
         autoFocus={autoFocus}
         rows={3}
-        placeholder={placeholder}
+        placeholder={t(placeholder)}
         aria-describedby={`${id}-count`}
         aria-invalid={count > POST_MAX}
         className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive field-sizing-content min-h-24 w-full resize-none rounded-2xl border px-4 py-3 text-base leading-[1.6] outline-none focus-visible:ring-3"

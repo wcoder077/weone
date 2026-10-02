@@ -2,24 +2,27 @@ import Link from "next/link";
 import { formatRelative } from "@/lib/format";
 import type { NetworkActivity } from "@/lib/queries/activities";
 import { UserAvatar } from "./user-avatar";
+import type { TFunction } from "@/lib/i18n/core";
+import { getT } from "@/lib/i18n/server";
 
-const VERBS: Partial<Record<string, (target: string) => string>> = {
-  joined_project: (t) => `«${t}» jamoasiga qo'shildi`,
-  launched_project: (t) => `«${t}» loyihasini ishga tushirdi`,
-  started_project: (t) => `«${t}» loyihasini boshladi`,
-  added_journey: (t) => `yo'liga «${t}» qo'shdi`,
-  connected: (t) => `${t} bilan bog'landi`,
+const VERBS: Partial<Record<string, string>> = {
+  joined_project: "«{name}» jamoasiga qo'shildi",
+  launched_project: "«{name}» loyihasini ishga tushirdi",
+  started_project: "«{name}» loyihasini boshladi",
+  added_journey: "yo'liga «{name}» qo'shdi",
+  connected: "{name} bilan bog'landi",
 };
 
 // "joined «X»" etc., or null for unknown types / missing targets.
-export function activityText(a: NetworkActivity) {
+export function activityText(a: NetworkActivity, t: TFunction) {
   const verb = VERBS[a.type];
-  return verb && a.target ? verb(a.target.label) : null;
+  return verb && a.target ? t(verb, { name: a.target.label }) : null;
 }
 
-export function ActivityRow({ activity: a }: { activity: NetworkActivity }) {
-  const verb = VERBS[a.type];
-  if (!verb || !a.target) return null;
+export async function ActivityRow({ activity: a }: { activity: NetworkActivity }) {
+  const t = await getT();
+  const text = activityText(a, t);
+  if (!text || !a.target) return null;
   return (
     <li className="flex gap-3">
       <Link href={`/u/${a.actor.username}`} aria-label={a.actor.full_name} className="shrink-0">
@@ -31,10 +34,10 @@ export function ActivityRow({ activity: a }: { activity: NetworkActivity }) {
             {a.actor.full_name}
           </Link>{" "}
           <Link href={a.target.href} className="text-muted hover:text-text">
-            {verb(a.target.label)}
+            {text}
           </Link>
         </p>
-        <span className="text-muted text-[12px]">{formatRelative(a.createdAt)}</span>
+        <span className="text-muted text-[12px]">{formatRelative(a.createdAt, t)}</span>
       </div>
     </li>
   );

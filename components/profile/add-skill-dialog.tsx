@@ -116,7 +116,7 @@ function AddSkillForm({
           {query.trim() && !exact ? (
             <ToggleChip selected={false} onClick={() => pick({ id: null, name: query.trim().slice(0, 40) })}>
               <Plus className="size-4" aria-hidden />
-              {t("&laquo;")}{query.trim().slice(0, 40)}{t("&raquo; qo'shish")}</ToggleChip>
+              {t("«{name}» qo'shish", { name: query.trim().slice(0, 40) })}</ToggleChip>
           ) : null}
         </div>
       </div>
@@ -195,10 +195,11 @@ function UsageCheckbox({
   checked: boolean;
   onChange: () => void;
 }) {
+  const t = useT();
   return (
     <label className="hover:bg-surface flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl px-3">
       <input type="checkbox" checked={checked} onChange={onChange} className="accent-primary size-4" />
-      <span className="flex-1 truncate">{label}</span>
+      <span className="flex-1 truncate">{t(label)}</span>
       <span className="text-muted text-[13px]">{hint}</span>
     </label>
   );

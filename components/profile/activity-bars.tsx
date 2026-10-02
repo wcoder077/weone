@@ -51,11 +51,11 @@ export function ActivityBars({
           className="bg-text text-bg pointer-events-none absolute -top-1 z-10 -translate-x-1/2 -translate-y-full rounded-lg px-2 py-1 text-[12px] font-medium whitespace-nowrap shadow-md"
           style={{ left: `${((active! + 0.5) / weeks.length) * 100}%` }}
         >
-          {formatDayMonth(hovered.start)} {" "}{t("haftasi ·")}{" "}{hovered.count} {" "}{t("ta")}</span>
+          {t("{date} haftasi · {count} ta", { date: formatDayMonth(hovered.start, t), count: hovered.count })}</span>
       ) : null}
       {axis && weeks[0] ? (
         <div className="text-muted mt-1.5 flex justify-between text-[11px]">
-          <span>{formatDayMonth(weeks[0].start)}</span>
+          <span>{formatDayMonth(weeks[0].start, t)}</span>
           <span>{t("Bu hafta")}</span>
         </div>
       ) : null}

@@ -39,15 +39,15 @@ export function UrlFilterSelect({
   return (
     <span className="relative inline-flex items-center" aria-busy={pending}>
       <NativeSelect
-        aria-label={label}
+        aria-label={t(label)}
         value={multi ? "" : (searchParams.get(param) ?? "")}
         onChange={(e) => onChange(e.target.value)}
         className="bg-card h-11 w-auto min-w-36 text-[14px]"
       >
-        <option value="">{label}</option>
+        <option value="">{t(label)}</option>
         {options.map((o) => (
           <option key={o.value} value={o.value}>
-            {o.label}
+            {t(o.label)}
           </option>
         ))}
       </NativeSelect>

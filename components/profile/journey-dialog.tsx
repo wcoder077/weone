@@ -93,7 +93,7 @@ function JourneyForm({ mySkills, item, onSaved }: Props & { onSaved: () => void 
         <NativeSelect id="type" name="type" defaultValue={item?.type ?? "hackathon"}>
           {JOURNEY_TYPES.map((type) => (
             <option key={type.value} value={type.value}>
-              {type.label}
+              {t(type.label)}
             </option>
           ))}
         </NativeSelect>

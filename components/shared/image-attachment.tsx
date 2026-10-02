@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { useT } from "@/components/i18n/i18n-provider";

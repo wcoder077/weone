@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { LinkifiedText } from "@/components/shared/linkified-text";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   getConnectionRequest,
   respondConnectionRequest,
@@ -102,7 +102,7 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
 
   function submit() {
     if (over || (empty && !quick) || image.uploading) return;
-    const input = { body: quick ? QUICK_GREETING : body, imagePath: image.attachment?.path ?? null };
+    const input = { body: quick ? t(QUICK_GREETING) : body, imagePath: image.attachment?.path ?? null };
     startTransition(async () => {
       const result =
         mode.kind === "new"

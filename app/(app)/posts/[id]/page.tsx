@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { BackLink } from "@/components/shared/back-link";
@@ -36,7 +37,7 @@ export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
       <PostCard post={post} isMine={post.author.id === userId} expanded />
       <section aria-labelledby="comments-title" className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
         <h2 id="comments-title" className="text-lg font-bold">
-          {t("Izohlar ·")}{" "}{post.commentCount}
+          {t("Izohlar · {n}", { n: post.commentCount })}
         </h2>
         <CommentForm postId={post.id} />
         <Suspense fallback={<CommentsSkeleton />}>
@@ -68,7 +69,7 @@ async function Comments({ postId, postAuthorId, userId }: { postId: string; post
 
 function CommentsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-4">
+    <LoadingRegion className="flex flex-col gap-4">
       {Array.from({ length: 2 }, (_, i) => (
         <div key={i} className="flex items-start gap-3">
           <Skeleton className="size-8 rounded-full" />
@@ -78,6 +79,6 @@ function CommentsSkeleton() {
           </div>
         </div>
       ))}
-    </div>
+    </LoadingRegion>
   );
 }

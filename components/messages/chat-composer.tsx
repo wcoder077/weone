@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition, type KeyboardEvent } from "react";
 import { FileText, Loader2, Reply, Send, Video, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   ATTACHMENT_BUCKET,
   ATTACHMENTS_ENABLED,
@@ -132,7 +132,7 @@ export function ChatComposer({
         <div className="bg-surface/60 flex items-center gap-2 rounded-2xl py-1 pr-1 pl-3">
           <Reply className="text-primary size-4 shrink-0" aria-hidden />
           <span className="border-primary min-w-0 flex-1 border-l-[3px] pl-2">
-            <span className="text-primary block truncate text-[12px] font-semibold">{replyName} {" "}{t("ga javob")}</span>
+            <span className="text-primary block truncate text-[12px] font-semibold">{t("{name} ga javob", { name: replyName })}</span>
             <span className="text-muted block truncate text-[13px]">{replyTo.preview}</span>
           </span>
           <button

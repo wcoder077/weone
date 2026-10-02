@@ -46,7 +46,7 @@ export function MobileTabBar({ username }: { username: string }) {
               <Icon className="size-5" aria-hidden />
               {href === "/messages" ? <UnreadBadge count={unreadMessages} className="absolute -top-1.5 left-3" /> : null}
             </span>
-            <span>{label}</span>
+            <span>{t(label)}</span>
             <LinkPending />
           </Link>
         );

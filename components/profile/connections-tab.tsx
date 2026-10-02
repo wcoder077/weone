@@ -44,7 +44,7 @@ export async function ConnectionsTab({ profileId, viewerId }: { profileId: strin
                 <span className="truncate font-medium">{other.full_name}</span>
                 {other.headline ? <span className="text-muted truncate text-[13px]">{other.headline}</span> : null}
               </span>
-              {badge && involved(other.id) ? <Badge tone={badge.tone}>{badge.label}</Badge> : null}
+              {badge && involved(other.id) ? <Badge tone={badge.tone}>{t(badge.label)}</Badge> : null}
             </Link>
           </li>
         );

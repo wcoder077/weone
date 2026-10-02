@@ -40,7 +40,7 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
   return (
     <form action={action} className="flex flex-col gap-5" noValidate>
       <AvatarUpload userId={profile.id} name={name} initialUrl={profile.avatar_url} />
-      {errors?.avatar_url ? <p className="text-danger text-[13px]">{errors.avatar_url[0]}</p> : null}
+      {errors?.avatar_url ? <p className="text-danger text-[13px]">{t(errors.avatar_url[0])}</p> : null}
 
       <FormField id="full_name" label={t("Ism va familiya")} errors={errors?.full_name}>
         <Input

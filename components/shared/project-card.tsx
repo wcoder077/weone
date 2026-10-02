@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PROJECT_STATUSES, labelOf } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { SkillChip } from "./skill-chip";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export type ProjectCardData = {
   name: string;
@@ -33,9 +36,10 @@ export function ProjectLogo({ name, url, className }: { name: string; url: strin
 }
 
 export function StatusBadge({ status }: { status: string }) {
+  const t = useT();
   return (
     <span className="border-border text-muted inline-flex h-7 items-center rounded-full border px-3 text-[12px] font-medium">
-      {labelOf(PROJECT_STATUSES, status)}
+      {t(labelOf(PROJECT_STATUSES, status))}
     </span>
   );
 }

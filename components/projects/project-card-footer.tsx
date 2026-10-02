@@ -20,7 +20,7 @@ export async function ProjectCardFooter({ members, openRoles }: { members: Membe
     <div className="border-border flex items-center justify-between gap-3 border-t pt-4 text-[13px]">
       <span className="flex items-center gap-2">
         <MemberStack members={members} />
-        <span className="text-muted whitespace-nowrap">{members.length} {" "}{t("a'zo")}</span>
+        <span className="text-muted whitespace-nowrap">{t("{n} a'zo", { n: members.length })}</span>
       </span>
       {openRoles.length > 0 ? (
         <span className="min-w-0 truncate">

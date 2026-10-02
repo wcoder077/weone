@@ -4,7 +4,7 @@ import { LinkifiedText } from "@/components/shared/linkified-text";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { deleteComment } from "@/lib/actions/posts";
 import { formatRelative } from "@/lib/format";
 import type { PostComment } from "@/lib/queries/posts";
@@ -38,7 +38,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
             {comment.author.full_name}
           </Link>
           <time dateTime={comment.createdAt} className="text-muted shrink-0 text-[12px]">
-            {formatRelative(comment.createdAt)}
+            {formatRelative(comment.createdAt, t)}
           </time>
         </p>
         <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap"><LinkifiedText text={comment.body} /></p>

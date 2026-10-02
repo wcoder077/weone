@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { decideJoinRequest } from "@/lib/actions/projects";
 import { respondConnectionRequest } from "@/lib/actions/connections";
 import type { ActionState } from "@/lib/actions/types";

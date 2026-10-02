@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { addEducation, deleteEducation } from "@/lib/actions/profile";
 import type { ActionState } from "@/lib/actions/types";
 import { FormField, FormMessage } from "@/components/shared/form-field";
@@ -75,7 +75,7 @@ function EducationRow({ education: e }: { education: Education }) {
         <span className="truncate font-medium">{e.institution}</span>
         <span className="text-muted text-[14px]">
           {[e.degree, e.field].filter(Boolean).join(" · ")}
-          {e.start_year ? ` · ${e.start_year}–${e.end_year ?? "hozir"}` : ""}
+          {e.start_year ? ` · ${e.start_year}–${e.end_year ?? t("hozir")}` : ""}
         </span>
       </span>
       <Button

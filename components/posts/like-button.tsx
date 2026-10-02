@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Heart } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { toggleLike } from "@/lib/actions/posts";
 import { formatCount } from "@/lib/format";
 import { cn } from "@/lib/utils";

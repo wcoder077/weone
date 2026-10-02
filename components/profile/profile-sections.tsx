@@ -67,7 +67,7 @@ export async function ProfileHeader({
             {profile.city ? (
               <span className="inline-flex items-center gap-1">
                 <MapPin className="size-4" aria-hidden />
-                {profile.city}
+                {t(profile.city)}
                 {profile.is_online_ok ? t(" · onlayn ham") : ""}
               </span>
             ) : null}
@@ -120,7 +120,7 @@ export async function EducationList({ education }: { education: ProfilePage["edu
           <span className="font-medium">{e.institution}</span>
           <span className="text-muted text-[14px]">
             {[e.degree, e.field].filter(Boolean).join(" · ")}
-            {e.start_year ? ` · ${e.start_year}–${e.end_year ?? "hozir"}` : ""}
+            {e.start_year ? ` · ${e.start_year}–${e.end_year ?? t("hozir")}` : ""}
           </span>
         </li>
       ))}

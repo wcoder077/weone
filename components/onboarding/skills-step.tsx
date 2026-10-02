@@ -74,7 +74,7 @@ export function SkillsStep({
       ) : (
         groups.map((group) => (
           <section key={group.value} className="flex flex-col gap-3">
-            <h2 className="text-base font-semibold">{group.label}</h2>
+            <h2 className="text-base font-semibold">{t(group.label)}</h2>
             <div className="flex flex-wrap gap-2.5">
               {group.skills.map((skill) => {
                 const selected = picked.has(skill.id);

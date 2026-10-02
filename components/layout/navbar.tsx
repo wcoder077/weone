@@ -63,7 +63,7 @@ export function Navbar({ me }: { me: Me }) {
                 )}
               >
                 <Icon className="size-[18px]" aria-hidden />
-                {label}
+                {t(label)}
                 {href === "/messages" ? <UnreadBadge count={unreadMessages} className="ml-1.5" /> : null}
                 <LinkPending />
               </Link>

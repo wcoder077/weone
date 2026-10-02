@@ -33,12 +33,12 @@ export async function PeopleCarousel({ meId, picks, relationships }: { meId: str
               <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
               <span className="w-full truncate text-[14px] font-semibold">{person.full_name}</span>
             </Link>
-            <span className="text-muted h-4 w-full truncate text-[12px] leading-4">{person.headline ?? person.city ?? ""}</span>
+            <span className="text-muted h-4 w-full truncate text-[12px] leading-4">{person.headline ?? (person.city ? t(person.city) : "")}</span>
             <span className="text-muted mb-2 flex h-4 w-full items-center justify-center gap-1 text-[12px] leading-4">
               {reasons[0] ? (
                 <>
                   <Check className="text-primary size-3 shrink-0" aria-hidden />
-                  <span className="truncate">{reasons[0]}</span>
+                  <span className="truncate">{t(reasons[0])}</span>
                   {reasons.length > 1 ? <span className="shrink-0">+{reasons.length - 1}</span> : null}
                 </>
               ) : null}

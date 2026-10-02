@@ -11,6 +11,7 @@ import { findPeople, type FindParams, type FindResult } from "@/lib/queries/find
 import { getAllSkills } from "@/lib/queries/skills";
 import { many, single } from "@/lib/url";
 import { BackLink } from "@/components/shared/back-link";
+import type { TFunction } from "@/lib/i18n/core";
 import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata() {
@@ -51,17 +52,17 @@ const PURPOSE_TO_LOOKING_FOR: Record<string, string> = {
   learning: "learning",
 };
 
-function reasonsFor(person: FindResult, params: FindParams) {
+function reasonsFor(person: FindResult, params: FindParams, t: TFunction) {
   const reasons = [...person.matchedSkillNames];
-  if (person.role_match && params.role) reasons.push(`«${params.role}» roliga mos`);
-  if (person.has_hackathon) reasons.push("Hackathon tajribasi bor");
+  if (person.role_match && params.role) reasons.push(t("«{role}» roliga mos", { role: params.role }));
+  if (person.has_hackathon) reasons.push(t("Hackathon tajribasi bor"));
   if (person.location_match) {
     const sameCity = params.city && person.city?.toLowerCase() === params.city.toLowerCase();
-    reasons.push(sameCity ? `${person.city}da` : "Onlayn ishlay oladi");
+    reasons.push(sameCity ? t("{city}da", { city: person.city ?? "" }) : t("Onlayn ishlay oladi"));
   }
-  if (person.is_open) reasons.push("Hamkorlikka ochiq");
+  if (person.is_open) reasons.push(t("Hamkorlikka ochiq"));
   if (person.looking_for_match && params.purpose) {
-    reasons.push(`U ham ${labelOf(LOOKING_FOR, PURPOSE_TO_LOOKING_FOR[params.purpose]).toLowerCase()} qidiryapti`);
+    reasons.push(t("U ham {purpose} qidiryapti", { purpose: t(labelOf(LOOKING_FOR, PURPOSE_TO_LOOKING_FOR[params.purpose])).toLowerCase() }));
   }
   return reasons;
 }
@@ -139,14 +140,14 @@ async function FindResults({ params }: { params: FindParams }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-muted text-[14px]">{people.length} {" "}{t("kishi mos keldi")}</p>
+      <p className="text-muted text-[14px]">{t("{n} kishi mos keldi", { n: people.length })}</p>
       {people.map((person) => (
         <PersonCard
           key={person.id}
           person={person}
           skills={person.skills.map((s) => s.name)}
           matchedSkills={person.matchedSkillNames}
-          reasons={<MatchReasons reasons={reasonsFor(person, params)} />}
+          reasons={<MatchReasons reasons={reasonsFor(person, params, t)} />}
           actions={<PersonActions viewerId={viewerId} userId={person.id} name={person.full_name} />}
         />
       ))}

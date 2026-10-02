@@ -52,7 +52,7 @@ export function UrlSearchInput({
       }}
     >
       <label className="sr-only" htmlFor={`search-${param}`}>
-        {label}
+        {t(label)}
       </label>
       <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" aria-hidden />
       <Input

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { ChevronRight } from "lucide-react";
 import { getProfileSummary } from "@/lib/queries/activities";
 import { ACTIVITY_WEEKS, getActivityStats } from "@/lib/queries/activity-stats";
@@ -36,7 +37,7 @@ export async function ProfileSummary({
   }
 
   const activity = summary.activity.flatMap((a) => {
-    const text = activityText(a);
+    const text = activityText(a, t);
     return text && a.target ? [{ id: a.id, text, href: a.target.href, createdAt: a.createdAt }] : [];
   });
 
@@ -56,7 +57,7 @@ export async function ProfileSummary({
         <span className="flex items-center justify-between gap-2 text-[13px]">
           <span className="font-medium">{t("Faoliyat")}</span>
           <span className="text-muted inline-flex items-center gap-0.5">
-            {ACTIVITY_WEEKS} {" "}{t("hafta ·")}{" "}{stats.weeks.reduce((sum, w) => sum + w.count, 0)} {" "}{t("ta")}<ChevronRight className="size-4" aria-hidden />
+            {t("{weeks} hafta · {count} ta", { weeks: ACTIVITY_WEEKS, count: stats.weeks.reduce((sum, w) => sum + w.count, 0) })}<ChevronRight className="size-4" aria-hidden />
           </span>
         </span>
         <ActivityBars weeks={stats.weeks} className="mt-2 h-14" />
@@ -68,7 +69,7 @@ export async function ProfileSummary({
               <Link href={a.href} className="text-[14px] leading-snug hover:underline">
                 {a.text}
               </Link>
-              <span className="text-muted text-[12px]">{formatRelative(a.createdAt)}</span>
+              <span className="text-muted text-[12px]">{formatRelative(a.createdAt, t)}</span>
             </li>
           ))}
         </ul>
@@ -79,14 +80,15 @@ export async function ProfileSummary({
   );
 }
 
-function Stat({ href, value, label }: { href: string; value: number; label: string }) {
+async function Stat({ href, value, label }: { href: string; value: number; label: string }) {
+  const t = await getT();
   return (
     <Link
       href={href}
       className="bg-surface hover:border-primary/40 border-border focus-visible:ring-ring/50 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition-colors outline-none focus-visible:ring-3"
     >
       <span className="text-[17px] leading-tight font-bold tabular-nums">{formatCount(value)}</span>
-      <span className="text-muted truncate text-[12px]">{label}</span>
+      <span className="text-muted truncate text-[12px]">{t(label)}</span>
     </Link>
   );
 }
@@ -94,7 +96,7 @@ function Stat({ href, value, label }: { href: string; value: number; label: stri
 export function ProfileSummarySkeleton() {
   return (
     <SectionCard title={TITLE}>
-      <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-3">
+      <LoadingRegion className="flex flex-col gap-3">
         <div className="grid grid-cols-4 gap-1.5">
           <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />
@@ -104,7 +106,7 @@ export function ProfileSummarySkeleton() {
         <Skeleton className="h-24 rounded-xl" />
         <Skeleton className="h-4 w-4/5" />
         <Skeleton className="h-4 w-3/5" />
-      </div>
+      </LoadingRegion>
     </SectionCard>
   );
 }

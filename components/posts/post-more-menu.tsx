@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link2, MoreHorizontal, Repeat2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { repostPost } from "@/lib/actions/posts";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import {

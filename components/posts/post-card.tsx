@@ -24,7 +24,7 @@ export async function PostCard({ post, isMine, expanded = false }: { post: FeedP
           </Link>
           {post.author.headline ? <p className="text-muted truncate text-[13px]">{post.author.headline}</p> : null}
           <p className="text-muted text-[12px]">
-            <time dateTime={post.createdAt}>{formatRelative(post.createdAt)}</time>
+            <time dateTime={post.createdAt}>{formatRelative(post.createdAt, t)}</time>
             {post.editedAt ? t(" · tahrirlangan") : null}
           </p>
         </div>
@@ -63,14 +63,15 @@ function AuthorLink({ author }: { author: PostAuthor }) {
 }
 
 // The post that was reposted, shown inside the repost.
-function EmbeddedOriginal({ original }: { original: EmbeddedPost }) {
+async function EmbeddedOriginal({ original }: { original: EmbeddedPost }) {
+  const t = await getT();
   return (
     <div className="border-border flex flex-col gap-2 rounded-2xl border p-3">
       <Link href={`/posts/${original.id}`} className="flex items-center gap-2 hover:underline">
         <UserAvatar name={original.author.full_name} url={original.author.avatar_url} size="sm" />
         <span className="truncate text-[14px] font-semibold">{original.author.full_name}</span>
         <time dateTime={original.createdAt} className="text-muted shrink-0 text-[12px]">
-          {formatRelative(original.createdAt)}
+          {formatRelative(original.createdAt, t)}
         </time>
       </Link>
       {original.body ? <PostBody body={original.body} small /> : null}
