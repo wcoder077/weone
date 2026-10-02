@@ -232,3 +232,6 @@
 - Profile sidebar card: under the four stats, a "Faoliyat · 12 hafta · N ta" strip with weekly columns (56 px high, primary colour, 2 px gaps, 4 px rounded tops, hover shows the week and count). Tapping it opens `/u/[username]/stats`.
 - `/u/[username]/stats`: headline tiles (last 12 weeks, active days, busiest week, all-time total), a large weekly chart with axis + a "Jadval ko'rinishi" table, small multiples per kind (posts, reposts, connections, projects, journey, comments; all-time total + 12-week bars), and a "Nima qachon bo'ldi" timeline grouped by day (latest 60, linked to the post/profile/project). Loading skeleton, empty and retryable error states.
 - Data: `getActivityStats()` reads the person's own rows (posts/reposts, accepted connections, project memberships, journey items, comments), no migration. Single-series charts only (no legend needed); primary passes the palette validator on both card surfaces.
+
+## Chat no longer slides sideways (done)
+- The swipe-to-reply icon sat outside the bubble and widened the message list, so the whole chat could be dragged left/right. The list is now `overflow-x-hidden` + `touch-action: pan-y`, and the icon sits behind the bubble (revealed as it slides).

@@ -85,7 +85,8 @@ export function MessageBubble({
           <span
             ref={iconRef}
             aria-hidden
-            className={cn("text-primary absolute top-1/2 -translate-y-1/2 opacity-0", mine ? "-right-8" : "-left-8")}
+            // Behind the bubble, revealed as the bubble slides away (stays inside the list).
+            className={cn("text-primary absolute top-1/2 z-0 -translate-y-1/2 opacity-0", mine ? "right-2" : "left-2")}
           >
             <Reply className="size-5" />
           </span>
@@ -106,7 +107,7 @@ export function MessageBubble({
           }
           onMouseDown={onReply ? (e) => e.detail > 1 && e.preventDefault() : undefined}
           className={cn(
-            "min-w-0 rounded-3xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-[0_1px_0_rgb(0_0_0/0.04)]",
+            "relative z-10 min-w-0 rounded-3xl px-4 py-2.5 text-[15px] leading-relaxed break-words whitespace-pre-wrap shadow-[0_1px_0_rgb(0_0_0/0.04)]",
             mine ? "bg-bubble-mine rounded-br-lg" : "bg-card border-border rounded-bl-lg border",
             // Long-press opens the menu on touch, so the native selection callout is off there ("Nusxa olish" copies).
             hasMenu && "pointer-coarse:touch-callout-none pointer-coarse:select-none",

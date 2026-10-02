@@ -249,7 +249,12 @@ export function ChatView({
         {open ? <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} /> : null}
       </header>
 
-      <div className="chat-surface flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-3 py-4 sm:px-6" aria-live="polite">
+      {/* Vertical scroll only: the swipe-to-reply icon sits just outside a bubble, and a
+          sideways drag must move the bubble, never the whole list. */}
+      <div
+        className="chat-surface flex min-h-0 flex-1 touch-pan-y flex-col gap-2 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-4 sm:px-6"
+        aria-live="polite"
+      >
         {messages.length === 0 ? (
           <p className="text-muted m-auto text-center text-[14px]">Birinchi xabarni yozing.</p>
         ) : (
