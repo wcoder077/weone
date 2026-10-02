@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { DEFAULT_LANG, translate, type Dictionary, type Lang, type TFunction } from "@/lib/i18n/core";
 
 type I18n = { lang: Lang; dict: Dictionary };
@@ -11,7 +11,10 @@ let active: I18n = { lang: DEFAULT_LANG, dict: {} };
 
 // Only the active language's dictionary is sent to the browser.
 export function I18nProvider({ lang, dict, children }: { lang: Lang; dict: Dictionary; children: ReactNode }) {
-  const value = useMemo(() => ({ lang, dict }), [lang, dict]);
+  // Every router.refresh() delivers a new `dict` object. Keep the first one per language, so `t`
+  // keeps its identity: effects that list `t` as a dependency must not re-run (and refresh again).
+  const [value, setValue] = useState<I18n>({ lang, dict });
+  if (value.lang !== lang) setValue({ lang, dict });
   useEffect(() => {
     active = value;
   }, [value]);

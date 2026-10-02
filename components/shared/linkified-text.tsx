@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import { hashtagHref } from "@/lib/hashtag";

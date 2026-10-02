@@ -297,3 +297,4 @@
 - Server components that use `t` became `async` (`await getT()`); shared files imported by client code got `"use client"`. Loading skeletons use `LoadingRegion`.
 - `node scripts/i18n-keys.mjs` (also `pnpm i18n`) lists every UI text missing from `en.ts` / `ru.ts` (currently none). Metadata (title, description, link preview) follows the language; Telegram previews stay Uzbek (no cookie).
 - Not translated: user content (posts, names, bios), skill names, city names inside sentences, email templates in Supabase.
+- LinkifiedText is a client component: it was a server component with an onClick handler, so any server-rendered text with a link (profile bio, journey/project descriptions) crashed the page. I18nProvider keeps one dictionary object per language: a new object on every router.refresh() changed t, re-ran the chat effect and caused an endless markRead/refresh loop.
