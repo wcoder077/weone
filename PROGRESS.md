@@ -221,3 +221,6 @@
 
 ## Default banner follows the theme (done)
 - `public/defaults/banner-light.jpg` (same composition on a light background) next to the dark one; the profile shows the light file in light mode and the dark one in dark mode (`dark:` variant), until the user uploads a banner.
+
+## Hold an avatar to see the photo (done)
+- `AvatarPreview` (used by `UserAvatar` whenever there is a real photo): press and hold 0.5 s (touch or mouse) → the photo opens large and round (min(78vw, 340 px)) with the name, over a see-through blurred backdrop; tap anywhere or Esc closes. Moving > 10 px cancels (scrolling/swiping still work). The click after a hold is swallowed, so the link around the avatar doesn't open; overlay events don't bubble to parent links. Native long-press menu is suppressed on avatars. Default-avatar users get no preview.

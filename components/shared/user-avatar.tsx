@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { OnlineDot } from "@/components/layout/online-presence";
+import { AvatarPreview } from "./avatar-preview";
 import { DEFAULT_AVATAR } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
@@ -30,15 +31,23 @@ export function UserAvatar({
   userId?: string;
   className?: string;
 }) {
+  const avatar = (
+    <Avatar className={SIZES[size]}>
+      {/* No photo yet: the default user picture (initials only show while it loads). */}
+      <AvatarImage src={url ?? DEFAULT_AVATAR} alt="" />
+      <AvatarFallback className="bg-surface text-text font-semibold">{initialsOf(name)}</AvatarFallback>
+    </Avatar>
+  );
   return (
     <span className={cn("relative inline-flex shrink-0", className)}>
-      <Avatar className={SIZES[size]}>
-        {/* No photo yet: the default user picture (initials only show while it loads). */}
-        <AvatarImage src={url ?? DEFAULT_AVATAR} alt="" />
-        <AvatarFallback className="bg-surface text-text font-semibold">
-          {initialsOf(name)}
-        </AvatarFallback>
-      </Avatar>
+      {/* A real photo opens large on press-and-hold. */}
+      {url ? (
+        <AvatarPreview url={url} name={name}>
+          {avatar}
+        </AvatarPreview>
+      ) : (
+        avatar
+      )}
       {userId ? <OnlineDot userId={userId} className={size === "xl" ? "right-1 bottom-1 size-5 ring-4" : undefined} /> : null}
     </span>
   );
