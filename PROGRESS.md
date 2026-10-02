@@ -279,3 +279,7 @@
 - Connect dialog: a request can be sent without a message ("Xabarsiz yuborish"); the first message is then a short greeting, so the DB rule "text or image" still holds.
 - Proxy: a link that lands on "/" with `code` or `token_hash` (Supabase fell back to the Site URL) is forwarded to /auth/callback.
 - Posts up to 2000 graphemes (migration 25, `POST_MAX`); comments stay at 500.
+
+## Email confirmation
+- Sign-up with "Confirm email" on: the form says where the email went and offers "Xatni qayta yuborish" (`resendConfirmation`, generic answer so emails can't be probed). Login with an unconfirmed account shows the same resend option.
+- Email delivery needs custom SMTP in Supabase (the built-in sender only reaches team members); email templates should use `token_hash` links so they open on any device.

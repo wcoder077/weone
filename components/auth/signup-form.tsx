@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, type FormEvent } from "react";
+import { ResendConfirmation } from "./resend-confirmation";
 import { useKeepValuesSubmit } from "./use-keep-values-submit";
 import { signUp } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
@@ -9,9 +10,24 @@ import { Input } from "@/components/ui/input";
 
 export function SignupForm() {
   const [state, action, pending] = useActionState(signUp, null);
-  const onSubmit = useKeepValuesSubmit(action);
+  const submit = useKeepValuesSubmit(action);
+  const [email, setEmail] = useState("");
 
-  if (state?.message) return <FormMessage message={state.message} />;
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    const value = new FormData(event.currentTarget).get("email");
+    setEmail(typeof value === "string" ? value.trim() : "");
+    submit(event);
+  }
+
+  // Confirmation email sent: tell where it went and offer to send it again.
+  if (state?.message) {
+    return (
+      <div className="flex flex-col gap-3">
+        <FormMessage message={state.message} />
+        <ResendConfirmation email={email} />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
