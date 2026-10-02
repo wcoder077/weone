@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import { cn } from "@/lib/utils";
 
 // The first paragraph is the title; whatever follows a blank line stays folded until "Yana".
@@ -18,11 +19,11 @@ export function PostBody({ body, small = false, expanded = false }: { body: stri
   const { title, rest } = splitPostBody(body);
   const text = cn("max-w-[65ch] leading-[1.6] break-words whitespace-pre-wrap", small ? "text-[15px]" : "text-base");
 
-  if (!rest) return <p className={text}>{body}</p>;
+  if (!rest) return <p className={text}><LinkifiedText text={body} /></p>;
   return (
     <div className="flex flex-col gap-2">
-      <p className={cn(text, "font-semibold")}>{title}</p>
-      {open ? <p className={text}>{rest}</p> : null}
+      <p className={cn(text, "font-semibold")}><LinkifiedText text={title} /></p>
+      {open ? <p className={text}><LinkifiedText text={rest} /></p> : null}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

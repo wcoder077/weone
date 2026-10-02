@@ -1,5 +1,6 @@
 "use client";
 
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
@@ -38,7 +39,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
             {formatRelative(comment.createdAt)}
           </time>
         </p>
-        <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap">{comment.body}</p>
+        <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap"><LinkifiedText text={comment.body} /></p>
       </div>
       {canDelete ? (
         <>

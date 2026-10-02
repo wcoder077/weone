@@ -1,3 +1,4 @@
+import { LinkifiedText } from "@/components/shared/linkified-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JoinDialog } from "@/components/projects/join-dialog";
@@ -99,7 +100,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Loyiha haqida</h2>
             <p className="text-muted leading-relaxed whitespace-pre-line">
-              {project.description ?? project.tagline ?? "Tavsif hali yozilmagan."}
+              <LinkifiedText text={project.description ?? project.tagline ?? "Tavsif hali yozilmagan."} />
             </p>
           </section>
 
