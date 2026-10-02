@@ -51,6 +51,14 @@ function replyFrom(m: ChatMessage): ChatReply {
   };
 }
 
+// Adds server messages we don't have yet. Messages already on screen stay as they are
+// (a fresh render re-signs attachment links, and swapping them would re-download files).
+function mergeMessages(local: ChatMessage[], server: ChatMessage[]) {
+  const byId = new Map(local.map((m) => [m.id, m]));
+  for (const m of server) if (!byId.has(m.id)) byId.set(m.id, m);
+  return [...byId.values()].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+}
+
 // Pending chats hold only the request's first message; the footer then shows the
 // request actions instead of a composer (RLS rejects messages until accepted).
 function pendingState(connection: Connection): ConnectionState | null {
@@ -79,6 +87,12 @@ export function ChatView({
 }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
+  const [serverMessages, setServerMessages] = useState(initialMessages);
+  // A refresh brought a newer server list: add what we missed.
+  if (initialMessages !== serverMessages) {
+    setServerMessages(initialMessages);
+    setMessages((prev) => mergeMessages(prev, initialMessages));
+  }
   // When the other person last read this chat; drives ✓ / ✓✓ on my messages.
   const [otherReadAt, setOtherReadAt] = useState(initialOtherReadAt);
   const channelRef = useRef<RealtimeChannel | null>(null);
@@ -208,9 +222,11 @@ export function ChatView({
           },
         ),
       // Joined (or re-joined): repeat my read time in case the first announce went out too early.
-      (channel) => {
+      // Back from a hidden tab: markRead also refreshes the page, which brings missed messages.
+      (channel, resumed) => {
         channelRef.current = channel;
-        announceRead(channel);
+        if (resumed) markRead();
+        else announceRead(channel);
       },
     );
     return () => {

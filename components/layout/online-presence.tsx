@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const NOBODY = new Set<string>();
@@ -18,7 +18,6 @@ export function OnlinePresenceProvider({ meId, children }: { meId: string; child
   useEffect(() => {
     const supabase = createClient();
     let channel: RealtimeChannel | null = null;
-    let cancelled = false;
 
     const visible = () => document.visibilityState === "visible";
     function onVisibility() {
@@ -27,21 +26,23 @@ export function OnlinePresenceProvider({ meId, children }: { meId: string; child
       else void channel.untrack();
     }
 
-    void supabase.realtime.setAuth().then(() => {
-      if (cancelled) return;
-      const ch = supabase.channel("online-users", { config: { presence: { key: meId } } });
-      channel = ch
-        .on("presence", { event: "sync" }, () => setOnline(new Set(Object.keys(ch.presenceState()))))
-        .subscribe((status) => {
-          if (status === "SUBSCRIBED" && visible()) void ch.track({});
-        });
-    });
+    // subscribeWithAuth also leaves the channel after a minute in the background.
+    const unsubscribe = subscribeWithAuth(
+      supabase,
+      () => {
+        const ch = supabase.channel("online-users", { config: { presence: { key: meId } } });
+        return ch.on("presence", { event: "sync" }, () => setOnline(new Set(Object.keys(ch.presenceState()))));
+      },
+      (ch) => {
+        channel = ch;
+        if (visible()) void ch.track({});
+      },
+    );
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
-      cancelled = true;
       document.removeEventListener("visibilitychange", onVisibility);
-      if (channel) void supabase.removeChannel(channel);
+      unsubscribe();
     };
   }, [meId]);
 

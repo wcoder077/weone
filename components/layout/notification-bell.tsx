@@ -35,7 +35,17 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
           "postgres_changes",
           { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
           () => setCount((n) => n + 1),
-        )
+        ),
+      // Back from a hidden tab: re-count what arrived meanwhile.
+      async (_, resumed) => {
+        if (!resumed) return;
+        const { count: unread } = await supabase
+          .from("notifications")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userId)
+          .eq("read", false);
+        if (unread !== null) setCount(unread);
+      },
     );
     return () => {
       unsubscribe();

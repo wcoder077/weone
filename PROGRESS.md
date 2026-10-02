@@ -266,3 +266,8 @@
 - Post videos limited to 10 MB (client + migration 23 bucket limit).
 - Home recommendations (people, projects) memoized per user for 5 minutes per server instance (`lib/memo.ts`).
 - Chat file sending paused: `ATTACHMENTS_ENABLED = false` hides the paperclip and the action refuses; migration 23 sets the bucket limit to 1 byte. Old files stay readable.
+
+## Scaling: Realtime, rate limits
+- `subscribeWithAuth` leaves its channel after a tab is hidden for 60 s (the socket closes once no channel is left) and rejoins on return with `resumed = true`; the bell, unread badge, conversation list and open chat re-fetch what they missed. Presence uses the same helper.
+- ChatView merges messages from a refreshed server render (adds missing ones, keeps those on screen).
+- Migration 24: `enforce_rate_limit()` trigger caps inserts per user (posts 10/10 min, comments 20/5 min, messages 30/min, connections 30/h, projects 5/h). Rows without a session are not limited. Actions show "Juda tez…" on `rate_limited`. Tested on Postgres 16.
