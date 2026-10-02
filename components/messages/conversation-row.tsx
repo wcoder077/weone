@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const ACTION_WIDTH = 72;
 const ACTIONS = 3;
@@ -40,6 +41,7 @@ function previewOf(last: NonNullable<ConversationSummary["last"]>) {
 // Mouse and keyboard: the same actions in the "…" menu. Everything here changes only
 // my side of the chat; "O'chirish" hides it for me, the other person keeps it.
 export function ConversationRow({ conversation: c, active }: { conversation: ConversationSummary; active: boolean }) {
+  const t = useT();
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
   const rowRef = useRef<HTMLDivElement>(null);
@@ -73,17 +75,17 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
     let frame = 0;
 
     function onStart(e: TouchEvent) {
-      const t = e.touches[0];
-      if (!t || e.touches.length !== 1) return;
-      start = { x: t.clientX, y: t.clientY, t: performance.now() };
+      const touch = e.touches[0];
+      if (!touch || e.touches.length !== 1) return;
+      start = { x: touch.clientX, y: touch.clientY, t: performance.now() };
       axis = null;
       draggedRef.current = false;
     }
     function onMove(e: TouchEvent) {
-      const t = e.touches[0];
-      if (!start || !t) return;
-      const dx = t.clientX - start.x;
-      const dy = t.clientY - start.y;
+      const touch = e.touches[0];
+      if (!start || !touch) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
       if (!axis) {
         if (Math.abs(dx) < LOCK && Math.abs(dy) < LOCK) return;
         axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
@@ -150,14 +152,14 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
     <div ref={rowRef} data-no-swipe className="group relative overflow-hidden">
       {/* Revealed by swiping left (touch only). */}
       <div className="absolute inset-y-0 right-0 flex" aria-hidden={!openRef.current}>
-        <SwipeAction label={c.muted ? "Ovozni yoqish" : "Ovozsiz"} className="bg-surface text-text" onClick={toggleMute}>
+        <SwipeAction label={c.muted ? t("Ovozni yoqish") : t("Ovozsiz")} className="bg-surface text-text" onClick={toggleMute}>
           {c.muted ? <Bell className="size-5" /> : <BellOff className="size-5" />}
         </SwipeAction>
-        <SwipeAction label={c.pinnedAt ? "Qadashni olish" : "Qadash"} className="bg-primary text-on-accent" onClick={togglePin}>
+        <SwipeAction label={c.pinnedAt ? t("Qadashni olish") : t("Qadash")} className="bg-primary text-on-accent" onClick={togglePin}>
           {c.pinnedAt ? <PinOff className="size-5" /> : <Pin className="size-5" />}
         </SwipeAction>
         <SwipeAction
-          label="O'chirish"
+          label={t("O'chirish")}
           className="bg-danger text-on-accent"
           onClick={() => {
             close();
@@ -172,7 +174,7 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
         <Link
           href={`/messages/${c.id}`}
           aria-current={active ? "page" : undefined}
-          aria-label={c.unread > 0 ? `${name}, ${c.unread} ta o'qilmagan xabar` : undefined}
+          aria-label={c.unread > 0 ? t("{name}, {unread} ta o'qilmagan xabar", { name, unread: c.unread }) : undefined}
           onClick={(e) => {
             // A swipe or an open row: the tap closes it instead of opening the chat.
             if (draggedRef.current || openRef.current) {
@@ -191,18 +193,18 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
             <span className="flex items-baseline justify-between gap-2">
               <span className={cn("flex min-w-0 items-center gap-1.5", c.unread > 0 ? "font-semibold" : "font-medium")}>
                 <span className="truncate">{name}</span>
-                {c.muted ? <BellOff className="text-muted size-3.5 shrink-0" aria-label="Ovozsiz" /> : null}
-                {c.status === "pending" ? <Badge className="h-5 px-2 text-[11px]">Jarayonda</Badge> : null}
+                {c.muted ? <BellOff className="text-muted size-3.5 shrink-0" aria-label={t("Ovozsiz")} /> : null}
+                {c.status === "pending" ? <Badge className="h-5 px-2 text-[11px]">{t("Jarayonda")}</Badge> : null}
               </span>
               <span className="text-muted flex shrink-0 items-center gap-1 text-[12px]">
-                {c.pinnedAt ? <Pin className="size-3.5" aria-label="Qadalgan" /> : null}
+                {c.pinnedAt ? <Pin className="size-3.5" aria-label={t("Qadalgan")} /> : null}
                 {c.lastStatus ? <ReadMark status={c.lastStatus} /> : null}
                 {c.last ? formatRelative(c.last.created_at) : null}
               </span>
             </span>
             <span className="flex items-center justify-between gap-2">
               <span className={cn("truncate text-[14px]", c.unread > 0 ? "text-text" : "text-muted")}>
-                {c.last ? previewOf(c.last) : "Yangi suhbat"}
+                {c.last ? previewOf(c.last) : t("Yangi suhbat")}
               </span>
               <UnreadBadge
                 count={c.unread}
@@ -214,7 +216,7 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
         {/* Mouse and keyboard: the same actions in a menu. */}
         <DropdownMenu>
           <DropdownMenuTrigger
-            aria-label={`${name}: amallar`}
+            aria-label={t("{name}: amallar", { name })}
             className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 data-popup-open:bg-surface mr-1 inline-flex size-9 shrink-0 items-center justify-center rounded-full opacity-0 outline-none group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-3 data-popup-open:opacity-100 pointer-coarse:hidden"
           >
             <MoreHorizontal className="size-4" />
@@ -222,16 +224,15 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
           <DropdownMenuContent align="end" className="min-w-48">
             <DropdownMenuItem onClick={toggleMute}>
               {c.muted ? <Bell aria-hidden /> : <BellOff aria-hidden />}
-              {c.muted ? "Ovozni yoqish" : "Ovozsiz qilish"}
+              {c.muted ? t("Ovozni yoqish") : t("Ovozsiz qilish")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={togglePin}>
               {c.pinnedAt ? <PinOff aria-hidden /> : <Pin aria-hidden />}
-              {c.pinnedAt ? "Qadashni olish" : "Qadash"}
+              {c.pinnedAt ? t("Qadashni olish") : t("Qadash")}
             </DropdownMenuItem>
             <DropdownMenuItem variant="destructive" onClick={() => setConfirming(true)}>
               <Trash2 aria-hidden />
-              O&apos;chirish
-            </DropdownMenuItem>
+              {t("O'chirish")}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -239,15 +240,14 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
       <ResponsiveDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title="Suhbatni o'chirasizmi?"
-        description={`Suhbat faqat siz uchun o'chadi. ${name} uchun u saqlanib qoladi. Yangi xabar kelsa, suhbat yana ko'rinadi.`}
+        title={t("Suhbatni o'chirasizmi?")}
+        description={t("Suhbat faqat siz uchun o'chadi. {name} uchun u saqlanib qoladi. Yangi xabar kelsa, suhbat yana ko'rinadi.", { name })}
       >
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" size="lg" onClick={() => setConfirming(false)}>
-            Bekor qilish
-          </Button>
+            {t("Bekor qilish")}</Button>
           <Button variant="destructive" size="lg" disabled={pending} onClick={remove}>
-            {pending ? "O'chirilmoqda…" : "O'chirish"}
+            {pending ? t("O'chirilmoqda…") : t("O'chirish")}
           </Button>
         </div>
       </ResponsiveDialog>

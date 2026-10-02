@@ -13,8 +13,12 @@ import { PROJECT_STATUSES } from "@/lib/constants";
 import { getProjectCategories, listProjects, type ProjectListTab } from "@/lib/queries/projects";
 import { getAllSkills } from "@/lib/queries/skills";
 import { BackLink } from "@/components/shared/back-link";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Loyihalar" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Loyihalar") };
+}
 
 const TABS: { value: ProjectListTab; label: string }[] = [
   { value: "for-you", label: "Siz uchun" },
@@ -36,8 +40,9 @@ function param(value: string | string[] | undefined) {
 }
 
 export default async function ProjectsPage({ searchParams }: PageProps<"/projects">) {
+  const t = await getT();
   const params = await searchParams;
-  const tab = TABS.find((t) => t.value === params.tab)?.value ?? "for-you";
+  const tab = TABS.find((item) => item.value === params.tab)?.value ?? "for-you";
   const filters = { category: param(params.category), status: param(params.status), stackSkillId: param(params.stack) };
   const [categories, skills] = await Promise.all([getProjectCategories(), getAllSkills()]);
 
@@ -52,17 +57,16 @@ export default async function ProjectsPage({ searchParams }: PageProps<"/project
     <div className="flex flex-col gap-6">
       <BackLink fallback="/home" />
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold lg:text-[32px]">Loyihalar</h1>
+        <h1 className="text-2xl font-bold lg:text-[32px]">{t("Loyihalar")}</h1>
         <Link href="/projects/new" className={buttonVariants()}>
           <Plus data-icon="inline-start" />
-          Loyiha yaratish
-        </Link>
+          {t("Loyiha yaratish")}</Link>
       </div>
-      <LinkTabs label="Loyihalar bo'limlari" active={tab} tabs={TABS.map((t) => ({ ...t, href: hrefFor(t.value) }))} />
+      <LinkTabs label={t("Loyihalar bo'limlari")} active={tab} tabs={TABS.map((item) => ({ ...item, href: hrefFor(item.value) }))} />
       <div className="flex flex-wrap gap-2">
-        <UrlFilterSelect param="category" label="Soha" options={categories.map((c) => ({ value: c, label: c }))} />
-        <UrlFilterSelect param="stack" label="Texnologiya" options={skills.map((s) => ({ value: s.id, label: s.name }))} />
-        <UrlFilterSelect param="status" label="Holat" options={[...PROJECT_STATUSES]} />
+        <UrlFilterSelect param="category" label={t("Soha")} options={categories.map((c) => ({ value: c, label: c }))} />
+        <UrlFilterSelect param="stack" label={t("Texnologiya")} options={skills.map((s) => ({ value: s.id, label: s.name }))} />
+        <UrlFilterSelect param="status" label={t("Holat")} options={[...PROJECT_STATUSES]} />
       </div>
       <Suspense key={JSON.stringify({ tab, filters })} fallback={<CardGridSkeleton variant="project" count={6} />}>
         <ProjectGrid tab={tab} filters={filters} />

@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const NOBODY = new Set<string>();
 const OnlineContext = createContext<Set<string>>(NOBODY);
@@ -56,11 +57,12 @@ export function useIsOnline(userId: string | undefined) {
 
 // Green dot on an avatar, only while that user is online.
 export function OnlineDot({ userId, className }: { userId: string; className?: string }) {
+  const t = useT();
   if (!useIsOnline(userId)) return null;
   return (
     <span
       role="img"
-      aria-label="Onlayn"
+      aria-label={t("Onlayn")}
       className={cn("bg-success ring-card absolute right-0 bottom-0 size-3 rounded-full ring-2", className)}
     />
   );
@@ -68,11 +70,11 @@ export function OnlineDot({ userId, className }: { userId: string; className?: s
 
 // "Onlayn" next to a name (profile header).
 export function OnlineLabel({ userId }: { userId: string }) {
+  const t = useT();
   if (!useIsOnline(userId)) return null;
   return (
     <span className="inline-flex items-center gap-1.5">
       <span className="bg-success size-2 rounded-full" aria-hidden />
-      Onlayn
-    </span>
+      {t("Onlayn")}</span>
   );
 }

@@ -2,6 +2,7 @@
 
 import { SKILL_LEVELS, type SkillLevel } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function LevelPicker({
   skillName,
@@ -12,8 +13,9 @@ export function LevelPicker({
   value: SkillLevel;
   onChange: (level: SkillLevel) => void;
 }) {
+  const t = useT();
   return (
-    <div role="radiogroup" aria-label={`${skillName} darajasi`} className="bg-surface flex rounded-full p-1">
+    <div role="radiogroup" aria-label={t("{skillName} darajasi", { skillName })} className="bg-surface flex rounded-full p-1">
       {SKILL_LEVELS.map((level) => (
         <button
           key={level.value}

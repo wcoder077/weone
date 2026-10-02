@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Edit/delete handlers, passed only for my own messages.
 export type OwnMessageHandlers = {
@@ -33,6 +34,7 @@ type Props = {
 // Message menu: reply, copy, and for my own messages edit (sheet) and delete (confirmation).
 // Opened from the hover button on desktop or by long-press on the bubble (see useLongPress).
 export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, onReply, own }: Props) {
+  const t = useT();
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [deleting, startDelete] = useTransition();
 
@@ -59,7 +61,7 @@ export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, on
     <>
       <DropdownMenu open={menuOpen} onOpenChange={onMenuOpenChange}>
         <DropdownMenuTrigger
-          aria-label="Xabar amallari"
+          aria-label={t("Xabar amallari")}
           className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 data-popup-open:bg-surface inline-flex size-8 shrink-0 items-center justify-center rounded-full opacity-0 outline-none group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-3 data-popup-open:opacity-100 pointer-coarse:pointer-events-none"
         >
           <MoreHorizontal className="size-4" />
@@ -68,31 +70,27 @@ export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, on
           {onReply ? (
             <DropdownMenuItem onClick={onReply}>
               <Reply aria-hidden />
-              Javob berish
-            </DropdownMenuItem>
+              {t("Javob berish")}</DropdownMenuItem>
           ) : null}
           {body ? (
             <DropdownMenuItem onClick={copy}>
               <Copy aria-hidden />
-              Nusxa olish
-            </DropdownMenuItem>
+              {t("Nusxa olish")}</DropdownMenuItem>
           ) : null}
           {own?.canEdit ? (
             <DropdownMenuItem onClick={() => setDialog("edit")}>
               <Pencil aria-hidden />
-              Tahrirlash
-            </DropdownMenuItem>
+              {t("Tahrirlash")}</DropdownMenuItem>
           ) : null}
           {own ? (
             <DropdownMenuItem variant="destructive" onClick={() => setDialog("delete")}>
               <Trash2 aria-hidden />
-              O&apos;chirish
-            </DropdownMenuItem>
+              {t("O'chirish")}</DropdownMenuItem>
           ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ResponsiveDialog open={dialog === "edit"} onOpenChange={(o) => !o && setDialog(null)} title="Xabarni tahrirlash">
+      <ResponsiveDialog open={dialog === "edit"} onOpenChange={(o) => !o && setDialog(null)} title={t("Xabarni tahrirlash")}>
         {dialog === "edit" ? (
           <MessageEditor
             messageId={messageId}
@@ -109,15 +107,14 @@ export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, on
       <ResponsiveDialog
         open={dialog === "delete"}
         onOpenChange={(o) => !o && setDialog(null)}
-        title="Xabarni o'chirasizmi?"
-        description="Xabar ikkala tomondan ham o'chadi. Bu amalni ortga qaytarib bo'lmaydi."
+        title={t("Xabarni o'chirasizmi?")}
+        description={t("Xabar ikkala tomondan ham o'chadi. Bu amalni ortga qaytarib bo'lmaydi.")}
       >
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" size="lg" onClick={() => setDialog(null)}>
-            Bekor qilish
-          </Button>
+            {t("Bekor qilish")}</Button>
           <Button variant="destructive" size="lg" disabled={deleting} aria-busy={deleting} onClick={remove}>
-            {deleting ? "O'chirilmoqda…" : "O'chirish"}
+            {deleting ? t("O'chirilmoqda…") : t("O'chirish")}
           </Button>
         </div>
       </ResponsiveDialog>
@@ -136,6 +133,7 @@ function MessageEditor({
   onSaved: (body: string, editedAt: string) => void;
   onCancel: () => void;
 }) {
+  const t = useT();
   const [draft, setDraft] = useState(initial);
   const [saving, startSaving] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
@@ -163,8 +161,7 @@ function MessageEditor({
       className="flex flex-col gap-3"
     >
       <label htmlFor={`edit-${messageId}`} className="sr-only">
-        Xabar matni
-      </label>
+        {t("Xabar matni")}</label>
       <textarea
         id={`edit-${messageId}`}
         ref={fieldRef}
@@ -178,10 +175,9 @@ function MessageEditor({
       <div className="flex items-center gap-2">
         <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, draft, emoji, setDraft)} />
         <Button type="button" variant="outline" className="ml-auto" onClick={onCancel}>
-          Bekor qilish
-        </Button>
+          {t("Bekor qilish")}</Button>
         <Button type="submit" disabled={invalid || saving} aria-busy={saving}>
-          {saving ? "Saqlanmoqda…" : "Saqlash"}
+          {saving ? t("Saqlanmoqda…") : t("Saqlash")}
         </Button>
       </div>
     </form>

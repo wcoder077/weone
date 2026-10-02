@@ -8,8 +8,12 @@ import { requireUserId } from "@/lib/auth";
 import type { SkillLevel } from "@/lib/constants";
 import { getMyProfile } from "@/lib/queries/profiles";
 import { getAllSkills, getUserSkills } from "@/lib/queries/skills";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Profilni sozlash" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Profilni sozlash") };
+}
 
 const STEPS = {
   1: {

@@ -10,6 +10,7 @@ import {
   type ThemePreference,
 } from "@/lib/theme";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const ICONS = { system: Monitor, light: Sun, dark: Moon };
 
@@ -19,10 +20,11 @@ export function useThemePreference(): ThemePreference {
 
 // "Tizim" / "Yorug'" / "Qorong'i" as a radio group.
 export function ThemeToggle() {
+  const t = useT();
   const preference = useThemePreference();
 
   return (
-    <div role="radiogroup" aria-label="Mavzu" className="bg-surface border-border flex w-full gap-1 rounded-full border p-1 sm:w-fit">
+    <div role="radiogroup" aria-label={t("Mavzu")} className="bg-surface border-border flex w-full gap-1 rounded-full border p-1 sm:w-fit">
       {THEME_OPTIONS.map(({ value, label }) => {
         const Icon = ICONS[value];
         const checked = preference === value;

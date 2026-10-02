@@ -7,8 +7,10 @@ import { signUp } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function SignupForm() {
+  const t = useT();
   const [state, action, pending] = useActionState(signUp, null);
   const submit = useKeepValuesSubmit(action);
   const [email, setEmail] = useState("");
@@ -31,7 +33,7 @@ export function SignupForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <FormField id="full_name" label="Ism va familiya" errors={state?.fieldErrors?.full_name}>
+      <FormField id="full_name" label={t("Ism va familiya")} errors={state?.fieldErrors?.full_name}>
         <Input
           id="full_name"
           name="full_name"
@@ -41,7 +43,7 @@ export function SignupForm() {
           aria-invalid={Boolean(state?.fieldErrors?.full_name)}
         />
       </FormField>
-      <FormField id="email" label="Email" errors={state?.fieldErrors?.email}>
+      <FormField id="email" label={t("Email")} errors={state?.fieldErrors?.email}>
         <Input
           id="email"
           name="email"
@@ -54,8 +56,8 @@ export function SignupForm() {
       </FormField>
       <FormField
         id="password"
-        label="Parol"
-        hint="Kamida 8 ta belgi"
+        label={t("Parol")}
+        hint={t("Kamida 8 ta belgi")}
         errors={state?.fieldErrors?.password}
       >
         <Input
@@ -70,7 +72,7 @@ export function SignupForm() {
       </FormField>
       <FormMessage error={state?.error} />
       <Button type="submit" size="lg" disabled={pending} aria-busy={pending}>
-        {pending ? "Yaratilmoqda…" : "Hisob yaratish"}
+        {pending ? t("Yaratilmoqda…") : t("Hisob yaratish")}
       </Button>
     </form>
   );

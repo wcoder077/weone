@@ -3,6 +3,7 @@
 import { TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type ErrorStateProps = {
   title?: string;
@@ -17,6 +18,7 @@ export function ErrorState({
   onRetry,
   className,
 }: ErrorStateProps) {
+  const t = useT();
   return (
     <div
       role="alert"
@@ -32,8 +34,7 @@ export function ErrorState({
       <p className="text-muted max-w-sm text-[15px]">{description}</p>
       {onRetry ? (
         <Button variant="outline" onClick={onRetry} className="mt-2">
-          Qayta urinish
-        </Button>
+          {t("Qayta urinish")}</Button>
       ) : null}
     </div>
   );

@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const DELAY = 300; // ms after the last keystroke
 
@@ -21,6 +22,7 @@ export function UrlSearchInput({
   placeholder: string;
   className?: string;
 }) {
+  const t = useT();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -68,7 +70,7 @@ export function UrlSearchInput({
         className="bg-card h-12 pr-10 pl-11"
       />
       {pending ? (
-        <Loader2 className="text-muted absolute top-1/2 right-4 size-4 -translate-y-1/2 animate-spin" aria-label="Qidirilmoqda" />
+        <Loader2 className="text-muted absolute top-1/2 right-4 size-4 -translate-y-1/2 animate-spin" aria-label={t("Qidirilmoqda")} />
       ) : null}
     </form>
   );

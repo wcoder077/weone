@@ -4,6 +4,7 @@ import { useState, type KeyboardEvent } from "react";
 import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Free-text list (languages, interests). The "Qo'shish" button, Enter or a comma
 // adds a tag; each tag is submitted as a repeated `name` field. Commas are also
@@ -21,6 +22,7 @@ export function TagInput({
   placeholder: string;
   max?: number;
 }) {
+  const t = useT();
   const [tags, setTags] = useState(initial);
   const [draft, setDraft] = useState("");
 
@@ -64,8 +66,8 @@ export function TagInput({
                 {tag}
                 <button
                   type="button"
-                  aria-label={`${tag} — olib tashlash`}
-                  onClick={() => setTags(tags.filter((t) => t !== tag))}
+                  aria-label={t("{tag} — olib tashlash", { tag })}
+                  onClick={() => setTags(tags.filter((item) => item !== tag))}
                   className="text-muted hover:text-text inline-flex size-7 items-center justify-center rounded-full"
                 >
                   <X className="size-3.5" aria-hidden />
@@ -94,8 +96,7 @@ export function TagInput({
           disabled={!draft.trim() || tags.length >= max}
         >
           <Plus data-icon="inline-start" />
-          Qo&apos;shish
-        </Button>
+          {t("Qo'shish")}</Button>
       </div>
     </div>
   );

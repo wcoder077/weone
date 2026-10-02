@@ -10,18 +10,23 @@ import { requireUserId } from "@/lib/auth";
 import { getNotifications } from "@/lib/queries/notifications";
 import { single } from "@/lib/url";
 import { BackLink } from "@/components/shared/back-link";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Bildirishnomalar" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Bildirishnomalar") };
+}
 
 export default async function NotificationsPage({ searchParams }: PageProps<"/notifications">) {
+  const t = await getT();
   const tab = single((await searchParams).tab) === "requests" ? "requests" : "all";
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <BackLink fallback="/home" />
-      <h1 className="text-2xl font-bold lg:text-[32px]">Bildirishnomalar</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">{t("Bildirishnomalar")}</h1>
       <LinkTabs
-        label="Bildirishnoma turlari"
+        label={t("Bildirishnoma turlari")}
         active={tab}
         tabs={[
           { value: "all", label: "Hammasi", href: "/notifications" },
@@ -48,6 +53,7 @@ function ListSkeleton() {
 }
 
 async function NotificationList({ onlyRequests }: { onlyRequests: boolean }) {
+  const t = await getT();
   const userId = await requireUserId();
   const notifications = await getNotifications(userId, onlyRequests);
 
@@ -55,8 +61,8 @@ async function NotificationList({ onlyRequests }: { onlyRequests: boolean }) {
     return (
       <EmptyState
         icon={Bell}
-        title={onlyRequests ? "So'rovlar yo'q" : "Hozircha bildirishnoma yo'q"}
-        description="Bog'lanish va loyiha so'rovlari shu yerda ko'rinadi."
+        title={onlyRequests ? t("So'rovlar yo'q") : t("Hozircha bildirishnoma yo'q")}
+        description={t("Bog'lanish va loyiha so'rovlari shu yerda ko'rinadi.")}
       />
     );
   }

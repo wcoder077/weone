@@ -6,10 +6,12 @@ import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
 import { markStale } from "@/lib/stale-pages";
 import { createClient, subscribeWithAuth } from "@/lib/supabase/client";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Unread badge that counts new notifications live (Realtime respects RLS:
 // only the user's own rows arrive). Opening /notifications clears it.
 export function NotificationBell({ userId, initialUnread }: { userId: string; initialUnread: number }) {
+  const t = useT();
   const pathname = usePathname();
   const onPage = pathname === "/notifications";
   const [count, setCount] = useState(onPage ? 0 : initialUnread);
@@ -60,7 +62,7 @@ export function NotificationBell({ userId, initialUnread }: { userId: string; in
   return (
     <Link
       href="/notifications"
-      aria-label={count > 0 ? `Bildirishnomalar, ${count} ta yangi` : "Bildirishnomalar"}
+      aria-label={count > 0 ? t("Bildirishnomalar, {count} ta yangi", { count }) : t("Bildirishnomalar")}
       className="text-muted hover:text-text relative inline-flex size-11 items-center justify-center rounded-full transition-colors"
     >
       <Bell className="size-5" />

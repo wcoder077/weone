@@ -1,10 +1,14 @@
+"use client";
+
 import { Download, FileText } from "lucide-react";
 import { formatBytes } from "@/lib/attachments";
 import { ImageLightbox } from "@/components/shared/image-lightbox";
 import type { ChatAttachment } from "@/lib/queries/messages";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Photo (opens large in the blurred viewer), video player, or a downloadable file card.
 export function AttachmentView({ attachment }: { attachment: ChatAttachment }) {
+  const t = useT();
   if (attachment.kind === "image") {
     // Signed URL of a private file; tap opens it large.
     return <ImageLightbox src={attachment.url} alt={attachment.name} className="max-h-80 max-w-full rounded-2xl object-cover" />;
@@ -29,7 +33,7 @@ export function AttachmentView({ attachment }: { attachment: ChatAttachment }) {
         <span className="truncate text-[14px] font-medium">{attachment.name}</span>
         <span className="text-muted text-[12px]">{formatBytes(attachment.size)}</span>
       </span>
-      <Download className="text-muted size-4 shrink-0" aria-label="Yuklab olish" />
+      <Download className="text-muted size-4 shrink-0" aria-label={t("Yuklab olish")} />
     </a>
   );
 }

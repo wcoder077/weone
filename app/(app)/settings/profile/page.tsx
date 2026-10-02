@@ -7,10 +7,15 @@ import type { SkillLevel } from "@/lib/constants";
 import { getProfilePage } from "@/lib/queries/profile-page";
 import { getMyProfile } from "@/lib/queries/profiles";
 import { BackLink } from "@/components/shared/back-link";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Profilni tahrirlash" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Profilni tahrirlash") };
+}
 
 export default async function SettingsProfilePage() {
+  const t = await getT();
   const profile = await getMyProfile();
   if (!profile) redirect("/login");
   const page = await getProfilePage(profile.username);
@@ -19,9 +24,9 @@ export default async function SettingsProfilePage() {
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <BackLink fallback="/profile" />
-      <h1 className="text-2xl font-bold lg:text-[32px]">Profilni tahrirlash</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">{t("Profilni tahrirlash")}</h1>
       <SettingsForm profile={profile}>
-        <SectionCard title="Ko'nikmalar">
+        <SectionCard title={t("Ko'nikmalar")}>
           <SkillsManager
             skills={page.skills.map((s) => ({
               skill_id: s.skill_id ?? "",
@@ -30,7 +35,7 @@ export default async function SettingsProfilePage() {
             }))}
           />
         </SectionCard>
-        <SectionCard title="Ta'lim">
+        <SectionCard title={t("Ta'lim")}>
           <EducationManager education={page.education} />
         </SectionCard>
       </SettingsForm>

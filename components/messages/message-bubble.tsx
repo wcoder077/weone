@@ -11,6 +11,7 @@ import { ImageLightbox } from "@/components/shared/image-lightbox";
 import { AttachmentView } from "./attachment-view";
 import { MessageActions } from "./message-actions";
 import { useLongPress } from "./use-long-press";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type EditHandlers = {
   onEdited: (id: string, body: string, editedAt: string) => void;
@@ -49,6 +50,7 @@ export function MessageBubble({
   /** Who wrote the quoted message ("Siz" or the other person's name). */
   replyName?: string;
 }) {
+  const t = useT();
   const [menuOpen, setMenuOpen] = useState(false);
   const longPress = useLongPress(() => setMenuOpen(true));
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -120,14 +122,14 @@ export function MessageBubble({
               onClick={() => jumpTo(message.replyTo!.id)}
               className="border-primary bg-primary/10 -mx-1 mb-1.5 block w-[calc(100%+0.5rem)] min-w-0 rounded-xl border-l-[3px] px-2.5 py-1 text-left"
             >
-              <span className="text-text block truncate text-[12px] font-semibold">{replyName ?? "Xabar"}</span>
+              <span className="text-text block truncate text-[12px] font-semibold">{replyName ?? t("Xabar")}</span>
               <span className="text-muted block truncate text-[13px] leading-snug">{message.replyTo.preview}</span>
             </button>
           ) : null}
           {message.imageUrl ? (
             // Signed URL of a private first-message image; tap opens it large.
             <div className="mb-2">
-              <ImageLightbox src={message.imageUrl} alt="Xabardagi rasm" className="max-h-64 rounded-2xl object-cover" />
+              <ImageLightbox src={message.imageUrl} alt={t("Xabardagi rasm")} className="max-h-64 rounded-2xl object-cover" />
             </div>
           ) : null}
           {message.attachment ? (
@@ -141,7 +143,7 @@ export function MessageBubble({
       </div>
       <span className="text-muted inline-flex items-center gap-1 px-2 text-[11px]">
         <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
-        {message.editedAt ? " · tahrirlangan" : null}
+        {message.editedAt ? t(" · tahrirlangan") : null}
         {status ? <ReadMark status={status} /> : null}
       </span>
     </div>
@@ -171,16 +173,16 @@ function useSwipeToReply(
 
   const handlers = {
     onTouchStart(e: TouchEvent<HTMLDivElement>) {
-      const t = e.touches[0];
-      start.current = t ? { x: t.clientX, y: t.clientY } : null;
+      const touch = e.touches[0];
+      start.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
       axis.current = null;
       dx.current = 0;
     },
     onTouchMove(e: TouchEvent<HTMLDivElement>) {
-      const t = e.touches[0];
-      if (!start.current || !t) return;
-      const x = t.clientX - start.current.x;
-      const y = t.clientY - start.current.y;
+      const touch = e.touches[0];
+      if (!start.current || !touch) return;
+      const x = touch.clientX - start.current.x;
+      const y = touch.clientY - start.current.y;
       if (!axis.current) {
         if (Math.abs(x) < 8 && Math.abs(y) < 8) return;
         axis.current = x * direction > 0 && Math.abs(x) > Math.abs(y) ? "x" : "y";
@@ -208,10 +210,11 @@ function useSwipeToReply(
 
 // Telegram-style ticks: one grey tick = sent, two blue ticks = read.
 export function ReadMark({ status, className }: { status: ReadStatus; className?: string }) {
+  const t = useT();
   return status === "read" ? (
-    <CheckCheck className={cn("text-primary size-3.5", className)} aria-label="O'qildi" />
+    <CheckCheck className={cn("text-primary size-3.5", className)} aria-label={t("O'qildi")} />
   ) : (
-    <Check className={cn("size-3.5", className)} aria-label="Yuborildi" />
+    <Check className={cn("size-3.5", className)} aria-label={t("Yuborildi")} />
   );
 }
 

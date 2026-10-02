@@ -2,9 +2,11 @@
 
 import { useCallback, useState } from "react";
 import { MediaOverlay } from "./media-overlay";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // An image that opens large in the blurred viewer when tapped (instead of a new tab).
 export function ImageLightbox({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
   return (
@@ -15,7 +17,7 @@ export function ImageLightbox({ src, alt, className }: { src: string; alt: strin
           e.stopPropagation();
           setOpen(true);
         }}
-        aria-label={`${alt} — kattalashtirish`}
+        aria-label={t("{alt} — kattalashtirish", { alt })}
         className="block max-w-full cursor-zoom-in"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}

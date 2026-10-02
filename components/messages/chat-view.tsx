@@ -21,6 +21,7 @@ import { InviteCard } from "./invite-card";
 import { InviteToProject } from "./invite-to-project";
 import { DaySeparator, MessageBubble } from "./message-bubble";
 import { useVisualViewportFit } from "./use-visual-viewport-fit";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Person = { id: string; username: string; full_name: string; avatar_url: string | null; headline: string | null };
 
@@ -85,6 +86,7 @@ export function ChatView({
   myProjectIds: string[];
   connection: Connection;
 }) {
+  const t = useT();
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [serverMessages, setServerMessages] = useState(initialMessages);
@@ -245,11 +247,11 @@ export function ChatView({
       <header className="border-border flex shrink-0 items-center gap-1 border-b px-1 pt-[max(0.25rem,env(safe-area-inset-top))] pb-1 sm:px-3 lg:gap-3 lg:px-5 lg:py-3">
         <Link
           href="/messages"
-          aria-label="Suhbatlarga qaytish"
+          aria-label={t("Suhbatlarga qaytish")}
           className="text-text hover:bg-surface inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1 rounded-full text-[15px] font-medium transition-colors duration-150 lg:pr-3 lg:pl-2"
         >
           <ArrowLeft className="size-6 lg:size-5" aria-hidden />
-          <span className="max-lg:sr-only">Orqaga</span>
+          <span className="max-lg:sr-only">{t("Orqaga")}</span>
         </Link>
         {other ? (
           <Link href={`/u/${other.username}`} className="flex min-h-11 min-w-0 flex-1 items-center gap-3">
@@ -260,7 +262,7 @@ export function ChatView({
             </span>
           </Link>
         ) : (
-          <span className="flex-1 font-semibold">Suhbat</span>
+          <span className="flex-1 font-semibold">{t("Suhbat")}</span>
         )}
         {open ? <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} /> : null}
       </header>
@@ -272,7 +274,7 @@ export function ChatView({
         aria-live="polite"
       >
         {messages.length === 0 ? (
-          <p className="text-muted m-auto text-center text-[14px]">Birinchi xabarni yozing.</p>
+          <p className="text-muted m-auto text-center text-[14px]">{t("Birinchi xabarni yozing.")}</p>
         ) : (
           messages.map((m, i) => {
             const day = formatDay(m.createdAt);
@@ -320,10 +322,10 @@ export function ChatView({
         <div role="status" className="border-border flex flex-col items-center gap-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center">
           <p className="text-muted text-[14px]">
             {pending?.state === "outgoing"
-              ? "So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin."
+              ? t("So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin.")
               : pending?.state === "incoming"
-                ? "Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi."
-                : "Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi."}
+                ? t("Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi.")
+                : t("Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi.")}
           </p>
           {pending && other ? (
             <ConnectButton meId={meId} userId={other.id} name={other.full_name} connection={pending} />

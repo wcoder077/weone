@@ -8,6 +8,7 @@ import type { ActionState } from "@/lib/actions/types";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Education = {
   id: string;
@@ -19,6 +20,7 @@ type Education = {
 };
 
 export function EducationManager({ education }: { education: Education[] }) {
+  const t = useT();
   const [formKey, setFormKey] = useState(0);
   const [state, action, pending] = useActionState(async (prev: ActionState, formData: FormData) => {
     const result = await addEducation(prev, formData);
@@ -38,26 +40,26 @@ export function EducationManager({ education }: { education: Education[] }) {
       ) : null}
 
       <form key={formKey} action={action} className="border-border flex flex-col gap-4 rounded-2xl border p-4" noValidate>
-        <FormField id="institution" label="Muassasa" errors={errors?.institution}>
+        <FormField id="institution" label={t("Muassasa")} errors={errors?.institution}>
           <Input id="institution" name="institution" maxLength={120} aria-describedby="institution-desc" />
         </FormField>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormField id="degree" label="Daraja" errors={errors?.degree}>
-            <Input id="degree" name="degree" maxLength={80} placeholder="Bakalavr" />
+          <FormField id="degree" label={t("Daraja")} errors={errors?.degree}>
+            <Input id="degree" name="degree" maxLength={80} placeholder={t("Bakalavr")} />
           </FormField>
-          <FormField id="field" label="Yo'nalish" errors={errors?.field}>
+          <FormField id="field" label={t("Yo'nalish")} errors={errors?.field}>
             <Input id="field" name="field" maxLength={80} />
           </FormField>
-          <FormField id="start_year" label="Boshlangan yil" errors={errors?.start_year}>
+          <FormField id="start_year" label={t("Boshlangan yil")} errors={errors?.start_year}>
             <Input id="start_year" name="start_year" inputMode="numeric" maxLength={4} aria-describedby="start_year-desc" />
           </FormField>
-          <FormField id="end_year" label="Tugash yili" errors={errors?.end_year}>
+          <FormField id="end_year" label={t("Tugash yili")} errors={errors?.end_year}>
             <Input id="end_year" name="end_year" inputMode="numeric" maxLength={4} aria-describedby="end_year-desc" />
           </FormField>
         </div>
         <FormMessage error={state?.error} />
         <Button type="submit" variant="outline" disabled={pending} className="sm:self-start">
-          {pending ? "Qo'shilmoqda…" : "Ta'lim qo'shish"}
+          {pending ? t("Qo'shilmoqda…") : t("Ta'lim qo'shish")}
         </Button>
       </form>
     </div>
@@ -65,6 +67,7 @@ export function EducationManager({ education }: { education: Education[] }) {
 }
 
 function EducationRow({ education: e }: { education: Education }) {
+  const t = useT();
   const [pending, startTransition] = useTransition();
   return (
     <li className="flex items-center justify-between gap-3">
@@ -78,7 +81,7 @@ function EducationRow({ education: e }: { education: Education }) {
       <Button
         variant="ghost"
         size="icon"
-        aria-label={`${e.institution} — o'chirish`}
+        aria-label={t("{institution} — o'chirish", { institution: e.institution })}
         disabled={pending}
         onClick={() =>
           startTransition(async () => {

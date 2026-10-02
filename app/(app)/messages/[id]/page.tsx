@@ -4,8 +4,12 @@ import { ChatView } from "@/components/messages/chat-view";
 import { requireUserId } from "@/lib/auth";
 import { getConversation } from "@/lib/queries/messages";
 import { getMyProjectOptions } from "@/lib/queries/social";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Suhbat" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Suhbat") };
+}
 
 export default async function ConversationPage({ params }: PageProps<"/messages/[id]">) {
   const { id } = await params;

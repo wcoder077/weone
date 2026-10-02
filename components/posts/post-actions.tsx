@@ -13,9 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PostEditor } from "./post-editor";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Author-only: edit in a dialog, delete with a confirmation step.
 export function PostActions({ postId, body }: { postId: string; body: string }) {
+  const t = useT();
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -33,28 +35,26 @@ export function PostActions({ postId, body }: { postId: string; body: string }) 
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label="Post amallari" />}>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" aria-label={t("Post amallari")} />}>
           <MoreHorizontal />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
           <DropdownMenuItem onClick={() => setDialog("edit")}>
             <Pencil aria-hidden />
-            Tahrirlash
-          </DropdownMenuItem>
+            {t("Tahrirlash")}</DropdownMenuItem>
           <DropdownMenuItem variant="destructive" onClick={() => setDialog("delete")}>
             <Trash2 aria-hidden />
-            O&apos;chirish
-          </DropdownMenuItem>
+            {t("O'chirish")}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <ResponsiveDialog open={dialog === "edit"} onOpenChange={(o) => !o && setDialog(null)} title="Postni tahrirlash">
+      <ResponsiveDialog open={dialog === "edit"} onOpenChange={(o) => !o && setDialog(null)} title={t("Postni tahrirlash")}>
         {dialog === "edit" ? (
           <PostEditor
             id={`edit-${postId}`}
             initial={body}
             autoFocus
-            submitLabel="Saqlash"
+            submitLabel={t("Saqlash")}
             onSubmit={(next) => updatePost(postId, next)}
             onDone={() => setDialog(null)}
           />
@@ -64,15 +64,14 @@ export function PostActions({ postId, body }: { postId: string; body: string }) 
       <ResponsiveDialog
         open={dialog === "delete"}
         onOpenChange={(o) => !o && setDialog(null)}
-        title="Postni o'chirasizmi?"
-        description="Bu amalni ortga qaytarib bo'lmaydi."
+        title={t("Postni o'chirasizmi?")}
+        description={t("Bu amalni ortga qaytarib bo'lmaydi.")}
       >
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" size="lg" onClick={() => setDialog(null)}>
-            Bekor qilish
-          </Button>
+            {t("Bekor qilish")}</Button>
           <Button variant="destructive" size="lg" disabled={pending} onClick={remove}>
-            {pending ? "O'chirilmoqda…" : "O'chirish"}
+            {pending ? t("O'chirilmoqda…") : t("O'chirish")}
           </Button>
         </div>
       </ResponsiveDialog>

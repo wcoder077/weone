@@ -8,12 +8,14 @@ import type { ActionState } from "@/lib/actions/types";
 import type { SkillLevel } from "@/lib/constants";
 import { LevelPicker } from "@/components/shared/level-picker";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Row = { skill_id: string; name: string; level: SkillLevel };
 
 export function SkillsManager({ skills }: { skills: Row[] }) {
+  const t = useT();
   if (skills.length === 0) {
-    return <p className="text-muted text-[14px]">Ko&apos;nikmalarni profilingizdagi &laquo;Ko&apos;nikma&raquo; tugmasi orqali qo&apos;shing.</p>;
+    return <p className="text-muted text-[14px]">{t("Ko'nikmalarni profilingizdagi &laquo;Ko'nikma&raquo; tugmasi orqali qo'shing.")}</p>;
   }
   return (
     <ul className="flex flex-col gap-3">
@@ -25,6 +27,7 @@ export function SkillsManager({ skills }: { skills: Row[] }) {
 }
 
 function SkillRow({ skill }: { skill: Row }) {
+  const t = useT();
   const [pending, startTransition] = useTransition();
   const report = (result: ActionState) => {
     if (result?.error) toast.error(result.error);
@@ -42,7 +45,7 @@ function SkillRow({ skill }: { skill: Row }) {
         <Button
           variant="ghost"
           size="icon"
-          aria-label={`${skill.name} — o'chirish`}
+          aria-label={t("{name} — o'chirish", { name: skill.name })}
           disabled={pending}
           onClick={() => startTransition(async () => report(await removeSkill(skill.skill_id)))}
         >

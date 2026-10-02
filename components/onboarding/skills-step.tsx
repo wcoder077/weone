@@ -10,6 +10,7 @@ import { LevelPicker } from "@/components/shared/level-picker";
 import { ToggleChip } from "@/components/shared/skill-chip";
 import { Input } from "@/components/ui/input";
 import { StepFooter } from "./step-shell";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Picked = Map<string, SkillLevel>;
 
@@ -20,6 +21,7 @@ export function SkillsStep({
   skills: Skill[];
   initial: { skill_id: string; level: SkillLevel }[];
 }) {
+  const t = useT();
   const [state, action, pending] = useActionState(saveSkills, null);
   const [picked, setPicked] = useState<Picked>(() => new Map(initial.map((s) => [s.skill_id, s.level])));
   const [query, setQuery] = useState("");
@@ -56,19 +58,19 @@ export function SkillsStep({
       <input type="hidden" name="skills" value={payload} />
 
       <label className="relative block">
-        <span className="sr-only">Ko&apos;nikmalarni qidirish</span>
+        <span className="sr-only">{t("Ko'nikmalarni qidirish")}</span>
         <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />
         <Input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ko'nikmalarni qidiring"
+          placeholder={t("Ko'nikmalarni qidiring")}
           className="bg-card h-12 pl-11"
         />
       </label>
 
       {groups.length === 0 ? (
-        <p className="text-muted text-[15px]">Hech narsa topilmadi.</p>
+        <p className="text-muted text-[15px]">{t("Hech narsa topilmadi.")}</p>
       ) : (
         groups.map((group) => (
           <section key={group.value} className="flex flex-col gap-3">
@@ -95,7 +97,7 @@ export function SkillsStep({
       {pickedSkills.length > 0 ? (
         <section className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
           <h2 className="text-base font-semibold">
-            Darajangiz{" "}
+            {t("Darajangiz")}{" "}
             <span className="text-muted font-normal">
               · {picked.size}/{ONBOARDING_SKILLS.max}
             </span>

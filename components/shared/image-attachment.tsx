@@ -5,6 +5,7 @@ import { ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export const MESSAGE_IMAGE = {
   maxBytes: 5 * 1024 * 1024,
@@ -52,15 +53,16 @@ export function useImageAttachment(userId: string, initial: Attachment | null) {
 }
 
 export function AttachmentPreview({ attachment, onRemove }: { attachment: Attachment; onRemove: () => void }) {
+  const t = useT();
   return (
     <div className="relative w-fit">
       {/* Local preview or a short-lived signed URL of a private image. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={attachment.previewUrl} alt="Biriktirilgan rasm" className="border-border max-h-48 rounded-2xl border object-cover" />
+      <img src={attachment.previewUrl} alt={t("Biriktirilgan rasm")} className="border-border max-h-48 rounded-2xl border object-cover" />
       <button
         type="button"
         onClick={onRemove}
-        aria-label="Rasmni olib tashlash"
+        aria-label={t("Rasmni olib tashlash")}
         className="bg-bg/80 text-text hover:bg-bg absolute top-2 right-2 inline-flex size-9 items-center justify-center rounded-full backdrop-blur transition-colors duration-150"
       >
         <X className="size-4" />
@@ -78,6 +80,7 @@ export function AttachImageButton({
   uploading: boolean;
   onPick: (file: File) => void;
 }) {
+  const t = useT();
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <>
@@ -97,7 +100,7 @@ export function AttachImageButton({
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
-        aria-label={hasImage ? "Rasmni almashtirish" : "Rasm biriktirish"}
+        aria-label={hasImage ? t("Rasmni almashtirish") : t("Rasm biriktirish")}
         className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-150 outline-none focus-visible:ring-3 disabled:opacity-50"
       >
         <ImagePlus className="size-5" />

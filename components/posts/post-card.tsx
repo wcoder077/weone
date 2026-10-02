@@ -9,9 +9,11 @@ import { PostActions } from "./post-actions";
 import { PostMediaView } from "./post-media-view";
 import { PostMoreMenu } from "./post-more-menu";
 import { PostViews } from "./post-views";
+import { getT } from "@/lib/i18n/server";
 
 // `expanded` opens long posts fully (the post's own page).
-export function PostCard({ post, isMine, expanded = false }: { post: FeedPost; isMine: boolean; expanded?: boolean }) {
+export async function PostCard({ post, isMine, expanded = false }: { post: FeedPost; isMine: boolean; expanded?: boolean }) {
+  const t = await getT();
   return (
     <article className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
       <header className="flex items-start gap-3">
@@ -23,7 +25,7 @@ export function PostCard({ post, isMine, expanded = false }: { post: FeedPost; i
           {post.author.headline ? <p className="text-muted truncate text-[13px]">{post.author.headline}</p> : null}
           <p className="text-muted text-[12px]">
             <time dateTime={post.createdAt}>{formatRelative(post.createdAt)}</time>
-            {post.editedAt ? " · tahrirlangan" : null}
+            {post.editedAt ? t(" · tahrirlangan") : null}
           </p>
         </div>
         {isMine ? <PostActions postId={post.id} body={post.body} /> : null}
@@ -38,7 +40,7 @@ export function PostCard({ post, isMine, expanded = false }: { post: FeedPost; i
         <LikeButton postId={post.id} initialLiked={post.liked} initialCount={post.likeCount} />
         <Link
           href={`/posts/${post.id}`}
-          aria-label={`Izohlar, ${post.commentCount} ta`}
+          aria-label={t("Izohlar, {commentCount} ta", { commentCount: post.commentCount })}
           className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-[14px] transition-colors duration-150 outline-none focus-visible:ring-3"
         >
           <MessageCircle className="size-5" aria-hidden />

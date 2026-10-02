@@ -4,6 +4,7 @@ import { BadgeCheck } from "lucide-react";
 import { JOURNEY_TYPES, labelOf } from "@/lib/constants";
 import { formatDateRange } from "@/lib/format";
 import { SkillChip } from "./skill-chip";
+import { getT } from "@/lib/i18n/server";
 
 export type JourneyItemData = {
   id: string;
@@ -19,7 +20,8 @@ export type JourneyItemData = {
   skills: string[];
 };
 
-export function JourneyItem({ item, actions }: { item: JourneyItemData; actions?: ReactNode }) {
+export async function JourneyItem({ item, actions }: { item: JourneyItemData; actions?: ReactNode }) {
+  const t = await getT();
   const dates = formatDateRange(item.start_date, item.end_date);
   const meta = [item.organization, item.role].filter(Boolean).join(" · ");
 
@@ -32,8 +34,7 @@ export function JourneyItem({ item, actions }: { item: JourneyItemData; actions?
           {item.verified ? (
             <span className="text-primary inline-flex items-center gap-1 font-medium">
               <BadgeCheck className="size-4" aria-hidden />
-              Tasdiqlangan
-            </span>
+              {t("Tasdiqlangan")}</span>
           ) : null}
         </div>
         <h3 className="text-base leading-snug font-semibold">

@@ -8,6 +8,7 @@ import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ActivityBars } from "./activity-bars";
 import { SectionCard } from "./profile-sections";
+import { getT } from "@/lib/i18n/server";
 
 const TITLE = "Bog'lanishlar va faoliyat";
 
@@ -21,6 +22,7 @@ export async function ProfileSummary({
   path: string;
   projectCount: number;
 }) {
+  const t = await getT();
   let summary;
   let stats;
   try {
@@ -28,7 +30,7 @@ export async function ProfileSummary({
   } catch {
     return (
       <SectionCard title={TITLE}>
-        <RetryErrorState description="Faoliyatni yuklab bo'lmadi." />
+        <RetryErrorState description={t("Faoliyatni yuklab bo'lmadi.")} />
       </SectionCard>
     );
   }
@@ -41,10 +43,10 @@ export async function ProfileSummary({
   return (
     <SectionCard title={TITLE}>
       <div className="grid grid-cols-4 gap-1.5">
-        <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label="Post" />
-        <Stat href={`${path}?tab=reposts#profile-tabs`} value={summary.reposts} label="Repost" />
-        <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label="Bog'lanish" />
-        <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label="Loyiha" />
+        <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label={t("Post")} />
+        <Stat href={`${path}?tab=reposts#profile-tabs`} value={summary.reposts} label={t("Repost")} />
+        <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label={t("Bog'lanish")} />
+        <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label={t("Loyiha")} />
       </div>
       {/* Activity strip: weekly bars; opens the full statistics page. */}
       <Link
@@ -52,10 +54,9 @@ export async function ProfileSummary({
         className="bg-surface border-border hover:border-primary/40 focus-visible:ring-ring/50 block rounded-xl border px-3 pt-2.5 pb-2 transition-colors outline-none focus-visible:ring-3"
       >
         <span className="flex items-center justify-between gap-2 text-[13px]">
-          <span className="font-medium">Faoliyat</span>
+          <span className="font-medium">{t("Faoliyat")}</span>
           <span className="text-muted inline-flex items-center gap-0.5">
-            {ACTIVITY_WEEKS} hafta · {stats.weeks.reduce((sum, w) => sum + w.count, 0)} ta
-            <ChevronRight className="size-4" aria-hidden />
+            {ACTIVITY_WEEKS} {" "}{t("hafta ·")}{" "}{stats.weeks.reduce((sum, w) => sum + w.count, 0)} {" "}{t("ta")}<ChevronRight className="size-4" aria-hidden />
           </span>
         </span>
         <ActivityBars weeks={stats.weeks} className="mt-2 h-14" />
@@ -72,7 +73,7 @@ export async function ProfileSummary({
           ))}
         </ul>
       ) : (
-        <p className="text-muted text-[14px]">Hali faoliyat yo&apos;q.</p>
+        <p className="text-muted text-[14px]">{t("Hali faoliyat yo'q.")}</p>
       )}
     </SectionCard>
   );

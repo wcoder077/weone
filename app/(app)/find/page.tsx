@@ -11,8 +11,12 @@ import { findPeople, type FindParams, type FindResult } from "@/lib/queries/find
 import { getAllSkills } from "@/lib/queries/skills";
 import { many, single } from "@/lib/url";
 import { BackLink } from "@/components/shared/back-link";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Maqsaddosh topish" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Maqsaddosh topish") };
+}
 
 // Words that carry no role meaning in a free-text request.
 const FILLER = new Set([
@@ -63,6 +67,7 @@ function reasonsFor(person: FindResult, params: FindParams) {
 }
 
 export default async function FindPage({ searchParams }: PageProps<"/find">) {
+  const t = await getT();
   const params = await searchParams;
   const skills = await getAllSkills();
   const known = new Set(skills.map((s) => s.id));
@@ -84,14 +89,14 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
     <div className="flex flex-col gap-6">
       <BackLink fallback="/discover" />
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold lg:text-[32px]">Maqsaddosh topish</h1>
-        <p className="text-muted">Kim kerakligini yozing — har bir natija nega mos ekanini ko&apos;rasiz.</p>
+        <h1 className="text-2xl font-bold lg:text-[32px]">{t("Maqsaddosh topish")}</h1>
+        <p className="text-muted">{t("Kim kerakligini yozing — har bir natija nega mos ekanini ko'rasiz.")}</p>
       </div>
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
         <aside className="bg-card border-border rounded-card border p-5 lg:sticky lg:top-24">
           <FindForm key={JSON.stringify(initial)} skills={skills} initial={initial} />
         </aside>
-        <section aria-label="Natijalar">
+        <section aria-label={t("Natijalar")}>
           {submitted ? (
             <Suspense key={JSON.stringify(initial)} fallback={<CardGridSkeleton count={3} />}>
               <FindResults
@@ -108,8 +113,8 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
           ) : (
             <EmptyState
               icon={UserSearch}
-              title="Talablarni yozing"
-              description="Rol, maqsad va kerakli ko'nikmalarni tanlang — mos maqsaddoshlarni sabablari bilan ko'rsatamiz."
+              title={t("Talablarni yozing")}
+              description={t("Rol, maqsad va kerakli ko'nikmalarni tanlang — mos maqsaddoshlarni sabablari bilan ko'rsatamiz.")}
             />
           )}
         </section>
@@ -119,21 +124,22 @@ export default async function FindPage({ searchParams }: PageProps<"/find">) {
 }
 
 async function FindResults({ params }: { params: FindParams }) {
+  const t = await getT();
   const [viewerId, people] = await Promise.all([requireUserId(), findPeople(params)]);
 
   if (people.length === 0) {
     return (
       <EmptyState
         icon={SearchX}
-        title="Mos maqsaddosh topilmadi"
-        description="Talablarni kamaytirib ko'ring: kamroq ko'nikma yoki «Onlayn ham bo'ladi»."
+        title={t("Mos maqsaddosh topilmadi")}
+        description={t("Talablarni kamaytirib ko'ring: kamroq ko'nikma yoki «Onlayn ham bo'ladi».")}
       />
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-muted text-[14px]">{people.length} kishi mos keldi</p>
+      <p className="text-muted text-[14px]">{people.length} {" "}{t("kishi mos keldi")}</p>
       {people.map((person) => (
         <PersonCard
           key={person.id}

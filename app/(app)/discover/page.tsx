@@ -30,12 +30,17 @@ import { getAllSkills } from "@/lib/queries/skills";
 import { getRelationships } from "@/lib/queries/social";
 import { hrefWith, many, pageOf, single } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Kashf etish" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Kashf etish") };
+}
 
 type Params = Record<string, string | string[] | undefined>;
 
 export default async function DiscoverPage({ searchParams }: PageProps<"/discover">) {
+  const t = await getT();
   const params: Params = await searchParams;
   const tab = single(params.tab) === "projects" ? "projects" : "people";
   const [skills, languages] = await Promise.all([getAllSkills(), getLanguages()]);
@@ -71,46 +76,44 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="sr-only">Kashf etish</h1>
+      <h1 className="sr-only">{t("Kashf etish")}</h1>
 
       {/* Search + filters stay compact so the results start near the top. */}
       <div className="flex gap-2">
         <UrlSearchInput
           param="q"
-          label="Qidirish"
-          placeholder={tab === "people" ? "Ism, ko'nikma yoki rol" : "Loyiha nomi yoki ko'nikma"}
+          label={t("Qidirish")}
+          placeholder={tab === "people" ? t("Ism, ko'nikma yoki rol") : t("Loyiha nomi yoki ko'nikma")}
           className="min-w-0 flex-1"
         />
         <FiltersSheet count={filterCount}>
           {tab === "people" ? (
-            <UrlSearchInput param="role" label="Rol bo'yicha" placeholder="Rol, masalan backend" />
+            <UrlSearchInput param="role" label={t("Rol bo'yicha")} placeholder={t("Rol, masalan backend")} />
           ) : null}
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <UrlFilterSelect multi param="s" label="Ko'nikma" options={skills.map((s) => ({ value: s.id, label: s.name }))} />
+            <UrlFilterSelect multi param="s" label={t("Ko'nikma")} options={skills.map((s) => ({ value: s.id, label: s.name }))} />
             {tab === "people" ? (
               <>
-                <UrlFilterSelect param="city" label="Shahar" options={CITIES.map((c) => ({ value: c, label: c }))} />
-                <UrlFilterSelect param="lang" label="Til" options={languages.map((l) => ({ value: l, label: l }))} />
+                <UrlFilterSelect param="city" label={t("Shahar")} options={CITIES.map((c) => ({ value: c, label: c }))} />
+                <UrlFilterSelect param="lang" label={t("Til")} options={languages.map((l) => ({ value: l, label: l }))} />
               </>
             ) : (
-              <UrlFilterSelect param="status" label="Holat" options={[...PROJECT_STATUSES]} />
+              <UrlFilterSelect param="status" label={t("Holat")} options={[...PROJECT_STATUSES]} />
             )}
           </div>
           {tab === "people" ? (
             <div className="flex flex-wrap gap-2">
               <FilterToggle href={toggleHref("available")} active={Boolean(single(params.available))}>
-                Hamkorlikka ochiq
-              </FilterToggle>
+                {t("Hamkorlikka ochiq")}</FilterToggle>
               <FilterToggle href={toggleHref("online")} active={Boolean(single(params.online))}>
-                Onlayn
-              </FilterToggle>
+                {t("Onlayn")}</FilterToggle>
             </div>
           ) : null}
         </FiltersSheet>
       </div>
 
       <LinkTabs
-        label="Kashf etish bo'limlari"
+        label={t("Kashf etish bo'limlari")}
         active={tab}
         tabs={[
           { value: "people", label: "Maqsaddoshlar", href: hrefWith("/discover", { q }, { tab: "people" }) },
@@ -119,7 +122,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
       />
 
       {active.length > 0 ? (
-        <ul className="flex flex-wrap gap-2" aria-label="Faol filtrlar">
+        <ul className="flex flex-wrap gap-2" aria-label={t("Faol filtrlar")}>
           {active.map((f) => (
             <li key={f.label}>
               <Link
@@ -128,7 +131,7 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
                 className="border-primary bg-primary/10 inline-flex min-h-11 items-center gap-1.5 rounded-full border px-4 text-[14px]"
               >
                 {f.label}
-                <X className="size-3.5" aria-label="olib tashlash" />
+                <X className="size-3.5" aria-label={t("olib tashlash")} />
               </Link>
             </li>
           ))}
@@ -165,12 +168,11 @@ export default async function DiscoverPage({ searchParams }: PageProps<"/discove
       {tab === "people" ? (
         <div className="bg-card border-border rounded-card flex flex-col gap-3 border p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[15px]">
-            <span className="font-semibold">Aniq talablar bo&apos;yicha qidiryapsizmi?</span>{" "}
-            <span className="text-muted">Rol, maqsad va ko&apos;nikmalarni yozing.</span>
+            <span className="font-semibold">{t("Aniq talablar bo'yicha qidiryapsizmi?")}</span>{" "}
+            <span className="text-muted">{t("Rol, maqsad va ko'nikmalarni yozing.")}</span>
           </p>
           <Link href="/find" className={buttonVariants({ variant: "outline" })}>
-            Maqsaddosh topish
-          </Link>
+            {t("Maqsaddosh topish")}</Link>
         </div>
       ) : null}
     </div>
@@ -204,6 +206,7 @@ async function PeopleResults({
   selectedSkillNames: string[];
   showPicks: boolean;
 }) {
+  const t = await getT();
   const viewerId = await requireUserId();
   const [{ people, total }, relationships, me] = await Promise.all([
     searchPeople(viewerId, filters),
@@ -217,8 +220,8 @@ async function PeopleResults({
     return (
       <EmptyState
         icon={Users}
-        title="Hech kim topilmadi"
-        description="Filtrlarni kamaytiring yoki «Maqsaddosh topish» orqali talablaringizni yozing."
+        title={t("Hech kim topilmadi")}
+        description={t("Filtrlarni kamaytiring yoki «Maqsaddosh topish» orqali talablaringizni yozing.")}
         action={{ label: "Maqsaddosh topish", href: "/find" }}
       />
     );
@@ -227,7 +230,7 @@ async function PeopleResults({
   return (
     <div className="flex flex-col gap-4">
       {picks.length > 0 ? <PeopleCarousel meId={viewerId} picks={picks} relationships={relationships} /> : null}
-      <p className="text-muted text-[14px]">{picks.length > 0 ? `Barcha maqsaddoshlar · ${total}` : `${total} kishi`}</p>
+      <p className="text-muted text-[14px]">{picks.length > 0 ? t("Barcha maqsaddoshlar · {total}", { total }) : t("{total} kishi", { total })}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {people.map((p) => (
           <PersonCard
@@ -253,15 +256,16 @@ async function ProjectResults({
   filters: ProjectSearchFilters;
   selectedSkillNames: string[];
 }) {
+  const t = await getT();
   const { projects, total } = await searchProjects(filters);
 
   if (projects.length === 0) {
-    return <EmptyState icon={FolderKanban} title="Loyiha topilmadi" description="Boshqa so'z yoki filtr bilan urinib ko'ring." />;
+    return <EmptyState icon={FolderKanban} title={t("Loyiha topilmadi")} description={t("Boshqa so'z yoki filtr bilan urinib ko'ring.")} />;
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-muted text-[14px]">{total} ta loyiha</p>
+      <p className="text-muted text-[14px]">{total} {" "}{t("ta loyiha")}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {projects.map((p) => (
           <ProjectCard

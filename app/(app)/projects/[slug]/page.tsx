@@ -21,6 +21,7 @@ import { formatMonth } from "@/lib/format";
 import { getJoinRequests, getProject, type ProjectDetails } from "@/lib/queries/projects";
 import { createClient } from "@/lib/supabase/server";
 import { BackLink } from "@/components/shared/back-link";
+import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata({ params }: PageProps<"/projects/[slug]">) {
   const { slug } = await params;
@@ -35,6 +36,7 @@ async function getViewerSkillIds(userId: string) {
 }
 
 export default async function ProjectPage({ params }: PageProps<"/projects/[slug]">) {
+  const t = await getT();
   const { slug } = await params;
   const [userId, project] = await Promise.all([requireUserId(), getProject(slug)]);
   if (!project) notFound();
@@ -56,8 +58,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
         {isOwner ? (
           <>
             <Link href={`/projects/${project.slug}/edit`} className={buttonVariants()}>
-              Tahrirlash
-            </Link>
+              {t("Tahrirlash")}</Link>
             <DeleteProjectButton projectId={project.id} redirectTo={`/u/${project.owner?.username ?? ""}?tab=projects`} />
           </>
         ) : null}
@@ -65,7 +66,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
         {canAsk ? <JoinDialog projectId={project.id} projectName={project.name} roles={roleOptions} /> : null}
         {myPending ? (
           <span className="flex flex-wrap items-center gap-2">
-            <span className="text-muted text-[14px]">So&apos;rov yuborildi</span>
+            <span className="text-muted text-[14px]">{t("So'rov yuborildi")}</span>
             <CancelRequestButton requestId={myPending.id} />
           </span>
         ) : null}
@@ -74,7 +75,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6">
           {pendingForOwner.length > 0 ? (
-            <SectionCard title={`Qo'shilish so'rovlari · ${pendingForOwner.length}`}>
+            <SectionCard title={t("Qo'shilish so'rovlari · {length}", { length: pendingForOwner.length })}>
               <ul className="flex flex-col gap-4">
                 {pendingForOwner.map((r) => (
                   <li key={r.id} className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -85,7 +86,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                           {r.profiles?.full_name}
                         </Link>
                         <span className="text-muted text-[13px]">
-                          {project.project_roles.find((role) => role.id === r.project_role_id)?.title ?? "Har qanday rol"}
+                          {project.project_roles.find((role) => role.id === r.project_role_id)?.title ?? t("Har qanday rol")}
                         </span>
                         {r.message ? <p className="text-[14px]">{r.message}</p> : null}
                       </div>
@@ -98,7 +99,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           ) : null}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Loyiha haqida</h2>
+            <h2 className="text-lg font-semibold">{t("Loyiha haqida")}</h2>
             <p className="text-muted leading-relaxed whitespace-pre-line">
               <LinkifiedText text={project.description ?? project.tagline ?? "Tavsif hali yozilmagan."} />
             </p>
@@ -106,7 +107,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
           {project.project_skills.length > 0 ? (
             <section className="flex flex-col gap-3">
-              <h2 className="text-lg font-semibold">Texnologiyalar</h2>
+              <h2 className="text-lg font-semibold">{t("Texnologiyalar")}</h2>
               <div className="flex flex-wrap gap-2">
                 {project.project_skills.map((s) => (
                   <SkillChip key={s.skill_id} className="h-10 px-4 text-[14px]">
@@ -118,7 +119,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           ) : null}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Jamoa · {project.project_members.length}</h2>
+            <h2 className="text-lg font-semibold">{t("Jamoa ·")}{" "}{project.project_members.length}</h2>
             <ul className="flex flex-col gap-2">
               {project.project_members.map((m) => (
                 <li key={m.user_id} className="flex items-center gap-3">
@@ -138,15 +139,15 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
         <aside className="flex flex-col gap-6">
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">{isOwner ? "Rollar" : "Ochiq rollar"}</h2>
+            <h2 className="text-lg font-semibold">{isOwner ? t("Rollar") : t("Ochiq rollar")}</h2>
             {visibleRoles.length === 0 ? (
-              <p className="text-muted text-[14px]">Hozircha ochiq rol yo&apos;q.</p>
+              <p className="text-muted text-[14px]">{t("Hozircha ochiq rol yo'q.")}</p>
             ) : (
               visibleRoles.map((role) => (
                 <div key={role.id} className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-semibold">{role.title}</h3>
-                    {!role.is_open ? <span className="text-muted text-[13px]">Yopiq</span> : null}
+                    {!role.is_open ? <span className="text-muted text-[13px]">{t("Yopiq")}</span> : null}
                   </div>
                   {role.project_role_skills.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
@@ -166,7 +167,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                       roles={roleOptions}
                       roleId={role.id}
                       variant="outline"
-                      label="Ariza berish"
+                      label={t("Ariza berish")}
                     />
                   ) : null}
                 </div>
@@ -174,12 +175,12 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             )}
           </section>
 
-          <SectionCard title="Tafsilotlar">
+          <SectionCard title={t("Tafsilotlar")}>
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 text-[14px]">
-              {project.category ? <DetailRow term="Soha" value={project.category} /> : null}
-              <DetailRow term="Boshlangan" value={formatMonth(project.created_at.slice(0, 10))} />
+              {project.category ? <DetailRow term={t("Soha")} value={project.category} /> : null}
+              <DetailRow term={t("Boshlangan")} value={formatMonth(project.created_at.slice(0, 10))} />
               <DetailRow
-                term="Qayerda"
+                term={t("Qayerda")}
                 value={[project.city, project.is_online ? "Onlayn" : null].filter(Boolean).join(" / ") || "—"}
               />
             </dl>
@@ -199,7 +200,8 @@ function DetailRow({ term, value }: { term: string; value: string }) {
   );
 }
 
-function ProjectHeader({ project, children }: { project: ProjectDetails; children: React.ReactNode }) {
+async function ProjectHeader({ project, children }: { project: ProjectDetails; children: React.ReactNode }) {
+  const t = await getT();
   return (
     <section className="bg-card border-border rounded-card flex flex-col gap-5 border p-5 sm:flex-row sm:items-center sm:p-8">
       <ProjectLogo name={project.name} url={project.logo_url} className="size-18 rounded-2xl text-2xl" />
@@ -212,18 +214,15 @@ function ProjectHeader({ project, children }: { project: ProjectDetails; childre
         <p className="text-muted flex flex-wrap items-center gap-x-2 text-[14px]">
           {project.owner ? (
             <Link href={`/u/${project.owner.username}`} className="hover:text-text whitespace-nowrap">
-              {project.owner.full_name} tomonidan
-            </Link>
+              {project.owner.full_name} {" "}{t("tomonidan")}</Link>
           ) : null}
           {project.github_url ? (
             <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-text">
-              · GitHub
-            </a>
+              {t("· GitHub")}</a>
           ) : null}
           {project.demo_url ? (
             <a href={project.demo_url} target="_blank" rel="noopener noreferrer" className="hover:text-text">
-              · Demo
-            </a>
+              {t("· Demo")}</a>
           ) : null}
         </p>
       </div>

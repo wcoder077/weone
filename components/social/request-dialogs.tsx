@@ -19,6 +19,7 @@ import { AttachImageButton, AttachmentPreview, useImageAttachment } from "@/comp
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Sent as the first message when someone connects without writing one.
 const QUICK_GREETING = "Salom! Siz bilan bog'lanmoqchiman.";
@@ -47,12 +48,13 @@ export function RequestComposeDialog({
   recipientName: string;
   mode: ComposeMode;
 }) {
+  const t = useT();
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={mode.kind === "new" ? `${recipientName} bilan bog'lanish` : "Xabarni tahrirlash"}
-      description="Xohlasangiz, qisqacha o'zingizni tanishtiring. So'rov qabul qilinmaguncha boshqa xabar yubora olmaysiz."
+      title={mode.kind === "new" ? t("{recipientName} bilan bog'lanish", { recipientName }) : t("Xabarni tahrirlash")}
+      description={t("Xohlasangiz, qisqacha o'zingizni tanishtiring. So'rov qabul qilinmaguncha boshqa xabar yubora olmaysiz.")}
     >
       {open ? <ComposeBody meId={meId} mode={mode} onDone={() => onOpenChange(false)} /> : null}
     </ResponsiveDialog>
@@ -60,6 +62,7 @@ export function RequestComposeDialog({
 }
 
 function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; onDone: () => void }) {
+  const t = useT();
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(mode.kind === "edit");
   const [pending, startTransition] = useTransition();
@@ -114,7 +117,7 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
 
   if (loading) {
     return (
-      <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-3">
+      <div role="status" aria-label={t("Yuklanmoqda")} className="flex flex-col gap-3">
         <Skeleton className="h-28 rounded-2xl" />
         <Skeleton className="h-11 w-32 self-end rounded-full" />
       </div>
@@ -130,8 +133,7 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
       className="flex flex-col gap-3"
     >
       <label htmlFor="first-message" className="sr-only">
-        Birinchi xabar
-      </label>
+        {t("Birinchi xabar")}</label>
       <textarea
         id="first-message"
         ref={fieldRef}
@@ -139,7 +141,7 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
         onChange={(e) => setBody(e.target.value)}
         rows={4}
         autoFocus
-        placeholder="Salom! Sizning loyihangiz qiziq tuyuldi…"
+        placeholder={t("Salom! Sizning loyihangiz qiziq tuyuldi…")}
         aria-describedby="first-message-count"
         aria-invalid={over}
         className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive min-h-28 w-full resize-none rounded-2xl border px-4 py-3 text-[15px] outline-none focus-visible:ring-3"
@@ -156,14 +158,14 @@ function ComposeBody({ meId, mode, onDone }: { meId: string; mode: ComposeMode; 
       </div>
       <Button type="submit" size="lg" disabled={pending || over || (empty && !quick) || image.uploading}>
         {pending
-          ? "Yuborilmoqda…"
+          ? t("Yuborilmoqda…")
           : image.uploading
-            ? "Rasm yuklanmoqda…"
+            ? t("Rasm yuklanmoqda…")
             : quick
-              ? "Xabarsiz yuborish"
+              ? t("Xabarsiz yuborish")
               : mode.kind === "new"
-                ? "So'rov yuborish"
-                : "Saqlash"}
+                ? t("So'rov yuborish")
+                : t("Saqlash")}
       </Button>
     </form>
   );
@@ -181,14 +183,16 @@ export function RequestReviewDialog({
   connectionId: string;
   senderName: string;
 }) {
+  const t = useT();
   return (
-    <ResponsiveDialog open={open} onOpenChange={onOpenChange} title={`${senderName}dan bog'lanish so'rovi`}>
+    <ResponsiveDialog open={open} onOpenChange={onOpenChange} title={t("{senderName}dan bog'lanish so'rovi", { senderName })}>
       {open ? <ReviewBody connectionId={connectionId} onDone={() => onOpenChange(false)} /> : null}
     </ResponsiveDialog>
   );
 }
 
 function ReviewBody({ connectionId, onDone }: { connectionId: string; onDone: () => void }) {
+  const t = useT();
   const [details, setDetails] = useState<ConnectionRequestDetails | null | undefined>(undefined);
   const [pending, startTransition] = useTransition();
 
@@ -209,32 +213,31 @@ function ReviewBody({ connectionId, onDone }: { connectionId: string; onDone: ()
   return (
     <div className="flex flex-col gap-4">
       {details === undefined ? (
-        <Skeleton role="status" aria-label="Yuklanmoqda" className="h-20 rounded-2xl" />
+        <Skeleton role="status" aria-label={t("Yuklanmoqda")} className="h-20 rounded-2xl" />
       ) : details ? (
         <FirstMessageBubble details={details} />
       ) : (
-        <p className="text-muted text-[14px]">Xabarsiz so&apos;rov.</p>
+        <p className="text-muted text-[14px]">{t("Xabarsiz so'rov.")}</p>
       )}
       <div className="grid grid-cols-2 gap-2">
         <Button variant="outline" size="lg" disabled={pending} onClick={() => respond(false)}>
-          Rad etish
-        </Button>
+          {t("Rad etish")}</Button>
         <Button size="lg" disabled={pending} onClick={() => respond(true)}>
-          Qabul qilish
-        </Button>
+          {t("Qabul qilish")}</Button>
       </div>
     </div>
   );
 }
 
 export function FirstMessageBubble({ details }: { details: ConnectionRequestDetails }) {
+  const t = useT();
   return (
     <div className="bg-surface border-border flex flex-col gap-3 rounded-2xl border p-4">
       {details.body ? <p className="text-[15px] leading-relaxed break-words whitespace-pre-wrap"><LinkifiedText text={details.body} /></p> : null}
       {details.imageUrl ? (
         // Signed URL of a private image, valid for an hour.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={details.imageUrl} alt="So'rovdagi rasm" className="border-border max-h-64 w-fit rounded-xl border object-cover" />
+        <img src={details.imageUrl} alt={t("So'rovdagi rasm")} className="border-border max-h-64 w-fit rounded-xl border object-cover" />
       ) : null}
     </div>
   );

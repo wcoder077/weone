@@ -11,6 +11,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getUserId } from "@/lib/auth";
 import { getWelcomePreviews } from "@/lib/queries/public";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 
 const STEPS = [
   { title: "Ko'nikmalaringizni ko'rsating", text: "Har bir ko'nikma loyiha va tadbirlar bilan isbotlanadi." },
@@ -19,6 +20,7 @@ const STEPS = [
 ];
 
 export default async function WelcomePage() {
+  const t = await getT();
   if (await getUserId()) redirect("/home");
 
   return (
@@ -28,11 +30,9 @@ export default async function WelcomePage() {
           <Logo />
           <nav className="flex items-center gap-2">
             <Link href="/login" className={buttonVariants({ variant: "ghost" })}>
-              Kirish
-            </Link>
+              {t("Kirish")}</Link>
             <Link href="/signup" className={buttonVariants()}>
-              Qo&apos;shilish
-            </Link>
+              {t("Qo'shilish")}</Link>
           </nav>
         </div>
       </header>
@@ -41,29 +41,24 @@ export default async function WelcomePage() {
         <section className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-6">
             <h1 className="text-[34px] leading-[1.05] font-bold tracking-tight break-words min-[400px]:text-[40px] sm:text-[56px] lg:text-[64px]">
-              Maqsaddoshlarni toping.
-              <br />
-              Birga yarating.
-              <br />
-              Birga o&apos;sing.
-            </h1>
+              {t("Maqsaddoshlarni toping.")}<br />
+              {t("Birga yarating.")}<br />
+              {t("Birga o'sing.")}</h1>
             <p className="text-muted max-w-xl text-lg">
-              Hackathon, startap va loyihalar uchun jamoadoshlarni haqiqiy ko&apos;nikmalar bo&apos;yicha toping.
-            </p>
+              {t("Hackathon, startap va loyihalar uchun jamoadoshlarni haqiqiy ko'nikmalar bo'yicha toping.")}</p>
             <form action="/start" role="search" className="bg-card border-border flex max-w-xl items-center gap-2 rounded-full border p-1.5">
               <label className="relative flex-1">
-                <span className="sr-only">Kim kerak?</span>
+                <span className="sr-only">{t("Kim kerak?")}</span>
                 <Search className="text-muted pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2" />
                 <input
                   name="q"
                   maxLength={120}
-                  placeholder="Menga hackathon uchun backend dasturchi kerak"
+                  placeholder={t("Menga hackathon uchun backend dasturchi kerak")}
                   className="placeholder:text-muted h-11 w-full bg-transparent pr-2 pl-11 text-[15px] outline-none"
                 />
               </label>
               <button type="submit" className={cn(buttonVariants(), "shrink-0")}>
-                Maqsaddosh topish
-              </button>
+                {t("Maqsaddosh topish")}</button>
             </form>
           </div>
           <Suspense fallback={<PreviewSkeleton />}>
@@ -73,12 +68,11 @@ export default async function WelcomePage() {
 
         <section className="flex flex-col gap-6" aria-labelledby="how-it-works">
           <h2 id="how-it-works" className="text-2xl font-semibold">
-            Qanday ishlaydi
-          </h2>
+            {t("Qanday ishlaydi")}</h2>
           <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {STEPS.map((step, i) => (
               <li key={step.title} className="bg-card border-border rounded-card flex flex-col gap-3 border p-6">
-                <span className="text-muted text-[14px]">{i + 1}-qadam</span>
+                <span className="text-muted text-[14px]">{i + 1}{t("-qadam")}</span>
                 <h3 className="text-xl font-semibold">{step.title}</h3>
                 <p className="text-muted">{step.text}</p>
               </li>
@@ -90,7 +84,7 @@ export default async function WelcomePage() {
       <footer className="border-border border-t">
         <div className="text-muted mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-4 py-8 text-[14px] lg:px-8">
           <Logo />
-          <span>Maqsaddoshlarni toping. Birga yarating. Birga o&apos;sing.</span>
+          <span>{t("Maqsaddoshlarni toping. Birga yarating. Birga o'sing.")}</span>
         </div>
       </footer>
     </div>
@@ -109,11 +103,12 @@ function PreviewSkeleton() {
 
 // Real people and projects from the database (safe fields only). Empty data simply hides the column.
 async function Previews() {
+  const t = await getT();
   const { people, projects } = await getWelcomePreviews().catch(() => ({ people: [], projects: [] }));
   if (people.length + projects.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-4" aria-label="WeOne'dagi maqsaddoshlar va loyihalar">
+    <div className="flex flex-col gap-4" aria-label={t("WeOne'dagi maqsaddoshlar va loyihalar")}>
       {projects.map((p) => (
         <Link key={p.slug} href="/signup" className="bg-card border-border rounded-card hover:border-muted/40 flex flex-col gap-4 border p-5 transition-colors">
           <div className="flex items-start gap-3">

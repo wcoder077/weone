@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ContextMenuGuard } from "@/components/layout/context-menu-guard";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { getLang } from "@/lib/i18n/server";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -54,18 +57,21 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const lang = await getLang();
   return (
     // The inline script sets data-theme before first paint, so React must accept the DOM value.
-    <html lang="uz" data-theme="dark" suppressHydrationWarning className={`${inter.variable} antialiased`}>
+    <html lang={lang} data-theme="dark" suppressHydrationWarning className={`${inter.variable} antialiased`}>
       <head>
         {/* Static script from our own constant (no user input). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body>
-        {children}
-        <Toaster />
-        <ContextMenuGuard />
+        <I18nProvider lang={lang} dict={dictionaries[lang]}>
+          {children}
+          <Toaster />
+          <ContextMenuGuard />
+        </I18nProvider>
       </body>
     </html>
   );

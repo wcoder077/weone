@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Client navigations since this tab loaded the app. A fresh load (deep link,
 // installed app opened on an inner page) starts at 0, so "back" can't leave the app.
@@ -24,6 +25,7 @@ export function NavigationTracker() {
 // In-app back (installed PWA has no browser back button). Goes back in history
 // when there is in-app history, otherwise to `fallback`.
 export function BackLink({ fallback, className }: { fallback: string; className?: string }) {
+  const t = useT();
   const router = useRouter();
   return (
     <Link
@@ -40,7 +42,6 @@ export function BackLink({ fallback, className }: { fallback: string; className?
       )}
     >
       <ArrowLeft className="size-5" aria-hidden />
-      Orqaga
-    </Link>
+      {t("Orqaga")}</Link>
   );
 }

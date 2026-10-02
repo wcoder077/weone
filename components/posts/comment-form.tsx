@@ -8,8 +8,10 @@ import { graphemeLength } from "@/lib/text";
 import { COMMENT_MAX } from "@/lib/validation/post";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function CommentForm({ postId }: { postId: string }) {
+  const t = useT();
   const [body, setBody] = useState("");
   const [pending, startTransition] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
@@ -39,20 +41,19 @@ export function CommentForm({ postId }: { postId: string }) {
       <div className="border-input bg-input/30 focus-within:border-ring focus-within:ring-ring/50 flex min-w-0 flex-1 items-end rounded-3xl border focus-within:ring-3">
         <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, body, emoji, setBody)} />
         <label htmlFor="comment-input" className="sr-only">
-          Izoh
-        </label>
+          {t("Izoh")}</label>
         <textarea
           id="comment-input"
           ref={fieldRef}
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={1}
-          placeholder="Izoh yozing…"
+          placeholder={t("Izoh yozing…")}
           aria-invalid={count > COMMENT_MAX}
           className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 pr-4 text-[15px] leading-snug outline-none"
         />
       </div>
-      <Button type="submit" size="icon" aria-label="Izohni yuborish" disabled={invalid || pending}>
+      <Button type="submit" size="icon" aria-label={t("Izohni yuborish")} disabled={invalid || pending}>
         <Send />
       </Button>
     </form>

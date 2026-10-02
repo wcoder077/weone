@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { ToggleChip } from "./skill-chip";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Skill = { id: string; name: string };
 
@@ -23,6 +24,7 @@ export function SkillMultiPicker({
   label: string;
   placeholder?: string;
 }) {
+  const t = useT();
   const [query, setQuery] = useState("");
   const byId = useMemo(() => new Map(skills.map((s) => [s.id, s])), [skills]);
 
@@ -44,7 +46,7 @@ export function SkillMultiPicker({
               <button
                 type="button"
                 onClick={() => onChange(value.filter((v) => v !== id))}
-                aria-label={`${byId.get(id)?.name ?? ""} — olib tashlash`}
+                aria-label={t("{v0} — olib tashlash", { v0: byId.get(id)?.name ?? "" })}
                 className="bg-primary text-primary-foreground inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-[14px] font-medium"
               >
                 {byId.get(id)?.name}
@@ -58,7 +60,7 @@ export function SkillMultiPicker({
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={full ? `Ko'pi bilan ${max} ta` : placeholder}
+        placeholder={full ? t("Ko'pi bilan {max} ta", { max }) : placeholder}
         disabled={full}
         aria-label={label}
       />
