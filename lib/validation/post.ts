@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { graphemeLength } from "@/lib/text";
 
-export const POST_MAX = 500;
+export const POST_MAX = 2000;
 
 // Mirrors the posts_body_check constraint.
 export const postBodySchema = z
