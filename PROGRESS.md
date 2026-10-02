@@ -261,3 +261,4 @@
 - Post media signed links are reused for 45 min per server instance, so the browser caches images instead of downloading them on every render; new uploads are sent with a 1-year cache header.
 - Post views go to the server in one batched request (1.5 s window) instead of one per post; `staleTimes.dynamic = 30` reuses recently visited pages.
 - `app/favicon.ico` rebuilt with RGBA PNGs (Turbopack refused the RGB ones).
+- Migration 22 makes the `post-media` bucket public: post media now uses stable public URLs (CDN-cached) instead of signed links; write policies unchanged.

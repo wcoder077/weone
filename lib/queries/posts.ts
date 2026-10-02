@@ -2,11 +2,6 @@ import { POST_MEDIA_BUCKET, type PostMediaKind } from "@/lib/post-media";
 import { createClient } from "@/lib/supabase/server";
 
 export const FEED_PAGE = 20;
-const MEDIA_URL_SECONDS = 60 * 60;
-// A signed link is reused while it has at least this long to live. The same URL
-// on every render lets the browser cache the file instead of downloading it again.
-const MEDIA_URL_REUSE_MS = 45 * 60 * 1000;
-const MEDIA_URL_CACHE_MAX = 5000;
 // Random older posts are picked from this many of the newest ones.
 const RANDOM_POOL = 100;
 
@@ -57,33 +52,13 @@ export type FeedPost = {
   liked: boolean;
 };
 
-// Signed links, shared by every visitor on this server instance. Safe to share:
-// every signed-in user may read any post's media (bucket policy).
-const signedUrlCache = new Map<string, { url: string; signedAt: number }>();
-
-// Private bucket: one signing request for the files of this page that are not cached yet.
-async function signMedia(supabase: Supabase, paths: string[]) {
-  const now = Date.now();
-  const urls = new Map<string, string>();
-  const missing: string[] = [];
-  for (const path of new Set(paths)) {
-    const hit = signedUrlCache.get(path);
-    if (hit && now - hit.signedAt < MEDIA_URL_REUSE_MS) urls.set(path, hit.url);
-    else missing.push(path);
-  }
-  if (missing.length === 0) return urls;
-
-  const { data } = await supabase.storage.from(POST_MEDIA_BUCKET).createSignedUrls(missing, MEDIA_URL_SECONDS);
-  if (signedUrlCache.size > MEDIA_URL_CACHE_MAX) signedUrlCache.clear();
-  for (const s of data ?? []) {
-    if (!s.path || !s.signedUrl) continue;
-    urls.set(s.path, s.signedUrl);
-    signedUrlCache.set(s.path, { url: s.signedUrl, signedAt: now });
-  }
-  return urls;
+// Public bucket (UUID paths): a stable URL per file, so browsers and the CDN cache it.
+function mediaUrls(supabase: Supabase, paths: string[]) {
+  const bucket = supabase.storage.from(POST_MEDIA_BUCKET);
+  return new Map(paths.map((path) => [path, bucket.getPublicUrl(path).data.publicUrl]));
 }
 
-// Adds signed media links, the reposted originals and "did I like it" to raw rows.
+// Adds media links, the reposted originals and "did I like it" to raw rows.
 async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Promise<FeedPost[]> {
   const originalIds = [...new Set(rows.flatMap((r) => (r.repost_of ? [r.repost_of] : [])))];
   const [originalsRes, likesRes] = await Promise.all([
@@ -98,7 +73,7 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
   const liked = new Set((likesRes.data ?? []).map((l) => l.post_id));
 
   const paths = [...rows, ...originals.values()].flatMap((p) => (p.media_path ? [p.media_path] : []));
-  const urls = await signMedia(supabase, paths);
+  const urls = mediaUrls(supabase, paths);
 
   function mediaOf(p: PostRow): PostMedia | null {
     const kind = p.media_type === "image" || p.media_type === "video" ? p.media_type : null;
