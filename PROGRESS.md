@@ -235,3 +235,6 @@
 
 ## Chat no longer slides sideways (done)
 - The swipe-to-reply icon sat outside the bubble and widened the message list, so the whole chat could be dragged left/right. The list is now `overflow-x-hidden` + `touch-action: pan-y`, and the icon sits behind the bubble (revealed as it slides).
+
+## Banner ambient glow (done)
+- The profile banner no longer fades to plain card colour (a dark banner looked washed out in light mode). A blurred, slightly enlarged copy of the banner sits behind the header and fades out downward (mask), so the banner's own colours spill into the card; the banner itself dissolves into that glow at the bottom. Works for uploaded and default banners (light/dark files), 45 % in light mode, 50 % in dark.

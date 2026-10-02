@@ -6,6 +6,7 @@ import { SkillChip } from "@/components/shared/skill-chip";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { OnlineLabel } from "@/components/layout/online-presence";
 import { DEFAULT_BANNER, bannerUrl } from "@/lib/url";
+import { cn } from "@/lib/utils";
 import { isGeneratedUsername } from "@/lib/validation/profile";
 
 export function SectionCard({
@@ -38,35 +39,39 @@ export function ProfileHeader({
   bannerEditor?: ReactNode;
 }) {
   const banner = bannerUrl(profile.banner_path);
+  const position = banner ? { objectPosition: `50% ${profile.banner_position}%` } : undefined;
+  // The user's banner, or the default one (a light and a dark file that follow the theme).
+  const bannerImage = (className: string) =>
+    banner ? (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={banner} alt="" className={className} style={position} />
+    ) : (
+      <>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={DEFAULT_BANNER.light} alt="" className={cn(className, "dark:hidden")} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={DEFAULT_BANNER.dark} alt="" className={cn(className, "hidden dark:block")} />
+      </>
+    );
+
   return (
-    <section className="bg-card border-border rounded-card overflow-hidden border">
-      {/* Banner behind the header; the avatar overlaps its bottom edge. */}
-      <div className="bg-surface relative h-32 sm:h-44 lg:h-52">
-        {banner ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={banner}
-            alt=""
-            className="size-full object-cover"
-            style={{ objectPosition: `50% ${profile.banner_position}%` }}
-          />
-        ) : (
-          // Default banner until the user uploads one; a light and a dark version follow the theme.
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={DEFAULT_BANNER.light} alt="" className="size-full object-cover dark:hidden" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={DEFAULT_BANNER.dark} alt="" className="hidden size-full object-cover dark:block" />
-          </>
-        )}
-        {/* Bottom of the banner melts into the card colour, so it follows light/dark. */}
-        <div
-          aria-hidden
-          className="from-card via-card/60 pointer-events-none absolute inset-x-0 bottom-0 h-1/5 bg-linear-to-t to-transparent"
-        />
+    <section className="bg-card border-border rounded-card relative overflow-hidden border">
+      {/* Ambient glow: a blurred copy of the banner spills its own colours down into the
+          card and fades out, so the banner never ends in a hard white/black edge. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 opacity-45 [mask-image:linear-gradient(to_bottom,black_35%,transparent)] sm:h-80 lg:h-96 dark:opacity-50"
+      >
+        {bannerImage("size-full scale-110 object-cover blur-2xl")}
+      </div>
+      {/* Banner behind the header; its bottom dissolves into the glow; the avatar overlaps it. */}
+      <div className="relative h-32 sm:h-44 lg:h-52">
+        <div className="size-full [mask-image:linear-gradient(to_bottom,black_65%,transparent)]">
+          {bannerImage("size-full object-cover")}
+        </div>
         {bannerEditor ? <div className="absolute top-3 right-3">{bannerEditor}</div> : null}
       </div>
-      <div className="flex flex-col gap-4 px-5 pb-5 sm:flex-row sm:gap-5 sm:px-6 sm:pb-6">
+      <div className="relative flex flex-col gap-4 px-5 pb-5 sm:flex-row sm:gap-5 sm:px-6 sm:pb-6">
         <div className="ring-card bg-card relative -mt-12 w-fit shrink-0 rounded-full ring-4">
           <UserAvatar name={profile.full_name} url={profile.avatar_url} size="xl" userId={profile.id} />
         </div>
