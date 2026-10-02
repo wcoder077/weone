@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Smile } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // A small built-in set instead of a heavy emoji library.
 const GROUPS = [
@@ -26,6 +27,7 @@ const GROUPS = [
 ];
 
 export function EmojiPicker({ onPick, disabled }: { onPick: (emoji: string) => void; disabled?: boolean }) {
+  const t = useT();
   const [group, setGroup] = useState(0);
   const [open, setOpen] = useState(false);
 
@@ -33,13 +35,13 @@ export function EmojiPicker({ onPick, disabled }: { onPick: (emoji: string) => v
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         disabled={disabled}
-        aria-label="Emoji qo'shish"
+        aria-label={t("Emoji qo'shish")}
         className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-150 outline-none focus-visible:ring-3 disabled:opacity-50"
       >
         <Smile className="size-5" />
       </PopoverTrigger>
       <PopoverContent side="top" align="start" className="glass-panel w-[min(20rem,calc(100vw-2rem))] gap-2 rounded-2xl p-2">
-        <div role="tablist" aria-label="Emoji turlari" className="flex gap-1">
+        <div role="tablist" aria-label={t("Emoji turlari")} className="flex gap-1">
           {GROUPS.map((g, i) => (
             <button
               key={g.label}
@@ -52,11 +54,11 @@ export function EmojiPicker({ onPick, disabled }: { onPick: (emoji: string) => v
                 group === i ? "bg-surface text-text" : "text-muted hover:text-text",
               )}
             >
-              {g.label}
+              {t(g.label)}
             </button>
           ))}
         </div>
-        <div role="tabpanel" aria-label={GROUPS[group].label} className="grid grid-cols-8 gap-0.5">
+        <div role="tabpanel" aria-label={t(GROUPS[group].label)} className="grid grid-cols-8 gap-0.5">
           {GROUPS[group].emojis.map((emoji) => (
             <button
               key={emoji}

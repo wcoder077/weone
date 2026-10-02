@@ -4,16 +4,18 @@ import { LinkifiedText } from "@/components/shared/linkified-text";
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { deleteComment } from "@/lib/actions/posts";
 import { formatRelative } from "@/lib/format";
 import type { PostComment } from "@/lib/queries/posts";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // `canDelete`: the commenter or the post's author (RLS checks it again).
 export function CommentItem({ comment, canDelete }: { comment: PostComment; canDelete: boolean }) {
+  const t = useT();
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -36,7 +38,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
             {comment.author.full_name}
           </Link>
           <time dateTime={comment.createdAt} className="text-muted shrink-0 text-[12px]">
-            {formatRelative(comment.createdAt)}
+            {formatRelative(comment.createdAt, t)}
           </time>
         </p>
         <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap"><LinkifiedText text={comment.body} /></p>
@@ -46,7 +48,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
           <button
             type="button"
             onClick={() => setConfirming(true)}
-            aria-label="Izohni o'chirish"
+            aria-label={t("Izohni o'chirish")}
             className="text-muted hover:text-danger hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3"
           >
             <Trash2 className="size-4" />
@@ -54,15 +56,14 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
           <ResponsiveDialog
             open={confirming}
             onOpenChange={setConfirming}
-            title="Izohni o'chirasizmi?"
-            description="Bu amalni ortga qaytarib bo'lmaydi."
+            title={t("Izohni o'chirasizmi?")}
+            description={t("Bu amalni ortga qaytarib bo'lmaydi.")}
           >
             <div className="grid grid-cols-2 gap-2">
               <Button variant="outline" size="lg" onClick={() => setConfirming(false)}>
-                Bekor qilish
-              </Button>
+                {t("Bekor qilish")}</Button>
               <Button variant="destructive" size="lg" disabled={pending} onClick={remove}>
-                {pending ? "O'chirilmoqda…" : "O'chirish"}
+                {pending ? t("O'chirilmoqda…") : t("O'chirish")}
               </Button>
             </div>
           </ResponsiveDialog>

@@ -5,6 +5,7 @@ import { Badge } from "@/components/shared/badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { getT } from "@/lib/i18n/server";
 
 const STATUS = {
   pending: { label: "Jarayonda", tone: "neutral" },
@@ -14,15 +15,16 @@ const STATUS = {
 
 // Status badges are shown only to the two people involved; others see accepted rows only.
 export async function ConnectionsTab({ profileId, viewerId }: { profileId: string; viewerId: string }) {
+  const t = await getT();
   let connections;
   try {
     connections = await getProfileConnections(profileId);
   } catch {
-    return <RetryErrorState description="Bog'lanishlarni yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Bog'lanishlarni yuklab bo'lmadi.")} />;
   }
 
   if (connections.length === 0) {
-    return <EmptyState icon={Users} title="Hali bog'lanishlar yo'q" description="Bog'lanish so'rovlari shu yerda ko'rinadi." />;
+    return <EmptyState icon={Users} title={t("Hali bog'lanishlar yo'q")} description={t("Bog'lanish so'rovlari shu yerda ko'rinadi.")} />;
   }
 
   const involved = (otherId: string) => viewerId === profileId || viewerId === otherId;
@@ -42,7 +44,7 @@ export async function ConnectionsTab({ profileId, viewerId }: { profileId: strin
                 <span className="truncate font-medium">{other.full_name}</span>
                 {other.headline ? <span className="text-muted truncate text-[13px]">{other.headline}</span> : null}
               </span>
-              {badge && involved(other.id) ? <Badge tone={badge.tone}>{badge.label}</Badge> : null}
+              {badge && involved(other.id) ? <Badge tone={badge.tone}>{t(badge.label)}</Badge> : null}
             </Link>
           </li>
         );

@@ -6,8 +6,10 @@ import { requestPasswordReset } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function ForgotPasswordForm() {
+  const t = useT();
   const [state, action, pending] = useActionState(requestPasswordReset, null);
   const onSubmit = useKeepValuesSubmit(action);
 
@@ -16,7 +18,7 @@ export function ForgotPasswordForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <FormField id="email" label="Email" errors={state?.fieldErrors?.email}>
+      <FormField id="email" label={t("Email")} errors={state?.fieldErrors?.email}>
         <Input
           id="email"
           name="email"
@@ -29,7 +31,7 @@ export function ForgotPasswordForm() {
       </FormField>
       <FormMessage error={state?.error} />
       <Button type="submit" size="lg" disabled={pending} aria-busy={pending}>
-        {pending ? "Yuborilmoqda…" : "Havolani yuborish"}
+        {pending ? t("Yuborilmoqda…") : t("Havolani yuborish")}
       </Button>
     </form>
   );

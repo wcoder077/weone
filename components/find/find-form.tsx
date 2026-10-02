@@ -9,6 +9,7 @@ import { ToggleChip } from "@/components/shared/skill-chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export type FindFormValues = {
   role: string;
@@ -26,6 +27,7 @@ export function FindForm({
   skills: { id: string; name: string }[];
   initial: FindFormValues;
 }) {
+  const t = useT();
   const router = useRouter();
   const [values, setValues] = useState(initial);
   const [searching, startSearch] = useTransition();
@@ -47,12 +49,12 @@ export function FindForm({
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold">Menga kerak</h2>
-      <FormField id="role" label="Rol">
-        <Input id="role" value={values.role} onChange={(e) => set("role", e.target.value)} placeholder="Masalan: Backend dasturchi" maxLength={80} />
+      <h2 className="text-lg font-semibold">{t("Menga kerak")}</h2>
+      <FormField id="role" label={t("Rol")}>
+        <Input id="role" value={values.role} onChange={(e) => set("role", e.target.value)} placeholder={t("Masalan: Backend dasturchi")} maxLength={80} />
       </FormField>
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">Nima uchun</legend>
+        <legend className="mb-2 text-sm font-medium">{t("Nima uchun")}</legend>
         <div className="flex flex-wrap gap-2">
           {FIND_PURPOSES.map((p) => (
             <ToggleChip
@@ -60,16 +62,16 @@ export function FindForm({
               selected={values.purpose === p.value}
               onClick={() => set("purpose", values.purpose === p.value ? "" : p.value)}
             >
-              {p.label}
+              {t(p.label)}
             </ToggleChip>
           ))}
         </div>
       </fieldset>
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Kerakli ko&apos;nikmalar</span>
-        <SkillMultiPicker label="Kerakli ko'nikmalar" skills={skills} value={values.skillIds} onChange={(ids) => set("skillIds", ids)} max={8} />
+        <span className="text-sm font-medium">{t("Kerakli ko'nikmalar")}</span>
+        <SkillMultiPicker label={t("Kerakli ko'nikmalar")} skills={skills} value={values.skillIds} onChange={(ids) => set("skillIds", ids)} max={8} />
       </div>
-      <FormField id="city" label="Shahar">
+      <FormField id="city" label={t("Shahar")}>
         <Input id="city" list="find-city-options" value={values.city} onChange={(e) => set("city", e.target.value)} maxLength={60} />
         <datalist id="find-city-options">
           {CITIES.map((c) => (
@@ -78,15 +80,13 @@ export function FindForm({
         </datalist>
       </FormField>
       <label className="flex min-h-11 items-center justify-between gap-3 text-[14px]">
-        Onlayn ham bo&apos;ladi
-        <Switch checked={values.online} onCheckedChange={(v) => set("online", v)} />
+        {t("Onlayn ham bo'ladi")}<Switch checked={values.online} onCheckedChange={(v) => set("online", v)} />
       </label>
       <label className="flex min-h-11 items-center justify-between gap-3 text-[14px]">
-        Faqat hamkorlikka ochiqlar
-        <Switch checked={values.openOnly} onCheckedChange={(v) => set("openOnly", v)} />
+        {t("Faqat hamkorlikka ochiqlar")}<Switch checked={values.openOnly} onCheckedChange={(v) => set("openOnly", v)} />
       </label>
       <Button type="submit" size="lg" disabled={searching} aria-busy={searching}>
-        {searching ? "Qidirilmoqda…" : "Natijalarni ko'rsatish"}
+        {searching ? t("Qidirilmoqda…") : t("Natijalarni ko'rsatish")}
       </Button>
     </form>
   );

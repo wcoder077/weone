@@ -1,5 +1,8 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const cardClass = "bg-card border-border rounded-card border p-5";
 
@@ -58,11 +61,12 @@ export function CardGridSkeleton({
   count?: number;
   variant?: "person" | "project";
 }) {
+  const t = useT();
   const Card = variant === "person" ? PersonCardSkeleton : ProjectCardSkeleton;
   return (
     <div
       role="status"
-      aria-label="Yuklanmoqda"
+      aria-label={t("Yuklanmoqda")}
       className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
     >
       {Array.from({ length: count }, (_, i) => (
@@ -74,8 +78,9 @@ export function CardGridSkeleton({
 
 // Narrow page with a title and a form card (settings, project form).
 export function FormPageSkeleton() {
+  const t = useT();
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+    <div role="status" aria-label={t("Yuklanmoqda")} className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <Skeleton className="h-8 w-56" />
       <div className="bg-card border-border rounded-card flex flex-col gap-5 border p-5 sm:p-6">
         {Array.from({ length: 4 }, (_, i) => (
@@ -92,8 +97,9 @@ export function FormPageSkeleton() {
 
 // Narrow feed/list page: title, optional tabs, stacked cards or rows.
 export function ListPageSkeleton({ tabs = false, cards = false }: { tabs?: boolean; cards?: boolean }) {
+  const t = useT();
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
+    <div role="status" aria-label={t("Yuklanmoqda")} className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <Skeleton className="h-8 w-48" />
       {tabs ? <Skeleton className="h-11 w-56 rounded-full" /> : null}
       {cards ? (

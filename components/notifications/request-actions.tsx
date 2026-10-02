@@ -1,11 +1,12 @@
 "use client";
 
 import { useTransition } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { decideJoinRequest } from "@/lib/actions/projects";
 import { respondConnectionRequest } from "@/lib/actions/connections";
 import type { ActionState } from "@/lib/actions/types";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 function AcceptDecline({
   onAccept,
@@ -14,6 +15,7 @@ function AcceptDecline({
   onAccept: () => Promise<ActionState>;
   onDecline: () => Promise<ActionState>;
 }) {
+  const t = useT();
   const [pending, startTransition] = useTransition();
   const run = (fn: () => Promise<ActionState>) =>
     startTransition(async () => {
@@ -25,11 +27,9 @@ function AcceptDecline({
   return (
     <div className="flex gap-2">
       <Button size="sm" disabled={pending} onClick={() => run(onAccept)}>
-        Qabul qilish
-      </Button>
+        {t("Qabul qilish")}</Button>
       <Button size="sm" variant="outline" disabled={pending} onClick={() => run(onDecline)}>
-        Rad etish
-      </Button>
+        {t("Rad etish")}</Button>
     </div>
   );
 }

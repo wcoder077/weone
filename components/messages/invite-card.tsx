@@ -2,13 +2,14 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { requestToJoin } from "@/lib/actions/projects";
 import type { ChatMessage } from "@/lib/queries/messages";
 import { formatTime } from "@/lib/format";
 import { ProjectLogo } from "@/components/shared/project-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // A project_invite message. "Qo'shilish" sends a join request; the owner accepts it
 // (only owners can add members — enforced by RLS).
@@ -21,6 +22,7 @@ export function InviteCard({
   mine: boolean;
   alreadyMember: boolean;
 }) {
+  const t = useT();
   const [requested, setRequested] = useState(false);
   const [pending, startTransition] = useTransition();
   const project = message.project;
@@ -43,7 +45,7 @@ export function InviteCard({
   return (
     <div className={cn("flex w-full max-w-sm flex-col gap-1", mine ? "items-end self-end" : "items-start")}>
       <div className="border-border bg-surface flex w-full flex-col gap-3 rounded-3xl border p-4">
-        <p className="text-muted text-[13px]">{mine ? "Siz loyihaga taklif qildingiz" : "Loyihaga taklif"}</p>
+        <p className="text-muted text-[13px]">{mine ? t("Siz loyihaga taklif qildingiz") : t("Loyihaga taklif")}</p>
         {project ? (
           <div className="flex items-center gap-3">
             <ProjectLogo name={project.name} url={project.logo_url} className="size-10" />
@@ -53,16 +55,15 @@ export function InviteCard({
             </div>
           </div>
         ) : (
-          <p className="text-muted text-[14px]">Loyiha o&apos;chirilgan.</p>
+          <p className="text-muted text-[14px]">{t("Loyiha o'chirilgan.")}</p>
         )}
         {project ? (
           <div className="flex flex-wrap gap-2">
             <Link href={`/projects/${project.slug}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              Loyihani ko&apos;rish
-            </Link>
+              {t("Loyihani ko'rish")}</Link>
             {!mine && !alreadyMember ? (
               <Button size="sm" disabled={pending || requested} onClick={join}>
-                {requested ? "So'rov yuborildi" : "Qo'shilish"}
+                {requested ? t("So'rov yuborildi") : t("Qo'shilish")}
               </Button>
             ) : null}
           </div>

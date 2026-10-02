@@ -9,6 +9,7 @@ import { AvatarUpload } from "@/components/shared/avatar-upload";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Input } from "@/components/ui/input";
 import { StepFooter } from "./step-shell";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const USERNAME_HINTS: Record<UsernameStatus | "checking", string> = {
   checking: "Tekshirilmoqda…",
@@ -18,6 +19,7 @@ const USERNAME_HINTS: Record<UsernameStatus | "checking", string> = {
 };
 
 export function AboutStep({ profile }: { profile: MyProfile }) {
+  const t = useT();
   const [state, action, pending] = useActionState(saveAbout, null);
   const [name, setName] = useState(profile.full_name);
   const [usernameStatus, setUsernameStatus] = useState<UsernameStatus | "checking" | null>(null);
@@ -38,9 +40,9 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
   return (
     <form action={action} className="flex flex-col gap-5" noValidate>
       <AvatarUpload userId={profile.id} name={name} initialUrl={profile.avatar_url} />
-      {errors?.avatar_url ? <p className="text-danger text-[13px]">{errors.avatar_url[0]}</p> : null}
+      {errors?.avatar_url ? <p className="text-danger text-[13px]">{t(errors.avatar_url[0])}</p> : null}
 
-      <FormField id="full_name" label="Ism va familiya" errors={errors?.full_name}>
+      <FormField id="full_name" label={t("Ism va familiya")} errors={errors?.full_name}>
         <Input
           id="full_name"
           name="full_name"
@@ -54,8 +56,8 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
 
       <FormField
         id="username"
-        label="Foydalanuvchi nomi"
-        hint={usernameStatus ? USERNAME_HINTS[usernameStatus] : "Ixtiyoriy. Keyinroq ham qo'sha olasiz"}
+        label={t("Foydalanuvchi nomi")}
+        hint={usernameStatus ? USERNAME_HINTS[usernameStatus] : t("Ixtiyoriy. Keyinroq ham qo'sha olasiz")}
         errors={errors?.username ?? (usernameStatus === "taken" ? [USERNAME_HINTS.taken] : undefined)}
       >
         <Input
@@ -65,14 +67,14 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
           autoCapitalize="none"
           spellCheck={false}
           defaultValue={isGeneratedUsername(profile.username) ? "" : profile.username}
-          placeholder="Foydalanuvchi nomi"
+          placeholder={t("Foydalanuvchi nomi")}
           onChange={(e) => onUsernameChange(e.target.value)}
           aria-describedby="username-desc"
           aria-invalid={Boolean(errors?.username) || usernameStatus === "taken"}
         />
       </FormField>
 
-      <FormField id="city" label="Shahar" errors={errors?.city}>
+      <FormField id="city" label={t("Shahar")} errors={errors?.city}>
         <Input
           id="city"
           name="city"
@@ -90,8 +92,8 @@ export function AboutStep({ profile }: { profile: MyProfile }) {
 
       <FormField
         id="headline"
-        label="Qisqa tavsif"
-        hint="Masalan: Frontend dasturchi · React, TypeScript"
+        label={t("Qisqa tavsif")}
+        hint={t("Masalan: Frontend dasturchi · React, TypeScript")}
         errors={errors?.headline}
       >
         <Input

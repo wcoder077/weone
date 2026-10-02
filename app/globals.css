@@ -189,7 +189,7 @@
 
 /* Loading skeletons fade in after a short delay: a page that arrives within ~150 ms
    never shows one (no flash), a slow one gets a smooth placeholder. */
-[role="status"][aria-label="Yuklanmoqda"] {
+[role="status"]:is([aria-label="Yuklanmoqda"], [aria-label="Loading"], [aria-label="Загрузка"]) {
   animation: skeleton-in 160ms ease-out 150ms backwards;
 }
 @keyframes skeleton-in {

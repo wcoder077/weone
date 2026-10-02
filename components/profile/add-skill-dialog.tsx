@@ -11,6 +11,7 @@ import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { SkillChip, ToggleChip } from "@/components/shared/skill-chip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export type SkillDialogData = {
   allSkills: { id: string; name: string }[];
@@ -21,6 +22,7 @@ export type SkillDialogData = {
 };
 
 export function AddSkillDialog(data: SkillDialogData) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [formKey, setFormKey] = useState(0);
 
@@ -28,16 +30,15 @@ export function AddSkillDialog(data: SkillDialogData) {
     <>
       <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         <Plus data-icon="inline-start" />
-        Ko&apos;nikma
-      </Button>
+        {t("Ko'nikma")}</Button>
       <ResponsiveDialog
         open={open}
         onOpenChange={(next) => {
           setOpen(next);
           if (!next) setFormKey((k) => k + 1);
         }}
-        title="Ko'nikma qo'shish"
-        description="Qayerda ishlatganingizni belgilang — bu ko'nikmangizning isboti."
+        title={t("Ko'nikma qo'shish")}
+        description={t("Qayerda ishlatganingizni belgilang — bu ko'nikmangizning isboti.")}
       >
         <AddSkillForm key={formKey} {...data} onSaved={() => setOpen(false)} />
       </ResponsiveDialog>
@@ -54,6 +55,7 @@ function AddSkillForm({
   myJourney,
   onSaved,
 }: SkillDialogData & { onSaved: () => void }) {
+  const t = useT();
   const [query, setQuery] = useState("");
   const [choice, setChoice] = useState<Choice | null>(null);
   const [level, setLevel] = useState<SkillLevel>("comfortable");
@@ -102,8 +104,8 @@ function AddSkillForm({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ko'nikmani qidiring, masalan React"
-          aria-label="Ko'nikmani qidirish"
+          placeholder={t("Ko'nikmani qidiring, masalan React")}
+          aria-label={t("Ko'nikmani qidirish")}
         />
         <div className="flex flex-wrap gap-2">
           {matches.map((skill) => (
@@ -114,8 +116,7 @@ function AddSkillForm({
           {query.trim() && !exact ? (
             <ToggleChip selected={false} onClick={() => pick({ id: null, name: query.trim().slice(0, 40) })}>
               <Plus className="size-4" aria-hidden />
-              &laquo;{query.trim().slice(0, 40)}&raquo; qo&apos;shish
-            </ToggleChip>
+              {t("«{name}» qo'shish", { name: query.trim().slice(0, 40) })}</ToggleChip>
           ) : null}
         </div>
       </div>
@@ -140,23 +141,22 @@ function AddSkillForm({
           {preview ? <span className="text-muted">· {preview}</span> : null}
         </SkillChip>
         <button type="button" onClick={() => setChoice(null)} className="text-muted hover:text-text min-h-11 text-[14px]">
-          Boshqasini tanlash
-        </button>
+          {t("Boshqasini tanlash")}</button>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium">Darajangiz</span>
+        <span className="text-sm font-medium">{t("Darajangiz")}</span>
         <LevelPicker skillName={choice.name} value={level} onChange={setLevel} />
       </div>
 
       {ownedProjects.length + myJourney.length > 0 ? (
         <fieldset className="flex flex-col gap-1">
-          <legend className="mb-2 text-sm font-medium">Qayerda ishlatgansiz?</legend>
+          <legend className="mb-2 text-sm font-medium">{t("Qayerda ishlatgansiz?")}</legend>
           {ownedProjects.map((p) => (
             <UsageCheckbox
               key={p.id}
               label={p.name}
-              hint="Loyiha"
+              hint={t("Loyiha")}
               checked={projectIds.has(p.id)}
               onChange={() => toggle(projectIds, p.id, setProjectIds)}
             />
@@ -165,7 +165,7 @@ function AddSkillForm({
             <UsageCheckbox
               key={j.id}
               label={j.title}
-              hint="Yo'l"
+              hint={t("Yo'l")}
               checked={journeyIds.has(j.id)}
               onChange={() => toggle(journeyIds, j.id, setJourneyIds)}
             />
@@ -173,13 +173,12 @@ function AddSkillForm({
         </fieldset>
       ) : (
         <p className="text-muted text-[14px]">
-          Loyiha yoki tadbir qo&apos;shsangiz, ko&apos;nikmangizni ular bilan isbotlay olasiz.
-        </p>
+          {t("Loyiha yoki tadbir qo'shsangiz, ko'nikmangizni ular bilan isbotlay olasiz.")}</p>
       )}
 
       <FormMessage error={state?.error ?? state?.fieldErrors?.skill_id?.[0]} />
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Saqlanmoqda…" : "Saqlash"}
+        {pending ? t("Saqlanmoqda…") : t("Saqlash")}
       </Button>
     </form>
   );
@@ -196,10 +195,11 @@ function UsageCheckbox({
   checked: boolean;
   onChange: () => void;
 }) {
+  const t = useT();
   return (
     <label className="hover:bg-surface flex min-h-11 cursor-pointer items-center gap-3 rounded-2xl px-3">
       <input type="checkbox" checked={checked} onChange={onChange} className="accent-primary size-4" />
-      <span className="flex-1 truncate">{label}</span>
+      <span className="flex-1 truncate">{t(label)}</span>
       <span className="text-muted text-[13px]">{hint}</span>
     </label>
   );

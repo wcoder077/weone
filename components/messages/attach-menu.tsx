@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { FileText, ImageIcon, Paperclip, Video } from "lucide-react";
 import { acceptFor, ATTACHMENT_LABELS, type AttachmentKind } from "@/lib/attachments";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const OPTIONS: { kind: AttachmentKind; icon: typeof ImageIcon }[] = [
   { kind: "image", icon: ImageIcon },
@@ -13,6 +14,7 @@ const OPTIONS: { kind: AttachmentKind; icon: typeof ImageIcon }[] = [
 
 // Paperclip button: pick a photo, a video or a file. The browser file picker does the rest.
 export function AttachMenu({ onPick, disabled }: { onPick: (file: File) => void; disabled?: boolean }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const inputs = useRef<Partial<Record<AttachmentKind, HTMLInputElement | null>>>({});
 
@@ -21,7 +23,7 @@ export function AttachMenu({ onPick, disabled }: { onPick: (file: File) => void;
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           disabled={disabled}
-          aria-label="Fayl biriktirish"
+          aria-label={t("Fayl biriktirish")}
           className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-150 outline-none focus-visible:ring-3 disabled:opacity-50"
         >
           <Paperclip className="size-5" />
@@ -38,7 +40,7 @@ export function AttachMenu({ onPick, disabled }: { onPick: (file: File) => void;
               className="hover:bg-surface flex min-h-11 items-center gap-3 rounded-xl px-3 text-[15px] transition-colors duration-150"
             >
               <Icon className="text-primary size-5" aria-hidden />
-              {ATTACHMENT_LABELS[kind]}
+              {t(ATTACHMENT_LABELS[kind])}
             </button>
           ))}
         </PopoverContent>

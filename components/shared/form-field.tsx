@@ -1,6 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type FormFieldProps = {
   id: string;
@@ -14,14 +17,15 @@ type FormFieldProps = {
 // Label + control + hint/error. The control must use the same `id`
 // and `aria-describedby={`${id}-desc`}`.
 export function FormField({ id, label, hint, errors, className, children }: FormFieldProps) {
+  const t = useT();
   const error = errors?.[0];
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id}>{t(label)}</Label>
       {children}
       {error || hint ? (
         <p id={`${id}-desc`} className={cn("text-[13px]", error ? "text-danger" : "text-muted")}>
-          {error ?? hint}
+          {error ? t(error) : typeof hint === "string" ? t(hint) : hint}
         </p>
       ) : null}
     </div>
@@ -29,6 +33,7 @@ export function FormField({ id, label, hint, errors, className, children }: Form
 }
 
 export function FormMessage({ error, message }: { error?: string; message?: string }) {
+  const t = useT();
   if (!error && !message) return null;
   return (
     <p
@@ -38,7 +43,7 @@ export function FormMessage({ error, message }: { error?: string; message?: stri
         error ? "border-danger/40 text-danger" : "border-border text-text",
       )}
     >
-      {error ?? message}
+      {t((error ?? message) as string)}
     </p>
   );
 }

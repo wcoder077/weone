@@ -2,13 +2,15 @@
 
 import { useState, useTransition } from "react";
 import { Heart } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { toggleLike } from "@/lib/actions/posts";
 import { formatCount } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Optimistic: the heart and the number change at once, the server answer then replaces them.
 export function LikeButton({ postId, initialLiked, initialCount }: { postId: string; initialLiked: boolean; initialCount: number }) {
+  const t = useT();
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [pending, startTransition] = useTransition();
@@ -36,7 +38,7 @@ export function LikeButton({ postId, initialLiked, initialCount }: { postId: str
       type="button"
       onClick={toggle}
       aria-pressed={liked}
-      aria-label={liked ? "Yoqtirishni bekor qilish" : "Yoqtirish"}
+      aria-label={liked ? t("Yoqtirishni bekor qilish") : t("Yoqtirish")}
       className={cn(
         "hover:bg-surface focus-visible:ring-ring/50 inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-[14px] transition-colors duration-150 outline-none focus-visible:ring-3",
         liked ? "text-danger" : "text-muted hover:text-text",

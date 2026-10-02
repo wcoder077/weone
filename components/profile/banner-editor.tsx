@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState, useTransition } from "react";
 import { Camera, ImagePlus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { saveBanner } from "@/lib/actions/profile";
 import { compressImage, IMAGE_TYPES, imageProblem } from "@/lib/image";
 import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { bannerUrl } from "@/lib/url";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const MAX_WIDTH = 1800;
 const MAX_HEIGHT = 1200;
@@ -19,6 +20,7 @@ type Banner = { path: string | null; position: number };
 // Owner-only: upload / reposition (vertical focus) / remove the profile banner.
 // Uploads go straight to banners/<uid>/; an upload that isn't saved is deleted on close.
 export function BannerEditor({ userId, initial }: { userId: string; initial: Banner }) {
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Banner>(initial);
   const [unsavedUpload, setUnsavedUpload] = useState<string | null>(null);
@@ -86,14 +88,13 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
         className="bg-card min-h-11"
       >
         <Camera data-icon="inline-start" />
-        Muqova
-      </Button>
+        {t("Muqova")}</Button>
 
       <ResponsiveDialog
         open={open}
         onOpenChange={changeOpen}
-        title="Profil muqovasi"
-        description="Keng rasm tanlang. Ko'rinadigan qismini surgich bilan tanlang."
+        title={t("Profil muqovasi")}
+        description={t("Keng rasm tanlang. Ko'rinadigan qismini surgich bilan tanlang.")}
       >
         <div className="flex flex-col gap-4">
           <div className="bg-surface border-border aspect-[3/1] overflow-hidden rounded-2xl border">
@@ -101,20 +102,19 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={url}
-                alt="Muqova ko'rinishi"
+                alt={t("Muqova ko'rinishi")}
                 className="size-full object-cover"
                 style={{ objectPosition: `50% ${draft.position}%` }}
               />
             ) : (
-              <div className="text-muted flex size-full items-center justify-center text-[14px]">Muqova yo&apos;q</div>
+              <div className="text-muted flex size-full items-center justify-center text-[14px]">{t("Muqova yo'q")}</div>
             )}
           </div>
 
           {url ? (
             <div className="flex flex-col gap-2">
               <label htmlFor={sliderId} className="text-[14px] font-medium">
-                Joylashuv
-              </label>
+                {t("Joylashuv")}</label>
               <input
                 id={sliderId}
                 type="range"
@@ -123,7 +123,7 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
                 value={draft.position}
                 onChange={(e) => setDraft((d) => ({ ...d, position: Number(e.target.value) }))}
                 className="accent-primary h-11 w-full"
-                aria-valuetext={draft.position < 34 ? "Yuqori qism" : draft.position > 66 ? "Pastki qism" : "O'rta"}
+                aria-valuetext={draft.position < 34 ? t("Yuqori qism") : draft.position > 66 ? t("Pastki qism") : t("O'rta")}
               />
             </div>
           ) : null}
@@ -143,7 +143,7 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => fileRef.current?.click()} disabled={uploading || saving}>
               <ImagePlus data-icon="inline-start" />
-              {uploading ? "Yuklanmoqda…" : url ? "Boshqa rasm" : "Rasm yuklash"}
+              {uploading ? t("Yuklanmoqda…") : url ? t("Boshqa rasm") : t("Rasm yuklash")}
             </Button>
             {url ? (
               <Button
@@ -152,17 +152,15 @@ export function BannerEditor({ userId, initial }: { userId: string; initial: Ban
                 disabled={uploading || saving}
               >
                 <Trash2 data-icon="inline-start" />
-                Olib tashlash
-              </Button>
+                {t("Olib tashlash")}</Button>
             ) : null}
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" size="lg" onClick={() => changeOpen(false)}>
-              Bekor qilish
-            </Button>
+              {t("Bekor qilish")}</Button>
             <Button size="lg" onClick={save} disabled={!changed || uploading || saving} aria-busy={saving}>
-              {saving ? "Saqlanmoqda…" : "Saqlash"}
+              {saving ? t("Saqlanmoqda…") : t("Saqlash")}
             </Button>
           </div>
         </div>

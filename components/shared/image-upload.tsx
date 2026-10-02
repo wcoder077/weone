@@ -2,10 +2,11 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { Camera } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { AVATAR_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { IMMUTABLE_CACHE } from "@/lib/storage-cache";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/components/i18n/i18n-provider";
 
 const MAX_BYTES = 2 * 1024 * 1024;
 const TYPES = ["image/png", "image/jpeg", "image/webp"];
@@ -25,6 +26,7 @@ export function ImageUpload({
   initialUrl: string | null;
   preview: (url: string | null) => ReactNode;
 }) {
+  const t = useT();
   const [url, setUrl] = useState(initialUrl);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +73,7 @@ export function ImageUpload({
         className="border-border text-text hover:bg-surface inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-[14px] font-medium disabled:opacity-50"
       >
         <Camera className="size-4" aria-hidden />
-        {uploading ? "Yuklanmoqda…" : url ? "Rasmni almashtirish" : "Rasm yuklash"}
+        {uploading ? t("Yuklanmoqda…") : url ? t("Rasmni almashtirish") : t("Rasm yuklash")}
       </button>
     </div>
   );

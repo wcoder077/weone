@@ -1,8 +1,12 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export default function ProfileLoading() {
+  const t = useT();
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-6">
+    <div role="status" aria-label={t("Yuklanmoqda")} className="flex flex-col gap-6">
       <div className="bg-card border-border rounded-card overflow-hidden border">
         <Skeleton className="h-32 rounded-none sm:h-44 lg:h-52" />
         <div className="flex flex-col gap-4 px-5 pb-6 sm:flex-row sm:gap-5 sm:px-6">

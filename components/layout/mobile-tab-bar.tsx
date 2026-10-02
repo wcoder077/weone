@@ -8,15 +8,17 @@ import { UnreadBadge } from "@/components/shared/unread-badge";
 import { LinkPending } from "./link-pending";
 import { useUnreadMessages } from "./unread-messages";
 import { isActive, isConversationPath, navItems } from "./nav-items";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function MobileTabBar({ username }: { username: string }) {
+  const t = useT();
   const pathname = usePathname();
   const { hidden, revealOnKeyboardFocus } = useBarsVisibility();
   const unreadMessages = useUnreadMessages();
 
   return (
     <nav
-      aria-label="Asosiy menyu"
+      aria-label={t("Asosiy menyu")}
       data-hidden={hidden}
       onFocus={revealOnKeyboardFocus}
       className={cn(
@@ -34,7 +36,7 @@ export function MobileTabBar({ username }: { username: string }) {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            aria-label={href === "/messages" && unreadMessages > 0 ? `${label}, ${unreadMessages} ta o'qilmagan` : undefined}
+            aria-label={href === "/messages" && unreadMessages > 0 ? t("{label}, {unreadMessages} ta o'qilmagan", { label, unreadMessages }) : undefined}
             className={cn(
               "relative flex min-h-12 min-w-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-full text-[13px] font-medium transition-colors",
               active ? "bg-primary text-primary-foreground" : "text-muted",
@@ -44,7 +46,7 @@ export function MobileTabBar({ username }: { username: string }) {
               <Icon className="size-5" aria-hidden />
               {href === "/messages" ? <UnreadBadge count={unreadMessages} className="absolute -top-1.5 left-3" /> : null}
             </span>
-            <span>{label}</span>
+            <span>{t(label)}</span>
             <LinkPending />
           </Link>
         );

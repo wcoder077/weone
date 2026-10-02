@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import {
   cancelJoinRequest,
   decideJoinRequest,
@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions/projects";
 import type { ActionState } from "@/lib/actions/types";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 function useAction() {
   const [pending, startTransition] = useTransition();
@@ -37,48 +38,51 @@ function ActionButton({
   size?: "sm" | "default";
   label?: string;
 }) {
+  const t = useT();
   const { pending, run } = useAction();
   return (
-    <Button variant={variant} size={size} disabled={pending} aria-label={label} onClick={() => run(onRun)}>
+    <Button variant={variant} size={size} disabled={pending} aria-label={label ? t(label) : undefined} onClick={() => run(onRun)}>
       {children}
     </Button>
   );
 }
 
 export function DecideRequestButtons({ requestId }: { requestId: string }) {
+  const t = useT();
   return (
     <div className="flex gap-2">
       <ActionButton variant="default" onRun={() => decideJoinRequest(requestId, true)}>
-        Qabul qilish
-      </ActionButton>
-      <ActionButton onRun={() => decideJoinRequest(requestId, false)}>Rad etish</ActionButton>
+        {t("Qabul qilish")}</ActionButton>
+      <ActionButton onRun={() => decideJoinRequest(requestId, false)}>{t("Rad etish")}</ActionButton>
     </div>
   );
 }
 
 export function CancelRequestButton({ requestId }: { requestId: string }) {
-  return <ActionButton onRun={() => cancelJoinRequest(requestId)}>Bekor qilish</ActionButton>;
+  const t = useT();
+  return <ActionButton onRun={() => cancelJoinRequest(requestId)}>{t("Bekor qilish")}</ActionButton>;
 }
 
 export function RemoveMemberButton({ projectId, memberId, name }: { projectId: string; memberId: string; name: string }) {
+  const t = useT();
   return (
-    <ActionButton variant="ghost" label={`${name} — jamoadan chiqarish`} onRun={() => removeMember(projectId, memberId)}>
-      Chiqarish
-    </ActionButton>
+    <ActionButton variant="ghost" label={t("{name} — jamoadan chiqarish", { name })} onRun={() => removeMember(projectId, memberId)}>
+      {t("Chiqarish")}</ActionButton>
   );
 }
 
 export function LeaveProjectButton({ projectId, userId }: { projectId: string; userId: string }) {
+  const t = useT();
   return (
     <ActionButton variant="outline" size="default" onRun={() => removeMember(projectId, userId)}>
-      Jamoadan chiqish
-    </ActionButton>
+      {t("Jamoadan chiqish")}</ActionButton>
   );
 }
 
 export function RoleToggleButton({ roleId, isOpen }: { roleId: string; isOpen: boolean }) {
+  const t = useT();
   return (
-    <ActionButton onRun={() => setRoleOpen(roleId, !isOpen)}>{isOpen ? "Rolni yopish" : "Qayta ochish"}</ActionButton>
+    <ActionButton onRun={() => setRoleOpen(roleId, !isOpen)}>{isOpen ? t("Rolni yopish") : t("Qayta ochish")}</ActionButton>
   );
 }
 
@@ -93,6 +97,7 @@ export function DeleteProjectButton({
   redirectTo?: string;
   size?: "sm" | "default";
 }) {
+  const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -112,18 +117,16 @@ export function DeleteProjectButton({
   if (!confirming) {
     return (
       <Button variant="destructive" size={size} onClick={() => setConfirming(true)}>
-        O&apos;chirish
-      </Button>
+        {t("O'chirish")}</Button>
     );
   }
   return (
     <span className="flex flex-wrap items-center gap-2">
       <Button variant="destructive" size={size} disabled={pending} onClick={remove}>
-        {pending ? "O'chirilmoqda…" : "Ha, o'chirish"}
+        {pending ? t("O'chirilmoqda…") : t("Ha, o'chirish")}
       </Button>
       <Button variant="ghost" size={size} onClick={() => setConfirming(false)}>
-        Bekor qilish
-      </Button>
+        {t("Bekor qilish")}</Button>
     </span>
   );
 }

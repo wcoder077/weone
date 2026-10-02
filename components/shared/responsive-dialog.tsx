@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Centered dialog on desktop, bottom sheet on mobile (spec: "dialog desktop, sheet mobile").
 export function ResponsiveDialog({
@@ -23,12 +24,13 @@ export function ResponsiveDialog({
   description?: string;
   children: ReactNode;
 }) {
+  const t = useT();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="top-auto bottom-0 max-h-[92dvh] max-w-full translate-y-0 overflow-y-auto rounded-b-none pb-8 sm:top-1/2 sm:bottom-auto sm:max-w-lg sm:-translate-y-1/2 sm:rounded-b-card sm:pb-6">
         <DialogHeader className="pr-10">
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
-          {description ? <DialogDescription>{description}</DialogDescription> : null}
+          <DialogTitle className="text-lg font-semibold">{t(title)}</DialogTitle>
+          {description ? <DialogDescription>{t(description)}</DialogDescription> : null}
         </DialogHeader>
         {children}
       </DialogContent>

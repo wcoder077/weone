@@ -9,8 +9,10 @@ import { signIn } from "@/lib/actions/auth";
 import { FormField, FormMessage } from "@/components/shared/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function LoginForm({ next }: { next?: string }) {
+  const t = useT();
   const [state, action, pending] = useActionState(signIn, null);
   const submit = useKeepValuesSubmit(action);
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ export function LoginForm({ next }: { next?: string }) {
     <div className="flex flex-col gap-4">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
         {next ? <input type="hidden" name="next" value={next} /> : null}
-        <FormField id="email" label="Email" errors={state?.fieldErrors?.email}>
+        <FormField id="email" label={t("Email")} errors={state?.fieldErrors?.email}>
           <Input
             id="email"
             name="email"
@@ -38,7 +40,7 @@ export function LoginForm({ next }: { next?: string }) {
         </FormField>
         <FormField
           id="password"
-          label="Parol"
+          label={t("Parol")}
           errors={state?.fieldErrors?.password}
         >
           <Input
@@ -55,11 +57,10 @@ export function LoginForm({ next }: { next?: string }) {
           href="/forgot-password"
           className="text-muted hover:text-text -mt-2 self-end py-2 text-[14px] underline-offset-4 hover:underline"
         >
-          Parolni unutdingizmi?
-        </Link>
+          {t("Parolni unutdingizmi?")}</Link>
         <FormMessage error={state?.error} />
         <Button type="submit" size="lg" disabled={pending} aria-busy={pending}>
-          {pending ? "Kirilmoqda…" : "Kirish"}
+          {pending ? t("Kirilmoqda…") : t("Kirish")}
         </Button>
       </form>
       {state?.error === EMAIL_NOT_CONFIRMED ? (

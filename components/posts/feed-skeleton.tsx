@@ -1,8 +1,12 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function FeedSkeleton({ count = 3 }: { count?: number }) {
+  const t = useT();
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-4">
+    <div role="status" aria-label={t("Yuklanmoqda")} className="flex flex-col gap-4">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
           <div className="flex items-center gap-3">

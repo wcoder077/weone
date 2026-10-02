@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { NativeSelect } from "./native-select";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // A filter that lives in the query string; changing it resets pagination.
 // `multi` appends the picked value (repeated param) and resets the select.
@@ -18,6 +19,7 @@ export function UrlFilterSelect({
   options: { value: string; label: string }[];
   multi?: boolean;
 }) {
+  const t = useT();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -37,22 +39,22 @@ export function UrlFilterSelect({
   return (
     <span className="relative inline-flex items-center" aria-busy={pending}>
       <NativeSelect
-        aria-label={label}
+        aria-label={t(label)}
         value={multi ? "" : (searchParams.get(param) ?? "")}
         onChange={(e) => onChange(e.target.value)}
         className="bg-card h-11 w-auto min-w-36 text-[14px]"
       >
-        <option value="">{label}</option>
+        <option value="">{t(label)}</option>
         {options.map((o) => (
           <option key={o.value} value={o.value}>
-            {o.label}
+            {t(o.label)}
           </option>
         ))}
       </NativeSelect>
       {pending ? (
         <Loader2
           className="text-muted pointer-events-none absolute right-9 size-4 animate-spin"
-          aria-label="Yuklanmoqda"
+          aria-label={t("Yuklanmoqda")}
         />
       ) : null}
     </span>

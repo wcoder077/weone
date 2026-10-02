@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { getT } from "@/lib/i18n/server";
 
 // URL-driven tabs (?tab=...), so the active tab survives reloads and shared links.
-export function LinkTabs({
+export async function LinkTabs({
   tabs,
   active,
   label,
@@ -11,8 +12,9 @@ export function LinkTabs({
   active: string;
   label: string;
 }) {
+  const t = await getT();
   return (
-    <nav aria-label={label} className="bg-surface border-border flex w-full gap-1 overflow-x-auto rounded-full border p-1 sm:w-fit">
+    <nav aria-label={t(label)} className="bg-surface border-border flex w-full gap-1 overflow-x-auto rounded-full border p-1 sm:w-fit">
       {tabs.map((tab) => {
         const isActive = tab.value === active;
         return (
@@ -26,7 +28,7 @@ export function LinkTabs({
               isActive ? "bg-primary text-primary-foreground" : "text-muted hover:text-text",
             )}
           >
-            {tab.label}
+            {t(tab.label)}
             {tab.count ? <span className={isActive ? "opacity-80" : "text-muted"}>{tab.count}</span> : null}
           </Link>
         );

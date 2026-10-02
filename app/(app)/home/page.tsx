@@ -1,4 +1,5 @@
 import { Fragment, Suspense, type ReactNode } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { ChevronRight, CircleCheck, Newspaper } from "lucide-react";
@@ -20,8 +21,12 @@ import { getHomeFeed } from "@/lib/queries/posts";
 import { getMyProfile, type MyProfile } from "@/lib/queries/profiles";
 import { listProjects } from "@/lib/queries/projects";
 import { getRelationships } from "@/lib/queries/social";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Asosiy" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Asosiy") };
+}
 
 // Recommendations are slotted in after these posts, so the feed stays mostly posts.
 const PEOPLE_AFTER = 3;
@@ -30,6 +35,7 @@ const PROJECTS_AFTER = 8;
 const RECOMMENDATIONS_TTL_MS = 5 * 60 * 1000;
 
 export default async function HomePage() {
+  const t = await getT();
   const me = await getMyProfile();
   if (!me) return null; // The (app) layout already redirects signed-out users.
   const firstName = me.full_name.split(" ")[0] || me.username;
@@ -37,7 +43,7 @@ export default async function HomePage() {
   return (
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div className="mx-auto flex w-full max-w-[680px] min-w-0 flex-col gap-4">
-        <h1 className="text-xl font-bold lg:text-2xl">Salom, {firstName}</h1>
+        <h1 className="text-xl font-bold lg:text-2xl">{t("Salom, {name}", { name: firstName })}</h1>
         <Suspense fallback={<FeedSkeleton />}>
           <HomeFeed me={me} />
         </Suspense>
@@ -65,6 +71,7 @@ async function optional<T>(promise: Promise<T>, fallback: T) {
 }
 
 async function HomeFeed({ me }: { me: MyProfile }) {
+  const t = await getT();
   const seen = (await cookies()).get(FEED_SEEN_COOKIE)?.value;
   const seenAt = seen && !Number.isNaN(Date.parse(seen)) ? seen : undefined;
   const [feed, picks, relationships, projects] = await Promise.all([
@@ -73,7 +80,7 @@ async function HomeFeed({ me }: { me: MyProfile }) {
     getRelationships(me.id),
     optional(memoize(`projects-for-you:${me.id}`, RECOMMENDATIONS_TTL_MS, () => listProjects(me.id, "for-you", {})), []),
   ]);
-  if (!feed) return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
+  if (!feed) return <RetryErrorState description={t("Postlarni yuklab bo'lmadi.")} />;
 
   const people = <PeopleCarousel meId={me.id} picks={picks} relationships={relationships} />;
   const projectStrip = <ProjectsStrip projects={projects.slice(0, 6)} />;
@@ -83,8 +90,8 @@ async function HomeFeed({ me }: { me: MyProfile }) {
       <div className="flex flex-col gap-6">
         <EmptyState
           icon={Newspaper}
-          title="Hali postlar yo'q"
-          description="Birinchi bo'lib yozing yoki maqsaddoshlar bilan bog'laning: ularning postlari shu yerda chiqadi."
+          title={t("Hali postlar yo'q")}
+          description={t("Birinchi bo'lib yozing yoki maqsaddoshlar bilan bog'laning: ularning postlari shu yerda chiqadi.")}
         />
         {people}
         {projectStrip}
@@ -120,8 +127,7 @@ async function HomeFeed({ me }: { me: MyProfile }) {
           href={feed.nextBefore ? `/posts?before=${encodeURIComponent(feed.nextBefore)}` : "/posts"}
           className={buttonVariants({ variant: "outline", className: "self-center" })}
         >
-          Ko&apos;proq postlar
-        </Link>
+          {t("Ko'proq postlar")}</Link>
       ) : null}
     </div>
   );
@@ -129,30 +135,30 @@ async function HomeFeed({ me }: { me: MyProfile }) {
 
 function SidebarSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-5">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-5">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }
 
 async function Checklist({ me }: { me: MyProfile }) {
+  const t = await getT();
   const items = await getProfileChecklist(me);
   return (
-    <SectionCard title="Profilingizni kuchaytiring">
+    <SectionCard title={t("Profilingizni kuchaytiring")}>
       {items.length === 0 ? (
         <p className="text-muted inline-flex items-center gap-2 text-[14px]">
           <CircleCheck className="text-success size-4" aria-hidden />
-          Profilingiz to&apos;liq. Zo&apos;r!
-        </p>
+          {t("Profilingiz to'liq. Zo'r!")}</p>
       ) : (
         <ul className="flex flex-col">
           {items.map((item) => (
             <li key={item.label}>
               <Link href={item.href} className="hover:text-text text-muted flex min-h-11 items-center gap-3 text-[14px]">
                 <span className="border-border size-5 shrink-0 rounded-md border" aria-hidden />
-                <span className="flex-1">{item.label}</span>
+                <span className="flex-1">{t(item.label)}</span>
                 <ChevronRight className="size-4" aria-hidden />
               </Link>
             </li>
@@ -164,13 +170,13 @@ async function Checklist({ me }: { me: MyProfile }) {
 }
 
 async function Network({ userId }: { userId: string }) {
+  const t = await getT();
   const activities = await getNetworkActivity(userId);
   return (
-    <SectionCard title="Tarmog'ingizdan">
+    <SectionCard title={t("Tarmog'ingizdan")}>
       {activities.length === 0 ? (
         <p className="text-muted text-[14px]">
-          Bog&apos;langan maqsaddoshlaringiz loyiha boshlasa yoki qo&apos;shilsa, shu yerda ko&apos;rinadi.
-        </p>
+          {t("Bog'langan maqsaddoshlaringiz loyiha boshlasa yoki qo'shilsa, shu yerda ko'rinadi.")}</p>
       ) : (
         <ul className="flex flex-col gap-4">
           {activities.map((a) => (

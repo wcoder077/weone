@@ -3,6 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Full-screen viewer over a see-through, blurred backdrop (avatar photos, chat and post
 // images). Tap anywhere or press Esc to close.
@@ -17,6 +18,7 @@ export function MediaOverlay({
   children: ReactNode;
   className?: string;
 }) {
+  const t = useT();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -27,7 +29,7 @@ export function MediaOverlay({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={label}
+      aria-label={t(label)}
       // Portals still bubble React events to their React parents (e.g. a profile link
       // or a chat bubble): keep taps on the overlay to itself.
       onClick={(e) => {

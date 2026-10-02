@@ -4,10 +4,15 @@ import { ProjectForm } from "@/components/projects/project-form";
 import { requireUserId } from "@/lib/auth";
 import { getProject, getProjectCategories } from "@/lib/queries/projects";
 import { getAllSkills } from "@/lib/queries/skills";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Loyihani tahrirlash" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Loyihani tahrirlash") };
+}
 
 export default async function EditProjectPage({ params }: PageProps<"/projects/[slug]/edit">) {
+  const t = await getT();
   const { slug } = await params;
   const [userId, project, skills, categories] = await Promise.all([
     requireUserId(),
@@ -21,7 +26,7 @@ export default async function EditProjectPage({ params }: PageProps<"/projects/[
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
       <BackLink fallback={`/projects/${slug}`} />
-      <h1 className="text-2xl font-bold lg:text-[32px]">Loyihani tahrirlash</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">{t("Loyihani tahrirlash")}</h1>
       <div className="bg-card border-border rounded-card border p-5 sm:p-6">
         <ProjectForm
           skills={skills}

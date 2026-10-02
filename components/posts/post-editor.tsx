@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ImagePlus, Video, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { formatBytes } from "@/lib/attachments";
 import type { PostMediaInput } from "@/lib/actions/posts";
 import type { ActionState } from "@/lib/actions/types";
@@ -15,6 +15,7 @@ import { POST_MAX } from "@/lib/validation/post";
 import { CharCounter } from "@/components/shared/char-counter";
 import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/i18n-provider";
 
 type Staged = { file: File; kind: PostMediaKind; previewUrl: string | null };
 
@@ -41,6 +42,7 @@ export function PostEditor({
   allowEmpty?: boolean;
   placeholder?: string;
 }) {
+  const t = useT();
   const [body, setBody] = useState(initial);
   const [staged, setStaged] = useState<Staged | null>(null);
   const [preparing, setPreparing] = useState(false);
@@ -109,8 +111,7 @@ export function PostEditor({
       className="flex flex-col gap-3"
     >
       <label htmlFor={id} className="sr-only">
-        Post matni
-      </label>
+        {t("Post matni")}</label>
       <textarea
         id={id}
         ref={fieldRef}
@@ -118,7 +119,7 @@ export function PostEditor({
         onChange={(e) => setBody(e.target.value)}
         autoFocus={autoFocus}
         rows={3}
-        placeholder={placeholder}
+        placeholder={t(placeholder)}
         aria-describedby={`${id}-count`}
         aria-invalid={count > POST_MAX}
         className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive field-sizing-content min-h-24 w-full resize-none rounded-2xl border px-4 py-3 text-base leading-[1.6] outline-none focus-visible:ring-3"
@@ -132,7 +133,7 @@ export function PostEditor({
               type="button"
               onClick={() => fileRef.current?.click()}
               disabled={pending}
-              aria-label="Rasm yoki video qo'shish"
+              aria-label={t("Rasm yoki video qo'shish")}
               className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors duration-150 outline-none focus-visible:ring-3 disabled:opacity-50"
             >
               <ImagePlus className="size-5" />
@@ -156,7 +157,7 @@ export function PostEditor({
           <CharCounter id={`${id}-count`} count={count} max={POST_MAX} />
         </span>
         <Button type="submit" disabled={invalid || pending}>
-          {preparing ? "Tayyorlanmoqda…" : pending ? (staged ? "Yuklanmoqda…" : "Saqlanmoqda…") : submitLabel}
+          {preparing ? t("Tayyorlanmoqda…") : pending ? (staged ? t("Yuklanmoqda…") : t("Saqlanmoqda…")) : submitLabel}
         </Button>
       </div>
     </form>
@@ -164,6 +165,7 @@ export function PostEditor({
 }
 
 function StagedPreview({ staged, disabled, onRemove }: { staged: Staged; disabled: boolean; onRemove: () => void }) {
+  const t = useT();
   const { file, kind, previewUrl } = staged;
   return (
     <div className="bg-surface/60 flex items-center gap-3 rounded-2xl p-2">
@@ -179,14 +181,14 @@ function StagedPreview({ staged, disabled, onRemove }: { staged: Staged; disable
       <span className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-[14px] font-medium">{file.name}</span>
         <span className="text-muted text-[12px]">
-          {kind === "video" ? "Video" : "Rasm"} · {formatBytes(file.size)}
+          {kind === "video" ? t("Video") : t("Rasm")} · {formatBytes(file.size)}
         </span>
       </span>
       <button
         type="button"
         onClick={onRemove}
         disabled={disabled}
-        aria-label="Biriktirilgan faylni olib tashlash"
+        aria-label={t("Biriktirilgan faylni olib tashlash")}
         className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 inline-flex size-11 shrink-0 items-center justify-center rounded-full outline-none focus-visible:ring-3 disabled:opacity-50"
       >
         <X className="size-5" />

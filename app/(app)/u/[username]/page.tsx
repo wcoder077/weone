@@ -1,4 +1,5 @@
 import { LinkifiedText } from "@/components/shared/linkified-text";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -39,6 +40,7 @@ import {
 } from "@/lib/queries/profile-page";
 import { getUserPosts, PROFILE_POSTS_LIMIT } from "@/lib/queries/posts";
 import { getAllSkills } from "@/lib/queries/skills";
+import { getT } from "@/lib/i18n/server";
 
 const TABS = [
   { value: "journey", label: "Yo'l" },
@@ -56,13 +58,14 @@ export async function generateMetadata({ params }: PageProps<"/u/[username]">) {
 }
 
 export default async function ProfilePageRoute({ params, searchParams }: PageProps<"/u/[username]">) {
+  const t = await getT();
   const [{ username }, { tab: rawTab }] = await Promise.all([params, searchParams]);
   const viewerId = await requireUserId();
   const page = await getProfilePage(username.toLowerCase());
   if (!page) notFound();
 
   const isMe = page.profile.id === viewerId;
-  const tab: Tab = TABS.some((t) => t.value === rawTab) ? (rawTab as Tab) : "journey";
+  const tab: Tab = TABS.some((item) => item.value === rawTab) ? (rawTab as Tab) : "journey";
   const path = `/u/${page.profile.username}`;
   const mySkillOptions = page.skills.map((s) => ({ id: s.skill_id ?? "", name: s.skill_name ?? "" }));
 
@@ -84,8 +87,7 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           isMe ? (
             <>
               <Link href="/settings/profile" className={buttonVariants()}>
-                Profilni tahrirlash
-              </Link>
+                {t("Profilni tahrirlash")}</Link>
               <ShareButton path={path} />
             </>
           ) : (
@@ -102,57 +104,55 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           <Suspense fallback={<ProfileSummarySkeleton />}>
             <ProfileSummary profileId={page.profile.id} path={path} projectCount={page.projects.length} />
           </Suspense>
-          <SectionCard title="Haqida">
+          <SectionCard title={t("Haqida")}>
             {page.profile.bio ? (
               <p className="text-[15px] leading-relaxed whitespace-pre-line"><LinkifiedText text={page.profile.bio} /></p>
             ) : (
-              <p className="text-muted text-[14px]">Hali yozilmagan.</p>
+              <p className="text-muted text-[14px]">{t("Hali yozilmagan.")}</p>
             )}
           </SectionCard>
           <SectionCard
-            title="Ko'nikmalar"
+            title={t("Ko'nikmalar")}
             action={isMe ? <SkillDialogLoader page={page} viewerId={viewerId} /> : null}
           >
             <SkillsList skills={page.skills} />
           </SectionCard>
-          <SectionCard title="Ta'lim">
+          <SectionCard title={t("Ta'lim")}>
             <EducationList education={page.education} />
           </SectionCard>
-          <SectionCard title="Qidiryapti">
-            <TagList items={page.profile.looking_for.map((v) => labelOf(LOOKING_FOR, v))} empty="Ko'rsatilmagan." />
+          <SectionCard title={t("Qidiryapti")}>
+            <TagList items={page.profile.looking_for.map((v) => labelOf(LOOKING_FOR, v))} empty={t("Ko'rsatilmagan.")} />
           </SectionCard>
           <SectionCard
-            title="Tillar"
+            title={t("Tillar")}
             action={
               isMe ? (
                 <Link href="/settings/profile#languages" className={buttonVariants({ variant: "outline", size: "sm" })}>
                   <Plus data-icon="inline-start" />
-                  Qo&apos;shish
-                </Link>
+                  {t("Qo'shish")}</Link>
               ) : null
             }
           >
-            <TagList items={page.profile.languages} empty="Ko'rsatilmagan." />
+            <TagList items={page.profile.languages} empty={t("Ko'rsatilmagan.")} />
           </SectionCard>
-          <SectionCard title="Qiziqishlar">
-            <TagList items={page.profile.interests} empty="Ko'rsatilmagan." />
+          <SectionCard title={t("Qiziqishlar")}>
+            <TagList items={page.profile.interests} empty={t("Ko'rsatilmagan.")} />
           </SectionCard>
         </aside>
 
         {/* The sidebar stats link to #profile-tabs, so on phones the tapped tab scrolls into view. */}
-        <section id="profile-tabs" className="flex min-w-0 scroll-mt-24 flex-col gap-4" aria-label="Faoliyat">
+        <section id="profile-tabs" className="flex min-w-0 scroll-mt-24 flex-col gap-4" aria-label={t("Faoliyat")}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <LinkTabs
-              label="Profil bo'limlari"
+              label={t("Profil bo'limlari")}
               active={tab}
-              tabs={TABS.map((t) => ({ ...t, href: `${path}?tab=${t.value}#profile-tabs` }))}
+              tabs={TABS.map((item) => ({ ...item, href: `${path}?tab=${item.value}#profile-tabs` }))}
             />
             {isMe && tab === "journey" ? <JourneyDialog mySkills={mySkillOptions} /> : null}
             {isMe && tab === "projects" ? (
               <Link href="/projects/new" className={buttonVariants({ variant: "outline", size: "sm" })}>
                 <Plus data-icon="inline-start" />
-                Loyiha qo&apos;shish
-              </Link>
+                {t("Loyiha qo'shish")}</Link>
             ) : null}
           </div>
           {tab === "journey" ? (
@@ -194,15 +194,16 @@ async function JourneyTab({
   viewerId: string;
   mySkillOptions: { id: string; name: string }[];
 }) {
+  const t = await getT();
   if (page.journey.length === 0) {
     return (
       <EmptyState
         icon={Route}
-        title="Yo'l hali bo'sh"
+        title={t("Yo'l hali bo'sh")}
         description={
           isMe
-            ? "Hackathon, amaliyot yoki kurslaringizni qo'shing — bu sizning isbotingiz."
-            : "Bu maqsaddosh hali hech narsa qo'shmagan."
+            ? t("Hackathon, amaliyot yoki kurslaringizni qo'shing — bu sizning isbotingiz.")
+            : t("Bu maqsaddosh hali hech narsa qo'shmagan.")
         }
       />
     );
@@ -265,26 +266,27 @@ async function PostsTab({
   isMe: boolean;
   kind: "posts" | "reposts";
 }) {
+  const t = await getT();
   let posts;
   try {
     posts = await getUserPosts(authorId, viewerId, kind);
   } catch {
-    return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Postlarni yuklab bo'lmadi.")} />;
   }
   if (posts.length === 0) {
     return kind === "posts" ? (
       <EmptyState
         icon={Newspaper}
-        title="Hali postlar yo'q"
-        description={isMe ? "Nima ustida ishlayotganingizni yozing." : "Bu maqsaddosh hali post joylamagan."}
+        title={t("Hali postlar yo'q")}
+        description={isMe ? t("Nima ustida ishlayotganingizni yozing.") : t("Bu maqsaddosh hali post joylamagan.")}
         action={isMe ? { label: "Post yozish", href: "/posts" } : undefined}
       />
     ) : (
       <EmptyState
         icon={Repeat2}
-        title="Hali repostlar yo'q"
+        title={t("Hali repostlar yo'q")}
         description={
-          isMe ? "Yoqqan postni «…» menyusidan repost qiling." : "Bu maqsaddosh hali hech narsani repost qilmagan."
+          isMe ? t("Yoqqan postni «…» menyusidan repost qiling.") : t("Bu maqsaddosh hali hech narsani repost qilmagan.")
         }
       />
     );
@@ -295,7 +297,7 @@ async function PostsTab({
         <PostCard key={post.id} post={post} isMine={isMe} />
       ))}
       {posts.length === PROFILE_POSTS_LIMIT ? (
-        <p className="text-muted text-center text-[13px]">Oxirgi {PROFILE_POSTS_LIMIT} tasi ko&apos;rsatilgan.</p>
+        <p className="text-muted text-center text-[13px]">{t("Oxirgi {n} tasi ko'rsatilgan.", { n: PROFILE_POSTS_LIMIT })}</p>
       ) : null}
     </div>
   );
@@ -303,15 +305,15 @@ async function PostsTab({
 
 function PostsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }
 
-function ProjectsTab({
+async function ProjectsTab({
   projects,
   isMe,
   viewerId,
@@ -320,12 +322,13 @@ function ProjectsTab({
   isMe: boolean;
   viewerId: string;
 }) {
+  const t = await getT();
   if (projects.length === 0) {
     return (
       <EmptyState
         icon={FolderKanban}
-        title="Loyihalar yo'q"
-        description={isMe ? "Loyiha yarating yoki jamoaga qo'shiling." : "Bu maqsaddosh hali loyihada qatnashmagan."}
+        title={t("Loyihalar yo'q")}
+        description={isMe ? t("Loyiha yarating yoki jamoaga qo'shiling.") : t("Bu maqsaddosh hali loyihada qatnashmagan.")}
         action={isMe ? { label: "Loyiha yaratish", href: "/projects/new" } : undefined}
       />
     );
@@ -342,8 +345,7 @@ function ProjectsTab({
               <div className="flex flex-wrap items-center gap-2">
                 <Link href={`/projects/${p.slug}/edit`} className={buttonVariants({ variant: "outline", size: "sm" })}>
                   <Pencil data-icon="inline-start" />
-                  Tahrirlash
-                </Link>
+                  {t("Tahrirlash")}</Link>
                 <DeleteProjectButton projectId={p.id} size="sm" />
               </div>
             ) : undefined
@@ -354,15 +356,16 @@ function ProjectsTab({
   );
 }
 
-function HighlightsTab({ page }: { page: ProfilePage }) {
+async function HighlightsTab({ page }: { page: ProfilePage }) {
+  const t = await getT();
   const wins = page.journey.filter((j) => j.result);
   const launched = page.projects.filter((p) => p.status === "launched");
   if (wins.length + launched.length === 0) {
     return (
       <EmptyState
         icon={Trophy}
-        title="Hali yutuqlar yo'q"
-        description="Natijali tadbirlar va ishga tushgan loyihalar shu yerda ko'rinadi."
+        title={t("Hali yutuqlar yo'q")}
+        description={t("Natijali tadbirlar va ishga tushgan loyihalar shu yerda ko'rinadi.")}
       />
     );
   }
@@ -409,10 +412,10 @@ async function SkillDialogLoader({ page, viewerId }: { page: ProfilePage; viewer
 
 function ConnectionsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
+    <LoadingRegion className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
       <ListRowSkeleton />
       <ListRowSkeleton />
       <ListRowSkeleton />
-    </div>
+    </LoadingRegion>
   );
 }

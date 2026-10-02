@@ -7,6 +7,7 @@ import { FormMessage } from "@/components/shared/form-field";
 import { ToggleChip } from "@/components/shared/skill-chip";
 import { Switch } from "@/components/ui/switch";
 import { StepFooter } from "./step-shell";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export function LookingForStep({
   initial,
@@ -15,6 +16,7 @@ export function LookingForStep({
   initial: string[];
   initialOnline: boolean;
 }) {
+  const t = useT();
   const [state, action, pending] = useActionState(finishOnboarding, null);
   const [selected, setSelected] = useState(() => new Set(initial));
 
@@ -30,7 +32,7 @@ export function LookingForStep({
   return (
     <form action={action} className="flex flex-col gap-8">
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-3 text-base font-semibold">Nimani qidiryapsiz?</legend>
+        <legend className="mb-3 text-base font-semibold">{t("Nimani qidiryapsiz?")}</legend>
         <div className="flex flex-wrap gap-2.5">
           {LOOKING_FOR.map((option) => (
             <ToggleChip
@@ -38,7 +40,7 @@ export function LookingForStep({
               selected={selected.has(option.value)}
               onClick={() => toggle(option.value)}
             >
-              {option.label}
+              {t(option.label)}
             </ToggleChip>
           ))}
         </div>
@@ -49,13 +51,13 @@ export function LookingForStep({
 
       <label className="bg-card border-border rounded-card flex min-h-11 cursor-pointer items-center justify-between gap-4 border p-5">
         <span className="flex flex-col gap-1">
-          <span className="font-medium">Onlayn ishlashga tayyorman</span>
-          <span className="text-muted text-[14px]">Boshqa shahardagi jamoalar ham sizni topadi</span>
+          <span className="font-medium">{t("Onlayn ishlashga tayyorman")}</span>
+          <span className="text-muted text-[14px]">{t("Boshqa shahardagi jamoalar ham sizni topadi")}</span>
         </span>
         <Switch name="is_online_ok" defaultChecked={initialOnline} />
       </label>
 
-      <StepFooter step={3} pending={pending} submitLabel="Tugatish">
+      <StepFooter step={3} pending={pending} submitLabel={t("Tugatish")}>
         <FormMessage error={state?.error} />
       </StepFooter>
     </form>

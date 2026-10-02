@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { ChevronDown, MessageCircle, Pencil, UserPlus, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { cancelConnectionRequest, openConversation, respondConnectionRequest } from "@/lib/actions/connections";
 import type { ActionState } from "@/lib/actions/types";
 import type { ConnectionState } from "@/lib/queries/social";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { RequestComposeDialog, RequestReviewDialog } from "./request-dialogs";
+import { useT } from "@/components/i18n/i18n-provider";
 
 // Bog'lanish → So'rov yuborildi (edit / cancel) → Xabar yozish; incoming → Accept / Reject.
 export function ConnectButton({
@@ -30,6 +31,7 @@ export function ConnectButton({
   connection: ConnectionState;
   className?: string;
 }) {
+  const t = useT();
   const [dialog, setDialog] = useState<"compose" | "edit" | "review" | null>(null);
   const [pending, startTransition] = useTransition();
   const run = (fn: () => Promise<ActionState>) =>
@@ -46,8 +48,7 @@ export function ConnectButton({
         <>
           <Button className={className} onClick={() => setDialog("compose")}>
             <UserPlus data-icon="inline-start" />
-            Bog&apos;lanish
-          </Button>
+            {t("Bog'lanish")}</Button>
           <RequestComposeDialog
             open={dialog === "compose"}
             onOpenChange={close}
@@ -66,18 +67,15 @@ export function ConnectButton({
               disabled={pending}
               render={<Button variant="outline" className={className} />}
             >
-              So&apos;rov yuborildi
-              <ChevronDown data-icon="inline-end" />
+              {t("So'rov yuborildi")}<ChevronDown data-icon="inline-end" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-52">
               <DropdownMenuItem onClick={() => setDialog("edit")}>
                 <Pencil aria-hidden />
-                Xabarni tahrirlash
-              </DropdownMenuItem>
+                {t("Xabarni tahrirlash")}</DropdownMenuItem>
               <DropdownMenuItem variant="destructive" onClick={() => run(() => cancelConnectionRequest(connection.connectionId))}>
                 <X aria-hidden />
-                So&apos;rovni bekor qilish
-              </DropdownMenuItem>
+                {t("So'rovni bekor qilish")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <RequestComposeDialog
@@ -95,12 +93,10 @@ export function ConnectButton({
         <>
           <span className={cn("flex gap-2", className)}>
             <Button className="flex-1" disabled={pending} onClick={() => run(() => respondConnectionRequest(connection.connectionId, true))}>
-              Qabul qilish
-            </Button>
+              {t("Qabul qilish")}</Button>
             <Button variant="outline" className="flex-1" disabled={pending} onClick={() => run(() => respondConnectionRequest(connection.connectionId, false))}>
-              Rad etish
-            </Button>
-            <Button variant="ghost" size="icon" aria-label="So'rov xabarini ko'rish" onClick={() => setDialog("review")}>
+              {t("Rad etish")}</Button>
+            <Button variant="ghost" size="icon" aria-label={t("So'rov xabarini ko'rish")} onClick={() => setDialog("review")}>
               <MessageCircle />
             </Button>
           </span>
@@ -117,14 +113,13 @@ export function ConnectButton({
       return (
         <Button className={className} disabled={pending} onClick={() => run(() => openConversation(userId))}>
           <MessageCircle data-icon="inline-start" />
-          Xabar yozish
-        </Button>
+          {t("Xabar yozish")}</Button>
       );
 
     case "rejected":
       return (
         <Button variant="outline" disabled className={className}>
-          {connection.byMe ? "Siz rad etgansiz" : "So'rov rad etildi"}
+          {connection.byMe ? t("Siz rad etgansiz") : t("So'rov rad etildi")}
         </Button>
       );
   }

@@ -4,22 +4,22 @@ import type { getPeopleForYou } from "@/lib/queries/home";
 import type { getRelationships } from "@/lib/queries/social";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ConnectButton } from "@/components/social/connect-button";
+import { getT } from "@/lib/i18n/server";
 
 type Pick = Awaited<ReturnType<typeof getPeopleForYou>>[number];
 type Relationships = Awaited<ReturnType<typeof getRelationships>>;
 
 // A swipeable row of small person cards placed between posts in the home feed.
-export function PeopleCarousel({ meId, picks, relationships }: { meId: string; picks: Pick[]; relationships: Relationships }) {
+export async function PeopleCarousel({ meId, picks, relationships }: { meId: string; picks: Pick[]; relationships: Relationships }) {
+  const t = await getT();
   if (picks.length === 0) return null;
   return (
     <section aria-labelledby="people-for-you" className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-4">
         <h2 id="people-for-you" className="text-lg font-semibold whitespace-nowrap">
-          Siz uchun maqsaddoshlar
-        </h2>
+          {t("Siz uchun maqsaddoshlar")}</h2>
         <Link href="/find" className="text-muted hover:text-text inline-flex min-h-11 items-center gap-1 text-[14px] whitespace-nowrap">
-          Ko&apos;proq
-          <ChevronRight className="size-4" aria-hidden />
+          {t("Ko'proq")}<ChevronRight className="size-4" aria-hidden />
         </Link>
       </div>
       {/* Small cards in a swipeable row; the scrollbar is hidden (the row still scrolls). */}
@@ -33,12 +33,12 @@ export function PeopleCarousel({ meId, picks, relationships }: { meId: string; p
               <UserAvatar name={person.full_name} url={person.avatar_url} size="lg" userId={person.id} />
               <span className="w-full truncate text-[14px] font-semibold">{person.full_name}</span>
             </Link>
-            <span className="text-muted h-4 w-full truncate text-[12px] leading-4">{person.headline ?? person.city ?? ""}</span>
+            <span className="text-muted h-4 w-full truncate text-[12px] leading-4">{person.headline ?? (person.city ? t(person.city) : "")}</span>
             <span className="text-muted mb-2 flex h-4 w-full items-center justify-center gap-1 text-[12px] leading-4">
               {reasons[0] ? (
                 <>
                   <Check className="text-primary size-3 shrink-0" aria-hidden />
-                  <span className="truncate">{reasons[0]}</span>
+                  <span className="truncate">{t(reasons[0])}</span>
                   {reasons.length > 1 ? <span className="shrink-0">+{reasons.length - 1}</span> : null}
                 </>
               ) : null}

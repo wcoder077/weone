@@ -8,10 +8,11 @@ import { OnlineLabel } from "@/components/layout/online-presence";
 import { DEFAULT_BANNER, bannerUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { isGeneratedUsername } from "@/lib/validation/profile";
+import { getT } from "@/lib/i18n/server";
 
 export { SectionCard } from "@/components/shared/section-card";
 
-export function ProfileHeader({
+export async function ProfileHeader({
   profile,
   actions,
   bannerEditor,
@@ -20,6 +21,7 @@ export function ProfileHeader({
   actions: ReactNode;
   bannerEditor?: ReactNode;
 }) {
+  const t = await getT();
   const banner = bannerUrl(profile.banner_path);
   const position = banner ? { objectPosition: `50% ${profile.banner_position}%` } : undefined;
   // The user's banner, or the default one (a light and a dark file that follow the theme).
@@ -65,8 +67,8 @@ export function ProfileHeader({
             {profile.city ? (
               <span className="inline-flex items-center gap-1">
                 <MapPin className="size-4" aria-hidden />
-                {profile.city}
-                {profile.is_online_ok ? " · onlayn ham" : ""}
+                {t(profile.city)}
+                {profile.is_online_ok ? t(" · onlayn ham") : ""}
               </span>
             ) : null}
             <OnlineLabel userId={profile.id} />
@@ -74,13 +76,12 @@ export function ProfileHeader({
             {profile.available ? (
               <span className="inline-flex items-center gap-1.5">
                 <Handshake className="text-primary size-4" aria-hidden />
-                Hamkorlikka ochiq
-              </span>
+                {t("Hamkorlikka ochiq")}</span>
             ) : null}
           </div>
           {profile.looking_for.length > 0 ? (
             <p className="text-[14px]">
-              <span className="text-muted">Qidiryapti: </span>
+              <span className="text-muted">{t("Qidiryapti:")}{" "}</span>
               {profile.looking_for.map((v) => labelOf(LOOKING_FOR, v)).join(", ")}
             </p>
           ) : null}
@@ -91,8 +92,9 @@ export function ProfileHeader({
   );
 }
 
-export function SkillsList({ skills }: { skills: ProfilePage["skills"] }) {
-  if (skills.length === 0) return <p className="text-muted text-[14px]">Hali ko&apos;nikma qo&apos;shilmagan.</p>;
+export async function SkillsList({ skills }: { skills: ProfilePage["skills"] }) {
+  const t = await getT();
+  if (skills.length === 0) return <p className="text-muted text-[14px]">{t("Hali ko'nikma qo'shilmagan.")}</p>;
   return (
     <ul className="flex flex-col gap-2">
       {skills.map((skill) => {
@@ -100,7 +102,7 @@ export function SkillsList({ skills }: { skills: ProfilePage["skills"] }) {
         return (
           <li key={skill.skill_id} className="flex items-center justify-between gap-3">
             <SkillChip className="text-text">{skill.skill_name}</SkillChip>
-            <span className="text-muted truncate text-[13px]">{evidence || "hali isbotsiz"}</span>
+            <span className="text-muted truncate text-[13px]">{evidence || t("hali isbotsiz")}</span>
           </li>
         );
       })}
@@ -108,8 +110,9 @@ export function SkillsList({ skills }: { skills: ProfilePage["skills"] }) {
   );
 }
 
-export function EducationList({ education }: { education: ProfilePage["education"] }) {
-  if (education.length === 0) return <p className="text-muted text-[14px]">Ta&apos;lim qo&apos;shilmagan.</p>;
+export async function EducationList({ education }: { education: ProfilePage["education"] }) {
+  const t = await getT();
+  if (education.length === 0) return <p className="text-muted text-[14px]">{t("Ta'lim qo'shilmagan.")}</p>;
   return (
     <ul className="flex flex-col gap-4">
       {education.map((e) => (
@@ -117,7 +120,7 @@ export function EducationList({ education }: { education: ProfilePage["education
           <span className="font-medium">{e.institution}</span>
           <span className="text-muted text-[14px]">
             {[e.degree, e.field].filter(Boolean).join(" · ")}
-            {e.start_year ? ` · ${e.start_year}–${e.end_year ?? "hozir"}` : ""}
+            {e.start_year ? ` · ${e.start_year}–${e.end_year ?? t("hozir")}` : ""}
           </span>
         </li>
       ))}

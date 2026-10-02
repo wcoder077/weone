@@ -10,19 +10,24 @@ import { buttonVariants } from "@/components/ui/button";
 import { requireUserId } from "@/lib/auth";
 import { getFeed } from "@/lib/queries/posts";
 import { single } from "@/lib/url";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Postlar" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Postlar") };
+}
 
 export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
+  const t = await getT();
   const before = single((await searchParams).before);
   const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : undefined;
   const userId = await requireUserId();
 
   return (
     <div className="mx-auto flex w-full max-w-[680px] flex-col gap-6">
-      <h1 className="text-2xl font-bold lg:text-[32px]">Postlar</h1>
+      <h1 className="text-2xl font-bold lg:text-[32px]">{t("Postlar")}</h1>
       {validBefore ? null : (
-        <section aria-label="Yangi post" className="bg-card border-border rounded-card border p-5">
+        <section aria-label={t("Yangi post")} className="bg-card border-border rounded-card border p-5">
           <PostComposer userId={userId} />
         </section>
       )}
@@ -34,19 +39,20 @@ export default async function PostsPage({ searchParams }: PageProps<"/posts">) {
 }
 
 async function Feed({ userId, before }: { userId: string; before?: string }) {
+  const t = await getT();
   let feed;
   try {
     feed = await getFeed(userId, before);
   } catch {
-    return <RetryErrorState description="Postlarni yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Postlarni yuklab bo'lmadi.")} />;
   }
 
   if (feed.posts.length === 0) {
     return (
       <EmptyState
         icon={Newspaper}
-        title={before ? "Boshqa post yo'q" : "Hali postlar yo'q"}
-        description="Birinchi bo'lib yozing: nima ustida ishlayapsiz yoki kimni qidiryapsiz?"
+        title={before ? t("Boshqa post yo'q") : t("Hali postlar yo'q")}
+        description={t("Birinchi bo'lib yozing: nima ustida ishlayapsiz yoki kimni qidiryapsiz?")}
       />
     );
   }
@@ -56,16 +62,14 @@ async function Feed({ userId, before }: { userId: string; before?: string }) {
       {feed.posts.map((post) => (
         <PostCard key={post.id} post={post} isMine={post.author.id === userId} />
       ))}
-      <nav aria-label="Postlar sahifalari" className="flex justify-center gap-2">
+      <nav aria-label={t("Postlar sahifalari")} className="flex justify-center gap-2">
         {before ? (
           <Link href="/posts" className={buttonVariants({ variant: "ghost" })}>
-            Eng yangilariga qaytish
-          </Link>
+            {t("Eng yangilariga qaytish")}</Link>
         ) : null}
         {feed.nextBefore ? (
           <Link href={`/posts?before=${encodeURIComponent(feed.nextBefore)}`} className={buttonVariants({ variant: "outline" })}>
-            Oldingi postlar
-          </Link>
+            {t("Oldingi postlar")}</Link>
         ) : null}
       </nav>
     </div>

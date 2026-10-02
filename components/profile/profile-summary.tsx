@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { ChevronRight } from "lucide-react";
 import { getProfileSummary } from "@/lib/queries/activities";
 import { ACTIVITY_WEEKS, getActivityStats } from "@/lib/queries/activity-stats";
@@ -8,6 +9,7 @@ import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ActivityBars } from "./activity-bars";
 import { SectionCard } from "./profile-sections";
+import { getT } from "@/lib/i18n/server";
 
 const TITLE = "Bog'lanishlar va faoliyat";
 
@@ -21,6 +23,7 @@ export async function ProfileSummary({
   path: string;
   projectCount: number;
 }) {
+  const t = await getT();
   let summary;
   let stats;
   try {
@@ -28,23 +31,23 @@ export async function ProfileSummary({
   } catch {
     return (
       <SectionCard title={TITLE}>
-        <RetryErrorState description="Faoliyatni yuklab bo'lmadi." />
+        <RetryErrorState description={t("Faoliyatni yuklab bo'lmadi.")} />
       </SectionCard>
     );
   }
 
   const activity = summary.activity.flatMap((a) => {
-    const text = activityText(a);
+    const text = activityText(a, t);
     return text && a.target ? [{ id: a.id, text, href: a.target.href, createdAt: a.createdAt }] : [];
   });
 
   return (
     <SectionCard title={TITLE}>
       <div className="grid grid-cols-4 gap-1.5">
-        <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label="Post" />
-        <Stat href={`${path}?tab=reposts#profile-tabs`} value={summary.reposts} label="Repost" />
-        <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label="Bog'lanish" />
-        <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label="Loyiha" />
+        <Stat href={`${path}?tab=posts#profile-tabs`} value={summary.posts} label={t("Post")} />
+        <Stat href={`${path}?tab=reposts#profile-tabs`} value={summary.reposts} label={t("Repost")} />
+        <Stat href={`${path}?tab=connections#profile-tabs`} value={summary.connections} label={t("Bog'lanish")} />
+        <Stat href={`${path}?tab=projects#profile-tabs`} value={projectCount} label={t("Loyiha")} />
       </div>
       {/* Activity strip: weekly bars; opens the full statistics page. */}
       <Link
@@ -52,10 +55,9 @@ export async function ProfileSummary({
         className="bg-surface border-border hover:border-primary/40 focus-visible:ring-ring/50 block rounded-xl border px-3 pt-2.5 pb-2 transition-colors outline-none focus-visible:ring-3"
       >
         <span className="flex items-center justify-between gap-2 text-[13px]">
-          <span className="font-medium">Faoliyat</span>
+          <span className="font-medium">{t("Faoliyat")}</span>
           <span className="text-muted inline-flex items-center gap-0.5">
-            {ACTIVITY_WEEKS} hafta · {stats.weeks.reduce((sum, w) => sum + w.count, 0)} ta
-            <ChevronRight className="size-4" aria-hidden />
+            {t("{weeks} hafta · {count} ta", { weeks: ACTIVITY_WEEKS, count: stats.weeks.reduce((sum, w) => sum + w.count, 0) })}<ChevronRight className="size-4" aria-hidden />
           </span>
         </span>
         <ActivityBars weeks={stats.weeks} className="mt-2 h-14" />
@@ -67,25 +69,26 @@ export async function ProfileSummary({
               <Link href={a.href} className="text-[14px] leading-snug hover:underline">
                 {a.text}
               </Link>
-              <span className="text-muted text-[12px]">{formatRelative(a.createdAt)}</span>
+              <span className="text-muted text-[12px]">{formatRelative(a.createdAt, t)}</span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-muted text-[14px]">Hali faoliyat yo&apos;q.</p>
+        <p className="text-muted text-[14px]">{t("Hali faoliyat yo'q.")}</p>
       )}
     </SectionCard>
   );
 }
 
-function Stat({ href, value, label }: { href: string; value: number; label: string }) {
+async function Stat({ href, value, label }: { href: string; value: number; label: string }) {
+  const t = await getT();
   return (
     <Link
       href={href}
       className="bg-surface hover:border-primary/40 border-border focus-visible:ring-ring/50 flex min-h-14 min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition-colors outline-none focus-visible:ring-3"
     >
       <span className="text-[17px] leading-tight font-bold tabular-nums">{formatCount(value)}</span>
-      <span className="text-muted truncate text-[12px]">{label}</span>
+      <span className="text-muted truncate text-[12px]">{t(label)}</span>
     </Link>
   );
 }
@@ -93,7 +96,7 @@ function Stat({ href, value, label }: { href: string; value: number; label: stri
 export function ProfileSummarySkeleton() {
   return (
     <SectionCard title={TITLE}>
-      <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-3">
+      <LoadingRegion className="flex flex-col gap-3">
         <div className="grid grid-cols-4 gap-1.5">
           <Skeleton className="h-14 rounded-xl" />
           <Skeleton className="h-14 rounded-xl" />
@@ -103,7 +106,7 @@ export function ProfileSummarySkeleton() {
         <Skeleton className="h-24 rounded-xl" />
         <Skeleton className="h-4 w-4/5" />
         <Skeleton className="h-4 w-3/5" />
-      </div>
+      </LoadingRegion>
     </SectionCard>
   );
 }

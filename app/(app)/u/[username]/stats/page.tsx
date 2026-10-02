@@ -17,10 +17,12 @@ import {
   type ActivityStats,
 } from "@/lib/queries/activity-stats";
 import { getProfilePage } from "@/lib/queries/profile-page";
+import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata({ params }: PageProps<"/u/[username]/stats">) {
   const { username } = await params;
-  return { title: `@${username} · statistika` };
+  const t = await getT();
+  return { title: t("@{username} · statistika", { username }) };
 }
 
 const ICONS: Record<ActivityKind, LucideIcon> = {
@@ -35,6 +37,7 @@ const ICONS: Record<ActivityKind, LucideIcon> = {
 const TIMELINE_LIMIT = 60;
 
 export default async function ProfileStatsPage({ params }: PageProps<"/u/[username]/stats">) {
+  const t = await getT();
   const { username } = await params;
   await requireUserId();
   const page = await getProfilePage(username.toLowerCase());
@@ -45,7 +48,7 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
   try {
     stats = await getActivityStats(profile.id);
   } catch {
-    return <RetryErrorState description="Statistikani yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Statistikani yuklab bo'lmadi.")} />;
   }
 
   const recent = stats.weeks.reduce((sum, w) => sum + w.count, 0);
@@ -59,36 +62,35 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
         <UserAvatar name={profile.full_name} url={profile.avatar_url} size="lg" userId={profile.id} />
         <div className="min-w-0">
           <h1 className="truncate text-xl font-bold lg:text-2xl">{profile.full_name}</h1>
-          <p className="text-muted text-[14px]">Faoliyat statistikasi</p>
+          <p className="text-muted text-[14px]">{t("Faoliyat statistikasi")}</p>
         </div>
       </header>
 
       {allTime === 0 ? (
-        <EmptyState icon={Activity} title="Hali faoliyat yo'q" description="Post, bog'lanish yoki loyiha paydo bo'lganda statistika shu yerda chiqadi." />
+        <EmptyState icon={Activity} title={t("Hali faoliyat yo'q")} description={t("Post, bog'lanish yoki loyiha paydo bo'lganda statistika shu yerda chiqadi.")} />
       ) : (
         <>
           {/* Headline numbers. */}
-          <section aria-label="Asosiy ko'rsatkichlar" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <Tile value={recent} label={`So'nggi ${ACTIVITY_WEEKS} hafta`} />
-            <Tile value={stats.activeDays} label="Faol kunlar" />
-            <Tile value={best.count} label={best.count ? `Eng faol hafta · ${formatDayMonth(best.start)}` : "Eng faol hafta"} />
-            <Tile value={allTime} label="Jami faoliyat" />
+          <section aria-label={t("Asosiy ko'rsatkichlar")} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <Tile value={recent} label={t("So'nggi {ACTIVITY_WEEKS} hafta", { ACTIVITY_WEEKS })} />
+            <Tile value={stats.activeDays} label={t("Faol kunlar")} />
+            <Tile value={best.count} label={best.count ? t("Eng faol hafta · {date}", { date: formatDayMonth(best.start, t) }) : t("Eng faol hafta")} />
+            <Tile value={allTime} label={t("Jami faoliyat")} />
           </section>
 
           {/* All activity per week. */}
           <section className="bg-card border-border rounded-card flex flex-col gap-3 border p-5" aria-labelledby="weekly-title">
             <div className="flex items-baseline justify-between gap-3">
               <h2 id="weekly-title" className="text-[15px] font-semibold">
-                Haftalik faoliyat
-              </h2>
-              <span className="text-muted text-[13px]">So&apos;nggi {ACTIVITY_WEEKS} hafta</span>
+                {t("Haftalik faoliyat")}</h2>
+              <span className="text-muted text-[13px]">{t("So'nggi {n} hafta", { n: ACTIVITY_WEEKS })}</span>
             </div>
             <ActivityBars weeks={stats.weeks} className="h-40" axis />
             <WeeklyTable stats={stats} />
           </section>
 
           {/* One small chart per kind (small multiples, same scale per chart). */}
-          <section aria-label="Turlar bo'yicha" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <section aria-label={t("Turlar bo'yicha")} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {ACTIVITY_KINDS.map((kind) => {
               const Icon = ICONS[kind];
               const weeks = stats.weeks.map((w, i) => ({ start: w.start, count: stats.weeksByKind[kind][i] ?? 0 }));
@@ -98,12 +100,12 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
                   <div className="flex items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-2 text-[14px] font-medium">
                       <Icon className="text-primary size-4" aria-hidden />
-                      {ACTIVITY_LABELS[kind]}
+                      {t(ACTIVITY_LABELS[kind])}
                     </span>
                     <span className="text-lg font-bold tabular-nums">{stats.totals[kind]}</span>
                   </div>
                   <ActivityBars weeks={weeks} className="h-12" />
-                  <span className="text-muted text-[12px]">So&apos;nggi {ACTIVITY_WEEKS} haftada: {lately}</span>
+                  <span className="text-muted text-[12px]">{t("So'nggi {n} haftada: {count}", { n: ACTIVITY_WEEKS, count: lately })}</span>
                 </div>
               );
             })}
@@ -112,8 +114,7 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
           {/* What happened when. */}
           <section className="bg-card border-border rounded-card flex flex-col gap-4 border p-5" aria-labelledby="timeline-title">
             <h2 id="timeline-title" className="text-[15px] font-semibold">
-              Nima qachon bo&apos;ldi
-            </h2>
+              {t("Nima qachon bo'ldi")}</h2>
             <Timeline stats={stats} />
           </section>
         </>
@@ -122,37 +123,39 @@ export default async function ProfileStatsPage({ params }: PageProps<"/u/[userna
   );
 }
 
-function Tile({ value, label }: { value: number; label: string }) {
+async function Tile({ value, label }: { value: number; label: string }) {
+  const t = await getT();
   return (
     <div className="bg-card border-border flex flex-col gap-0.5 rounded-[20px] border px-4 py-3">
       <span className="text-2xl font-bold tabular-nums">{value}</span>
-      <span className="text-muted truncate text-[12px]">{label}</span>
+      <span className="text-muted truncate text-[12px]">{t(label)}</span>
     </div>
   );
 }
 
 // The same weekly numbers as a table (screen readers, exact values).
-function WeeklyTable({ stats }: { stats: ActivityStats }) {
+async function WeeklyTable({ stats }: { stats: ActivityStats }) {
+  const t = await getT();
   return (
     <details className="text-[13px]">
-      <summary className="text-muted hover:text-text min-h-11 cursor-pointer content-center">Jadval ko&apos;rinishi</summary>
+      <summary className="text-muted hover:text-text min-h-11 cursor-pointer content-center">{t("Jadval ko'rinishi")}</summary>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[520px] text-left tabular-nums">
           <thead className="text-muted">
             <tr>
-              <th className="py-1.5 pr-3 font-medium">Hafta</th>
+              <th className="py-1.5 pr-3 font-medium">{t("Hafta")}</th>
               {ACTIVITY_KINDS.map((k) => (
                 <th key={k} className="py-1.5 pr-3 font-medium">
-                  {ACTIVITY_LABELS[k]}
+                  {t(ACTIVITY_LABELS[k])}
                 </th>
               ))}
-              <th className="py-1.5 font-medium">Jami</th>
+              <th className="py-1.5 font-medium">{t("Jami")}</th>
             </tr>
           </thead>
           <tbody>
             {stats.weeks.map((w, i) => (
               <tr key={w.start} className="border-border border-t">
-                <td className="py-1.5 pr-3">{formatDayMonth(w.start)}</td>
+                <td className="py-1.5 pr-3">{formatDayMonth(w.start, t)}</td>
                 {ACTIVITY_KINDS.map((k) => (
                   <td key={k} className="py-1.5 pr-3">
                     {stats.weeksByKind[k][i]}
@@ -168,11 +171,12 @@ function WeeklyTable({ stats }: { stats: ActivityStats }) {
   );
 }
 
-function Timeline({ stats }: { stats: ActivityStats }) {
+async function Timeline({ stats }: { stats: ActivityStats }) {
+  const t = await getT();
   const events = stats.events.slice(0, TIMELINE_LIMIT);
   const byDay = new Map<string, typeof events>();
   for (const e of events) {
-    const day = formatDay(e.at);
+    const day = formatDay(e.at, t);
     byDay.set(day, [...(byDay.get(day) ?? []), e]);
   }
   return (
@@ -186,7 +190,7 @@ function Timeline({ stats }: { stats: ActivityStats }) {
               const body = (
                 <>
                   <Icon className="text-primary mt-0.5 size-4 shrink-0" aria-hidden />
-                  <span className="min-w-0 flex-1 text-[14px] leading-snug">{e.text}</span>
+                  <span className="min-w-0 flex-1 text-[14px] leading-snug">{t(e.text)}</span>
                   <time dateTime={e.at} className="text-muted shrink-0 text-[12px]">
                     {formatTime(e.at)}
                   </time>
@@ -208,7 +212,7 @@ function Timeline({ stats }: { stats: ActivityStats }) {
         </div>
       ))}
       {stats.events.length > TIMELINE_LIMIT ? (
-        <p className="text-muted text-[13px]">Oxirgi {TIMELINE_LIMIT} ta voqea ko&apos;rsatilgan.</p>
+        <p className="text-muted text-[13px]">{t("Oxirgi {n} ta voqea ko'rsatilgan.", { n: TIMELINE_LIMIT })}</p>
       ) : null}
     </div>
   );

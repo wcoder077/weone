@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LoadingRegion } from "@/components/shared/loading-region";
 import { notFound } from "next/navigation";
 import { z } from "zod";
 import { BackLink } from "@/components/shared/back-link";
@@ -9,10 +10,15 @@ import { PostCard } from "@/components/posts/post-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireUserId } from "@/lib/auth";
 import { getComments, getPost } from "@/lib/queries/posts";
+import { getT } from "@/lib/i18n/server";
 
-export const metadata = { title: "Post" };
+export async function generateMetadata() {
+  const t = await getT();
+  return { title: t("Post") };
+}
 
 export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
+  const t = await getT();
   const { id } = await params;
   if (!z.guid().safeParse(id).success) notFound();
 
@@ -21,7 +27,7 @@ export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
   try {
     post = await getPost(id, userId);
   } catch {
-    return <RetryErrorState description="Postni yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Postni yuklab bo'lmadi.")} />;
   }
   if (!post) notFound();
 
@@ -31,7 +37,7 @@ export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
       <PostCard post={post} isMine={post.author.id === userId} expanded />
       <section aria-labelledby="comments-title" className="bg-card border-border rounded-card flex flex-col gap-4 border p-5">
         <h2 id="comments-title" className="text-lg font-bold">
-          Izohlar · {post.commentCount}
+          {t("Izohlar · {n}", { n: post.commentCount })}
         </h2>
         <CommentForm postId={post.id} />
         <Suspense fallback={<CommentsSkeleton />}>
@@ -43,13 +49,14 @@ export default async function PostPage({ params }: PageProps<"/posts/[id]">) {
 }
 
 async function Comments({ postId, postAuthorId, userId }: { postId: string; postAuthorId: string; userId: string }) {
+  const t = await getT();
   let comments;
   try {
     comments = await getComments(postId);
   } catch {
-    return <RetryErrorState description="Izohlarni yuklab bo'lmadi." />;
+    return <RetryErrorState description={t("Izohlarni yuklab bo'lmadi.")} />;
   }
-  if (comments.length === 0) return <p className="text-muted text-[14px]">Hali izoh yo&apos;q. Birinchi bo&apos;lib yozing.</p>;
+  if (comments.length === 0) return <p className="text-muted text-[14px]">{t("Hali izoh yo'q. Birinchi bo'lib yozing.")}</p>;
 
   return (
     <ul className="flex flex-col gap-4">
@@ -62,7 +69,7 @@ async function Comments({ postId, postAuthorId, userId }: { postId: string; post
 
 function CommentsSkeleton() {
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="flex flex-col gap-4">
+    <LoadingRegion className="flex flex-col gap-4">
       {Array.from({ length: 2 }, (_, i) => (
         <div key={i} className="flex items-start gap-3">
           <Skeleton className="size-8 rounded-full" />
@@ -72,6 +79,6 @@ function CommentsSkeleton() {
           </div>
         </div>
       ))}
-    </div>
+    </LoadingRegion>
   );
 }

@@ -1,8 +1,12 @@
+"use client";
+
 import { Skeleton } from "@/components/ui/skeleton";
+import { useT } from "@/components/i18n/i18n-provider";
 
 export default function Loading() {
+  const t = useT();
   return (
-    <div role="status" aria-label="Yuklanmoqda" className="mx-auto flex w-full max-w-[880px] flex-col gap-5">
+    <div role="status" aria-label={t("Yuklanmoqda")} className="mx-auto flex w-full max-w-[880px] flex-col gap-5">
       <Skeleton className="h-11 w-28 rounded-full" />
       <div className="flex items-center gap-3">
         <Skeleton className="size-12 rounded-full" />
