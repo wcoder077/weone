@@ -32,7 +32,7 @@ export function PostBody({ body, small = false, expanded = false }: { body: stri
   const [open, setOpen] = useState(expanded);
   const { title, rest } = splitPostBody(body);
   const { preview, cut } = previewOf(title);
-  const text = cn("max-w-[65ch] leading-[1.6] break-words whitespace-pre-wrap", small ? "text-[15px]" : "text-base");
+  const text = cn("max-w-[65ch] leading-[1.6] break-words whitespace-pre-wrap select-text", small ? "text-[15px]" : "text-base");
   const foldable = Boolean(rest) || cut;
 
   const toggle = (

@@ -106,7 +106,7 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           </Suspense>
           <SectionCard title={t("Haqida")}>
             {page.profile.bio ? (
-              <p className="text-[15px] leading-relaxed whitespace-pre-line"><LinkifiedText text={page.profile.bio} /></p>
+              <p className="text-[15px] leading-relaxed whitespace-pre-line select-text"><LinkifiedText text={page.profile.bio} /></p>
             ) : (
               <p className="text-muted text-[14px]">{t("Hali yozilmagan.")}</p>
             )}

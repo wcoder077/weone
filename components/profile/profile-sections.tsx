@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Handshake, MapPin } from "lucide-react";
 import { LOOKING_FOR, evidenceText, labelOf } from "@/lib/constants";
 import type { ProfilePage } from "@/lib/queries/profile-page";
+import { CopyUsername } from "@/components/profile/copy-username";
 import { SkillChip } from "@/components/shared/skill-chip";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { OnlineLabel } from "@/components/layout/online-presence";
@@ -61,7 +62,7 @@ export async function ProfileHeader({
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-2 sm:pt-4">
           <h1 className="text-2xl font-bold lg:text-[28px]">{profile.full_name || profile.username}</h1>
-          {isGeneratedUsername(profile.username) ? null : <p className="text-muted">@{profile.username}</p>}
+          {isGeneratedUsername(profile.username) ? null : <CopyUsername username={profile.username} />}
           {profile.headline ? <p className="text-[15px]">{profile.headline}</p> : null}
           <div className="text-muted flex flex-wrap items-center gap-x-4 gap-y-1 text-[14px]">
             {profile.city ? (
