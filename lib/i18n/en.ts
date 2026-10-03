@@ -772,4 +772,6 @@ export const en: Dictionary = {
   "Postlar bo'limlari": "Post sections",
   "Postlarim": "My posts",
   "Repostlarim": "My reposts",
+  "Kirish emaili": "Sign-in email",
+  "Faqat siz ko'rasiz. Boshqalarga ko'rinmaydi.": "Only you can see this. It is hidden from others.",
 };
