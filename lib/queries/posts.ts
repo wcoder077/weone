@@ -1,9 +1,10 @@
 import { POST_MEDIA_BUCKET, type PostMediaKind } from "@/lib/post-media";
+import { rankRecommended } from "@/lib/feed-rank";
 import { createClient } from "@/lib/supabase/server";
 
 export const FEED_PAGE = 20;
-// Random older posts are picked from this many of the newest ones.
-const RANDOM_POOL = 100;
+// The recommended tab ranks this many of the newest posts.
+const RANK_POOL = 100;
 
 const AUTHOR = "author:profiles!posts_author_id_fkey(id, username, full_name, avatar_url, headline)";
 const POST_FIELDS = `id, body, created_at, edited_at, media_path, media_type, media_name, repost_of, like_count, comment_count, view_count, repost_count, ${AUTHOR}`;
@@ -120,37 +121,50 @@ export async function getFeed(userId: string, before?: string) {
   };
 }
 
-function shuffle<T>(items: T[]) {
-  const out = [...items];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
+// Home "Tavsiya" tab: the newest posts, picked and ordered by lib/feed-rank.ts.
+// `newest` is what the feed marker remembers as "seen".
+export async function getRecommendedFeed(userId: string, seenAt?: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_FIELDS)
+    .order("created_at", { ascending: false })
+    .limit(RANK_POOL);
+  if (error) throw error;
+
+  const rows = rankRecommended(data, { limit: FEED_PAGE, seenAt });
+  return { posts: await hydrate(supabase, rows, userId), newest: data[0]?.created_at };
 }
 
-// Home feed. New posts (written after `seenAt`, the newest post the viewer was
-// last shown) come first, newest first. With nothing new, the viewer gets a
-// random mix of recent posts instead of the same page again.
-export async function getHomeFeed(userId: string, seenAt?: string) {
-  const feed = await getFeed(userId);
-  const newest = feed.posts[0]?.createdAt;
-  if (!seenAt || !newest || Date.parse(newest) > Date.parse(seenAt)) return { ...feed, shuffled: false, newest };
-
+// Home "Do'stlar" tab: posts of the people the viewer is connected with, newest first.
+const FRIENDS_LIMIT = 150;
+export async function getFriendsFeed(userId: string, before?: string) {
   const supabase = await createClient();
-  const { data: pool, error: poolError } = await supabase
-    .from("posts")
-    .select("id")
-    .order("created_at", { ascending: false })
-    .limit(RANDOM_POOL);
-  if (poolError) throw poolError;
-  const ids = shuffle(pool.map((p) => p.id)).slice(0, FEED_PAGE);
+  const { data: links, error: linksError } = await supabase
+    .from("connections")
+    .select("requester_id, addressee_id")
+    .eq("status", "accepted")
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`)
+    .limit(FRIENDS_LIMIT);
+  if (linksError) throw linksError;
+  const friendIds = links.map((c) => (c.requester_id === userId ? c.addressee_id : c.requester_id));
+  if (friendIds.length === 0) return { posts: [], nextBefore: null, hasFriends: false };
 
-  const { data, error } = await supabase.from("posts").select(POST_FIELDS).in("id", ids);
+  let query = supabase
+    .from("posts")
+    .select(POST_FIELDS)
+    .in("author_id", friendIds)
+    .order("created_at", { ascending: false })
+    .limit(FEED_PAGE + 1);
+  if (before) query = query.lt("created_at", before);
+  const { data, error } = await query;
   if (error) throw error;
-  const order = new Map(ids.map((id, i) => [id, i]));
-  const rows = data.toSorted((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
-  return { posts: await hydrate(supabase, rows, userId), nextBefore: null, shuffled: true, newest };
+  const page = data.slice(0, FEED_PAGE);
+  return {
+    posts: await hydrate(supabase, page, userId),
+    nextBefore: data.length > FEED_PAGE ? page[page.length - 1].created_at : null,
+    hasFriends: true,
+  };
 }
 
 // Posts that carry a hashtag, newest first. `tag` must already be normalized (lib/hashtag.ts).

@@ -15,7 +15,7 @@ import { getT } from "@/lib/i18n/server";
 export async function PostCard({ post, isMine, expanded = false }: { post: FeedPost; isMine: boolean; expanded?: boolean }) {
   const t = await getT();
   return (
-    <article className="bg-card border-border rounded-card flex flex-col gap-3 border p-5">
+    <article className="bg-card border-border rounded-card flex flex-col gap-2 border p-4">
       <header className="flex items-start gap-3">
         <AuthorLink author={post.author} />
         <div className="flex min-w-0 flex-1 flex-col">

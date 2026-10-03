@@ -2,7 +2,8 @@ import { Fragment, Suspense, type ReactNode } from "react";
 import { LoadingRegion } from "@/components/shared/loading-region";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import { ChevronRight, CircleCheck, Newspaper } from "lucide-react";
+import { ChevronRight, CircleCheck, Newspaper, Users } from "lucide-react";
+import { LinkTabs } from "@/components/shared/link-tabs";
 import { PeopleCarousel } from "@/components/home/people-carousel";
 import { ProjectsStrip } from "@/components/home/projects-strip";
 import { FeedSeenMarker } from "@/components/posts/feed-seen-marker";
@@ -17,11 +18,12 @@ import { buttonVariants } from "@/components/ui/button";
 import { FEED_SEEN_COOKIE } from "@/lib/feed";
 import { memoize } from "@/lib/memo";
 import { getNetworkActivity, getPeopleForYou, getProfileChecklist } from "@/lib/queries/home";
-import { getHomeFeed } from "@/lib/queries/posts";
+import { getFriendsFeed, getRecommendedFeed } from "@/lib/queries/posts";
 import { getMyProfile, type MyProfile } from "@/lib/queries/profiles";
 import { listProjects } from "@/lib/queries/projects";
 import { getRelationships } from "@/lib/queries/social";
 import { getT } from "@/lib/i18n/server";
+import { single } from "@/lib/url";
 
 export async function generateMetadata() {
   const t = await getT();
@@ -34,18 +36,32 @@ const PROJECTS_AFTER = 8;
 // Recommendations change slowly: recompute them at most every 5 minutes per person.
 const RECOMMENDATIONS_TTL_MS = 5 * 60 * 1000;
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: PageProps<"/home">) {
   const t = await getT();
   const me = await getMyProfile();
   if (!me) return null; // The (app) layout already redirects signed-out users.
   const firstName = me.full_name.split(" ")[0] || me.username;
+  const params = await searchParams;
+  const tab = single(params.feed) === "friends" ? "friends" : "recommended";
+  const before = single(params.before);
+  const validBefore = before && !Number.isNaN(Date.parse(before)) ? before : undefined;
 
   return (
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div className="mx-auto flex w-full max-w-[680px] min-w-0 flex-col gap-4">
-        <h1 className="text-xl font-bold lg:text-2xl">{t("Salom, {name}", { name: firstName })}</h1>
-        <Suspense fallback={<FeedSkeleton />}>
-          <HomeFeed me={me} />
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <h1 className="text-xl font-bold lg:text-2xl">{t("Salom, {name}", { name: firstName })}</h1>
+          <LinkTabs
+            label="Postlar turi"
+            active={tab}
+            tabs={[
+              { value: "recommended", label: "Tavsiya", href: "/home" },
+              { value: "friends", label: "Do'stlar", href: "/home?feed=friends" },
+            ]}
+          />
+        </div>
+        <Suspense key={`${tab}:${validBefore ?? ""}`} fallback={<FeedSkeleton />}>
+          {tab === "friends" ? <FriendsFeed me={me} before={validBefore} /> : <HomeFeed me={me} />}
         </Suspense>
       </div>
 
@@ -75,7 +91,7 @@ async function HomeFeed({ me }: { me: MyProfile }) {
   const seen = (await cookies()).get(FEED_SEEN_COOKIE)?.value;
   const seenAt = seen && !Number.isNaN(Date.parse(seen)) ? seen : undefined;
   const [feed, picks, relationships, projects] = await Promise.all([
-    getHomeFeed(me.id, seenAt).catch(() => null),
+    getRecommendedFeed(me.id, seenAt).catch(() => null),
     optional(memoize(`people-for-you:${me.id}`, RECOMMENDATIONS_TTL_MS, () => getPeopleForYou(me, 8)), []),
     getRelationships(me.id),
     optional(memoize(`projects-for-you:${me.id}`, RECOMMENDATIONS_TTL_MS, () => listProjects(me.id, "for-you", {})), []),
@@ -122,12 +138,44 @@ async function HomeFeed({ me }: { me: MyProfile }) {
           {slots.get(i)}
         </Fragment>
       ))}
-      {feed.nextBefore || feed.shuffled ? (
+      <Link href="/posts" className={buttonVariants({ variant: "outline", className: "self-center" })}>
+        {t("Ko'proq postlar")}
+      </Link>
+    </div>
+  );
+}
+
+async function FriendsFeed({ me, before }: { me: MyProfile; before?: string }) {
+  const t = await getT();
+  const feed = await getFriendsFeed(me.id, before).catch(() => null);
+  if (!feed) return <RetryErrorState description={t("Postlarni yuklab bo'lmadi.")} />;
+
+  if (feed.posts.length === 0) {
+    return (
+      <EmptyState
+        icon={Users}
+        title={before ? t("Boshqa post yo'q") : t("Do'stlaringiz postlari yo'q")}
+        description={
+          feed.hasFriends
+            ? t("Bog'langan odamlaringiz post yozsa, shu yerda chiqadi.")
+            : t("Maqsaddoshlar bilan bog'laning: ularning postlari shu yerda chiqadi.")
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {feed.posts.map((post) => (
+        <PostCard key={post.id} post={post} isMine={post.author.id === me.id} />
+      ))}
+      {feed.nextBefore ? (
         <Link
-          href={feed.nextBefore ? `/posts?before=${encodeURIComponent(feed.nextBefore)}` : "/posts"}
+          href={`/home?feed=friends&before=${encodeURIComponent(feed.nextBefore)}`}
           className={buttonVariants({ variant: "outline", className: "self-center" })}
         >
-          {t("Ko'proq postlar")}</Link>
+          {t("Ko'proq postlar")}
+        </Link>
       ) : null}
     </div>
   );

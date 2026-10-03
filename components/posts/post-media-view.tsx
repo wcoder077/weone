@@ -11,9 +11,9 @@ export function PostMediaView({ media }: { media: PostMedia }) {
         preload="none"
         playsInline
         aria-label={media.name}
-        className="max-h-[28rem] w-full rounded-2xl bg-black"
+        className="max-h-72 sm:max-h-80 w-full rounded-2xl bg-black"
       />
     );
   }
-  return <ImageLightbox src={media.url} alt={media.name} className="max-h-[28rem] w-full rounded-2xl object-cover" />;
+  return <ImageLightbox src={media.url} alt={media.name} className="max-h-72 sm:max-h-80 w-full rounded-2xl object-cover" />;
 }
