@@ -1,9 +1,9 @@
-import { Compass, House, MessageCircle, Newspaper, User } from "lucide-react";
+import { Compass, House, MessageCircle, SquarePlus, User } from "lucide-react";
 
 export const navItems = [
   { href: "/home", label: "Asosiy", icon: House },
   { href: "/discover", label: "Kashf", icon: Compass },
-  { href: "/posts", label: "Postlar", icon: Newspaper },
+  { href: "/posts", label: "Postlar", icon: SquarePlus },
   { href: "/messages", label: "Xabarlar", icon: MessageCircle },
   { href: "/profile", label: "Profil", icon: User },
 ] as const;
