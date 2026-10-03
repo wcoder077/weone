@@ -305,3 +305,4 @@
 ## Home: Tavsiya / Do'stlar
 - `/home` has two tabs (`?feed=friends`). "Tavsiya": ranks the newest 100 posts with `lib/feed-rank.ts` (about 70% of slots go to posts from the last 48h, likes/comments/views and recency order inside each group, max 2 posts per author per page, unseen posts get a boost). "Do'stlar": posts of accepted connections, newest first, paged with `before`.
 - Post card is more compact (p-4, media max height 18-20rem). No DB changes.
+- Post text longer than 200 characters is cut at a space with "…" and "Yana" (`previewOf` in `components/posts/post-body.tsx`); media is never hidden.
