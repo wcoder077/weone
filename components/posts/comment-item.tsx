@@ -41,7 +41,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
             {formatRelative(comment.createdAt, t)}
           </time>
         </p>
-        <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap"><LinkifiedText text={comment.body} /></p>
+        <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap select-text"><LinkifiedText text={comment.body} /></p>
       </div>
       {canDelete ? (
         <>

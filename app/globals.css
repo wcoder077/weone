@@ -133,21 +133,19 @@
   html {
     @apply font-sans;
   }
-  /* Touch: no iOS callout or accidental selection when long-pressing controls.
-     Message, post and form text stays selectable. */
-  @media (pointer: coarse) {
-    a,
-    button,
-    img,
-    label,
-    nav,
-    [role="button"],
-    [role="tab"],
-    [role="menuitem"] {
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
+  /* The app behaves like an app: text is not selected by press-and-hold, double click or drag.
+     Fields stay editable, and post, comment and bio text opts back in with `select-text`.
+     Messages are copied from their menu; the @username is copied by tapping it. */
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
   }
   body {
     @apply bg-background text-foreground min-h-dvh text-[15px];
