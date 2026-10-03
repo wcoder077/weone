@@ -106,21 +106,6 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
   });
 }
 
-// Newest first. `before` (an ISO timestamp) loads the next, older page.
-export async function getFeed(userId: string, before?: string) {
-  const supabase = await createClient();
-  let query = supabase.from("posts").select(POST_FIELDS).order("created_at", { ascending: false }).limit(FEED_PAGE + 1);
-  if (before) query = query.lt("created_at", before);
-
-  const { data, error } = await query;
-  if (error) throw error;
-  const page = data.slice(0, FEED_PAGE);
-  return {
-    posts: await hydrate(supabase, page, userId),
-    nextBefore: data.length > FEED_PAGE ? data[FEED_PAGE - 1].created_at : null,
-  };
-}
-
 // Home "Tavsiya" tab: the newest posts, picked and ordered by lib/feed-rank.ts.
 // `newest` is what the feed marker remembers as "seen".
 export async function getRecommendedFeed(userId: string, seenAt?: string) {
