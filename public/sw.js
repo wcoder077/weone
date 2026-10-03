@@ -1,4 +1,5 @@
 // Service worker for push notifications. It does nothing else: no caching, no offline mode.
+// badge-96.png is white on transparent: Android draws only its shape in the status bar.
 // The server sends { title, body, url, tag }; see app/api/push/route.ts.
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -22,7 +23,7 @@ self.addEventListener("push", (event) => {
       await self.registration.showNotification(data.title || "we1", {
         body: data.body || "",
         icon: "/icons/icon-192.png",
-        badge: "/icons/icon-192.png",
+        badge: "/icons/badge-96.png",
         tag: data.tag || undefined,
         renotify: Boolean(data.tag),
         data: { url: data.url || "/" },
