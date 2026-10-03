@@ -4,7 +4,7 @@ import { BackLink } from "@/components/shared/back-link";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FolderKanban, Mail, Newspaper, Pencil, Plus, Repeat2, Route, Trophy } from "lucide-react";
+import { FolderKanban, Newspaper, Pencil, Plus, Repeat2, Route, Trophy } from "lucide-react";
 import { AddSkillDialog } from "@/components/profile/add-skill-dialog";
 import { JourneyDialog } from "@/components/profile/journey-dialog";
 import { ConfirmJourneyButton, DeleteJourneyButton } from "@/components/profile/journey-actions";
@@ -29,7 +29,7 @@ import { JourneyItem } from "@/components/shared/journey-item";
 import { LinkTabs } from "@/components/shared/link-tabs";
 import { ProjectCard } from "@/components/shared/project-card";
 import { buttonVariants } from "@/components/ui/button";
-import { getMyEmail, requireUserId } from "@/lib/auth";
+import { requireUserId } from "@/lib/auth";
 import { CONFIRMABLE_TYPES, LOOKING_FOR, labelOf, memberRoleLabel, type SkillLevel } from "@/lib/constants";
 import {
   getMyEventItems,
@@ -104,7 +104,6 @@ export default async function ProfilePageRoute({ params, searchParams }: PagePro
           <Suspense fallback={<ProfileSummarySkeleton />}>
             <ProfileSummary profileId={page.profile.id} path={path} projectCount={page.projects.length} />
           </Suspense>
-          {isMe ? <AccountEmailCard /> : null}
           <SectionCard title={t("Haqida")}>
             {page.profile.bio ? (
               <p className="text-[15px] leading-relaxed whitespace-pre-line"><LinkifiedText text={page.profile.bio} /></p>
@@ -244,22 +243,6 @@ async function JourneyTab({
         </div>
       ))}
     </div>
-  );
-}
-
-async function AccountEmailCard() {
-  const [t, email] = await Promise.all([getT(), getMyEmail()]);
-  if (!email) return null;
-  return (
-    <SectionCard title={t("Kirish emaili")}>
-      <div className="flex flex-col gap-1">
-        <p className="inline-flex items-center gap-2 text-[15px] break-all">
-          <Mail className="text-muted size-4 shrink-0" aria-hidden />
-          {email}
-        </p>
-        <p className="text-muted text-[13px]">{t("Faqat siz ko'rasiz. Boshqalarga ko'rinmaydi.")}</p>
-      </div>
-    </SectionCard>
   );
 }
 
