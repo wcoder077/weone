@@ -306,3 +306,6 @@
 - `/home` has two tabs (`?feed=friends`). "Tavsiya": ranks the newest 100 posts with `lib/feed-rank.ts` (about 70% of slots go to posts from the last 48h, likes/comments/views and recency order inside each group, max 2 posts per author per page, unseen posts get a boost). "Do'stlar": posts of accepted connections, newest first, paged with `before`.
 - Post card is more compact (p-4, media max height 18-20rem). No DB changes.
 - Post text longer than 200 characters is cut at a space with "…" and "Yana" (`previewOf` in `components/posts/post-body.tsx`); media is never hidden.
+## Posts tabs + keyboard-safe sheets
+- `/posts` has tabs: "Postlarim" (default, own posts), "Repostlarim" (own reposts), "Tavsiya" (ranked feed of everyone). Removed `getFeed` and the `before` paging; home's "Ko'proq postlar" links to `/posts?tab=recommended`.
+- `ResponsiveDialog` follows the phone keyboard: while open it publishes `--sheet-bottom` / `--sheet-height` from `visualViewport`, so the sheet (message edit, etc.) sits above the keyboard instead of behind it.

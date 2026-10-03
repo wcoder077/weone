@@ -138,7 +138,7 @@ async function HomeFeed({ me }: { me: MyProfile }) {
           {slots.get(i)}
         </Fragment>
       ))}
-      <Link href="/posts" className={buttonVariants({ variant: "outline", className: "self-center" })}>
+      <Link href="/posts?tab=recommended" className={buttonVariants({ variant: "outline", className: "self-center" })}>
         {t("Ko'proq postlar")}
       </Link>
     </div>
