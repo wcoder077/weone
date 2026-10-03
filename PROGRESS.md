@@ -311,3 +311,4 @@
 - `ResponsiveDialog` follows the phone keyboard: while open it publishes `--sheet-bottom` / `--sheet-height` from `visualViewport`, so the sheet (message edit, etc.) sits above the keyboard instead of behind it.
 - Sign-in email: `getMyEmail()` (lib/auth.ts, from the JWT claims) is shown only to its owner: Settings > Hisob only (the profile card was removed again). It is never part of any public query.
 - Text selection is off app-wide (`body { user-select: none }` in globals.css); inputs/textareas stay selectable, post/comment/bio text opts in with `select-text`. Tapping the @username copies it (`CopyUsername`); messages copy from their menu.
+- Messages list: the swipe-to-reveal row actions are gone; Ovozsiz / Qadash / O'chirish are in the "…" menu, now visible on touch too. Swiping sideways on the list switches tabs again (page-to-page navigation).

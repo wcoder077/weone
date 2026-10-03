@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Bell, BellOff, MoreHorizontal, Pin, PinOff, Trash2 } from "lucide-react";
 import { toast } from "@/lib/toast";
@@ -24,114 +24,22 @@ import { cn } from "@/lib/utils";
 import type { TFunction } from "@/lib/i18n/core";
 import { useT } from "@/components/i18n/i18n-provider";
 
-const ACTION_WIDTH = 72;
-const ACTIONS = 3;
-const OPEN_X = -ACTION_WIDTH * ACTIONS;
-const LOCK = 8;
-
-// Only one row stays swiped open at a time (identified by its element, which is stable across renders).
-let openRow: { el: HTMLElement; close: () => void } | null = null;
-
 function previewOf(last: NonNullable<ConversationSummary["last"]>, t: TFunction) {
   if (last.kind === "project_invite") return t("Loyihaga taklif");
   if (last.body) return last.body;
   return t(ATTACHMENT_LABELS[last.attachment_type as AttachmentKind] ?? "Xabar");
 }
 
-// A chat in the list. Touch: swipe left to reveal Ovozsiz / Qadash / O'chirish.
-// Mouse and keyboard: the same actions in the "…" menu. Everything here changes only
+// A chat in the list. Ovozsiz / Qadash / O'chirish live in the "…" menu (touch, mouse and keyboard);
+// swiping sideways is left to the page-to-page swipe navigation. Everything here changes only
 // my side of the chat; "O'chirish" hides it for me, the other person keeps it.
 export function ConversationRow({ conversation: c, active }: { conversation: ConversationSummary; active: boolean }) {
   const t = useT();
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
-  const rowRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const openRef = useRef(false);
-  const draggedRef = useRef(false);
   const name = c.other?.full_name ?? t("Suhbat");
 
-  function slideTo(x: number) {
-    const el = contentRef.current;
-    if (!el) return;
-    el.style.transition = "transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1)";
-    el.style.transform = x ? `translateX(${x}px)` : "";
-    openRef.current = x !== 0;
-    if (x) {
-      if (openRow && openRow.el !== el) openRow.close();
-      openRow = { el, close };
-    } else if (openRow?.el === el) openRow = null;
-  }
-  function close() {
-    slideTo(0);
-  }
-
-  useEffect(() => {
-    const row = rowRef.current;
-    const el = contentRef.current;
-    if (!row || !el) return;
-    let start: { x: number; y: number; t: number } | null = null;
-    let axis: "x" | "y" | null = null;
-    let offset = 0;
-    let frame = 0;
-
-    function onStart(e: TouchEvent) {
-      const touch = e.touches[0];
-      if (!touch || e.touches.length !== 1) return;
-      start = { x: touch.clientX, y: touch.clientY, t: performance.now() };
-      axis = null;
-      draggedRef.current = false;
-    }
-    function onMove(e: TouchEvent) {
-      const touch = e.touches[0];
-      if (!start || !touch) return;
-      const dx = touch.clientX - start.x;
-      const dy = touch.clientY - start.y;
-      if (!axis) {
-        if (Math.abs(dx) < LOCK && Math.abs(dy) < LOCK) return;
-        axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-        if (axis === "y") {
-          start = null;
-          return;
-        }
-        draggedRef.current = true;
-        el!.style.transition = "";
-      }
-      const base = openRef.current ? OPEN_X : 0;
-      offset = Math.min(0, Math.max(OPEN_X - 24, base + dx));
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        el!.style.transform = `translateX(${offset}px)`;
-      });
-    }
-    function onEnd() {
-      if (!start || axis !== "x") {
-        start = null;
-        return;
-      }
-      const speed = (offset - (openRef.current ? OPEN_X : 0)) / Math.max(1, performance.now() - start.t);
-      start = null;
-      cancelAnimationFrame(frame);
-      slideTo(offset < OPEN_X / 3 || speed < -0.5 ? OPEN_X : 0);
-    }
-
-    row.addEventListener("touchstart", onStart, { passive: true });
-    row.addEventListener("touchmove", onMove, { passive: true });
-    row.addEventListener("touchend", onEnd, { passive: true });
-    row.addEventListener("touchcancel", onEnd, { passive: true });
-    return () => {
-      row.removeEventListener("touchstart", onStart);
-      row.removeEventListener("touchmove", onMove);
-      row.removeEventListener("touchend", onEnd);
-      row.removeEventListener("touchcancel", onEnd);
-      cancelAnimationFrame(frame);
-    };
-    // slideTo only touches refs and the DOM, so the listeners are attached once.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   function run(action: () => Promise<{ error?: string }>, done?: string) {
-    close();
     startTransition(async () => {
       const result = await action();
       if (result.error) toast.error(result.error);
@@ -150,40 +58,12 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
     });
 
   return (
-    <div ref={rowRef} data-no-swipe className="group relative overflow-hidden">
-      {/* Revealed by swiping left (touch only). */}
-      <div className="absolute inset-y-0 right-0 flex" aria-hidden={!openRef.current}>
-        <SwipeAction label={c.muted ? t("Ovozni yoqish") : t("Ovozsiz")} className="bg-surface text-text" onClick={toggleMute}>
-          {c.muted ? <Bell className="size-5" /> : <BellOff className="size-5" />}
-        </SwipeAction>
-        <SwipeAction label={c.pinnedAt ? t("Qadashni olish") : t("Qadash")} className="bg-primary text-on-accent" onClick={togglePin}>
-          {c.pinnedAt ? <PinOff className="size-5" /> : <Pin className="size-5" />}
-        </SwipeAction>
-        <SwipeAction
-          label={t("O'chirish")}
-          className="bg-danger text-on-accent"
-          onClick={() => {
-            close();
-            setConfirming(true);
-          }}
-        >
-          <Trash2 className="size-5" />
-        </SwipeAction>
-      </div>
-
-      <div ref={contentRef} className={cn("bg-card relative flex items-center", pending && "opacity-60")}>
+    <div className="group relative overflow-hidden">
+      <div className={cn("bg-card relative flex items-center", pending && "opacity-60")}>
         <Link
           href={`/messages/${c.id}`}
           aria-current={active ? "page" : undefined}
           aria-label={c.unread > 0 ? t("{name}, {unread} ta o'qilmagan xabar", { name, unread: c.unread }) : undefined}
-          onClick={(e) => {
-            // A swipe or an open row: the tap closes it instead of opening the chat.
-            if (draggedRef.current || openRef.current) {
-              e.preventDefault();
-              draggedRef.current = false;
-              close();
-            }
-          }}
           className={cn(
             "flex min-h-16 min-w-0 flex-1 items-center gap-3 px-3 py-3 transition-colors",
             active ? "bg-surface" : "hover:bg-surface/60",
@@ -214,11 +94,11 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
             </span>
           </span>
         </Link>
-        {/* Mouse and keyboard: the same actions in a menu. */}
+        {/* Always visible on touch; on desktop it appears on hover or focus. */}
         <DropdownMenu>
           <DropdownMenuTrigger
             aria-label={t("{name}: amallar", { name })}
-            className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 data-popup-open:bg-surface mr-1 inline-flex size-9 shrink-0 items-center justify-center rounded-full opacity-0 outline-none group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-3 data-popup-open:opacity-100 pointer-coarse:hidden"
+            className="text-muted hover:text-text hover:bg-surface focus-visible:ring-ring/50 data-popup-open:bg-surface mr-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full outline-none pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-3 data-popup-open:opacity-100"
           >
             <MoreHorizontal className="size-4" />
           </DropdownMenuTrigger>
@@ -253,31 +133,5 @@ export function ConversationRow({ conversation: c, active }: { conversation: Con
         </div>
       </ResponsiveDialog>
     </div>
-  );
-}
-
-function SwipeAction({
-  label,
-  className,
-  onClick,
-  children,
-}: {
-  label: string;
-  className: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  const t = useT();
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      tabIndex={-1}
-      style={{ width: ACTION_WIDTH }}
-      className={cn("flex flex-col items-center justify-center gap-1 text-[12px] font-medium", className)}
-    >
-      {children}
-      {t(label)}
-    </button>
   );
 }
