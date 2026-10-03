@@ -302,3 +302,6 @@
 - Web Push: DB triggers (messages, notifications) -> pg_net -> `/api/push` -> `web-push` -> `public/sw.js`. Migration 27 adds `push_subscriptions`, `push_settings`, `save_push_subscription`, `send_push`, `send_test_push`, `push_drop`. No service-role key; the webhook uses a shared secret.
 - UI: Settings "Bildirishnomalar" card (on/off + test), `PushPrompt` card after 8s (asks once; the browser dialog appears only after the click). Texts follow the device language.
 - Needs env vars + SQL from `docs/PUSH.md` before it does anything; without the `push_settings` row the triggers are no-ops.
+## Home: Tavsiya / Do'stlar
+- `/home` has two tabs (`?feed=friends`). "Tavsiya": ranks the newest 100 posts with `lib/feed-rank.ts` (about 70% of slots go to posts from the last 48h, likes/comments/views and recency order inside each group, max 2 posts per author per page, unseen posts get a boost). "Do'stlar": posts of accepted connections, newest first, paged with `before`.
+- Post card is more compact (p-4, media max height 18-20rem). No DB changes.

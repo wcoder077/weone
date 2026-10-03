@@ -763,4 +763,10 @@ export const en: Dictionary = {
   "Yoqish": "Turn on",
   "iPhone'da bildirishnoma olish uchun saytni Bosh ekranga qo'shing: Ulashish, so'ng «Bosh ekranga qo'shish». Keyin ilovani shu yerdan oching.": "To get notifications on iPhone, add the site to your Home Screen: Share, then “Add to Home Screen”. Then open the app from there.",
   "{actor} ishtirokingizni tasdiqladi": "{actor} confirmed your involvement",
+  "Bog'langan odamlaringiz post yozsa, shu yerda chiqadi.": "When people you are connected with post, it shows up here.",
+  "Do'stlar": "Friends",
+  "Do'stlaringiz postlari yo'q": "No posts from your friends",
+  "Maqsaddoshlar bilan bog'laning: ularning postlari shu yerda chiqadi.": "Connect with like-minded people: their posts show up here.",
+  "Postlar turi": "Post type",
+  "Tavsiya": "For you",
 };
