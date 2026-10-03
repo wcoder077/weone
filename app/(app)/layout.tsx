@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { NavigationTracker } from "@/components/shared/back-link";
 import { redirect } from "next/navigation";
 import { BarsVisibilityProvider } from "@/components/layout/bars-visibility";
+import { PushPrompt } from "@/components/push/push-prompt";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { OnlinePresenceProvider } from "@/components/layout/online-presence";
 import { Navbar } from "@/components/layout/navbar";
@@ -42,6 +43,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           </main>
           <MobileTabBar username={me.username} />
           <NavigationTracker />
+          <PushPrompt />
         </BarsVisibilityProvider>
       </OnlinePresenceProvider>
     </UnreadMessagesProvider>

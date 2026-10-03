@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, LogOut, UserPen } from "lucide-react";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { PushToggle } from "@/components/push/push-toggle";
 import { BackLink } from "@/components/shared/back-link";
 import { SectionCard } from "@/components/shared/section-card";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
@@ -25,6 +26,9 @@ export default async function SettingsPage() {
           <p className="text-muted text-[14px]">{t("Tanlov shu qurilmada saqlanadi.")}</p>
           <LanguageSwitcher />
         </div>
+      </SectionCard>
+      <SectionCard title={t("Bildirishnomalar")}>
+        <PushToggle />
       </SectionCard>
       <SectionCard title={t("Ko'rinish")}>
         <div className="flex flex-col gap-3">
