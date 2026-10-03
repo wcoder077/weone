@@ -14,10 +14,10 @@ export const MESSAGE_IMAGE = {
 
 export type Attachment = { path: string; previewUrl: string };
 
-// One optional image for a message. Uploads to the private bucket
-// message-images/<userId>/<uuid>.<ext> right away; the bucket itself rejects
+// One optional image (for a message, by default). Uploads to the private bucket
+// <bucket>/<userId>/<uuid>.<ext> right away; the bucket itself rejects
 // other types and files over 5 MB.
-export function useImageAttachment(userId: string, initial: Attachment | null) {
+export function useImageAttachment(userId: string, initial: Attachment | null, bucket = "message-images") {
   const [attachment, setAttachment] = useState(initial);
   const [uploading, setUploading] = useState(false);
   // Uploads made in this session; removed again if they end up unused.
@@ -34,7 +34,7 @@ export function useImageAttachment(userId: string, initial: Attachment | null) {
       return toast.error("Rasm 5 MB dan kichik bo'lsin");
     }
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-    const { error } = await createClient().storage.from("message-images").upload(path, file, { contentType: file.type });
+    const { error } = await createClient().storage.from(bucket).upload(path, file, { contentType: file.type });
     setUploading(false);
     if (error) return toast.error("Rasmni yuklab bo'lmadi");
 
@@ -46,8 +46,8 @@ export function useImageAttachment(userId: string, initial: Attachment | null) {
   const cleanup = useCallback((keep: string | null) => {
     const stale = [...uploaded.current].filter((p) => p !== keep);
     uploaded.current.clear();
-    if (stale.length) void createClient().storage.from("message-images").remove(stale);
-  }, []);
+    if (stale.length) void createClient().storage.from(bucket).remove(stale);
+  }, [bucket]);
 
   return { attachment, setAttachment, uploading, attach, cleanup };
 }
