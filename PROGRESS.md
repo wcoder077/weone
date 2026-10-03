@@ -298,3 +298,7 @@
 - `node scripts/i18n-keys.mjs` (also `pnpm i18n`) lists every UI text missing from `en.ts` / `ru.ts` (currently none). Metadata (title, description, link preview) follows the language; Telegram previews stay Uzbek (no cookie).
 - Not translated: user content (posts, names, bios), skill names, city names inside sentences, email templates in Supabase.
 - LinkifiedText is a client component: it was a server component with an onClick handler, so any server-rendered text with a link (profile bio, journey/project descriptions) crashed the page. I18nProvider keeps one dictionary object per language: a new object on every router.refresh() changed t, re-ran the chat effect and caused an endless markRead/refresh loop.
+## Push notifications
+- Web Push: DB triggers (messages, notifications) -> pg_net -> `/api/push` -> `web-push` -> `public/sw.js`. Migration 27 adds `push_subscriptions`, `push_settings`, `save_push_subscription`, `send_push`, `send_test_push`, `push_drop`. No service-role key; the webhook uses a shared secret.
+- UI: Settings "Bildirishnomalar" card (on/off + test), `PushPrompt` card after 8s (asks once; the browser dialog appears only after the click). Texts follow the device language.
+- Needs env vars + SQL from `docs/PUSH.md` before it does anything; without the `push_settings` row the triggers are no-ops.

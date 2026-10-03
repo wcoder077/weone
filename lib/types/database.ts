@@ -661,6 +661,18 @@ export type Database = {
           },
         ]
       }
+      push_subscriptions: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          lang: string
+          user_id: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
       profiles: {
         Row: {
           available: boolean
@@ -1098,6 +1110,12 @@ export type Database = {
         Args: { p_addressee: string; p_body: string; p_image_path?: string }
         Returns: string
       }
+      push_drop: { Args: { p_endpoints: string[]; p_secret: string }; Returns: number }
+      save_push_subscription: {
+        Args: { p_auth: string; p_endpoint: string; p_lang: string; p_p256dh: string }
+        Returns: undefined
+      }
+      send_test_push: { Args: Record<string, never>; Returns: undefined }
       start_conversation: { Args: { other_user: string }; Returns: string }
       update_connection_request: {
         Args: { p_body: string; p_connection_id: string; p_image_path?: string }
