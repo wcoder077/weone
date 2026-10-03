@@ -772,4 +772,6 @@ export const ru: Dictionary = {
   "Postlar bo'limlari": "Разделы постов",
   "Postlarim": "Мои посты",
   "Repostlarim": "Мои репосты",
+  "Kirish emaili": "Email для входа",
+  "Faqat siz ko'rasiz. Boshqalarga ko'rinmaydi.": "Видите только вы. Другим не показывается.",
 };
