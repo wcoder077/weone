@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, Settings, User } from "lucide-react";
+import { LifeBuoy, LogOut, Settings, User } from "lucide-react";
 import { signOut } from "@/lib/actions/auth";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import {
@@ -23,7 +23,7 @@ export function HeaderActions({ me }: { me: Me }) {
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label={t("Profil menyusi")}
-          className="focus-visible:ring-ring/50 inline-flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3"
+          className="focus-visible:ring-ring/50 inline-flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3 max-lg:hidden"
         >
           <UserAvatar name={me.fullName} url={me.avatarUrl} size="sm" />
         </DropdownMenuTrigger>
@@ -34,6 +34,9 @@ export function HeaderActions({ me }: { me: Me }) {
           <DropdownMenuItem render={<Link href="/settings" />}>
             <Settings aria-hidden />
             {t("Sozlamalar")}</DropdownMenuItem>
+          <DropdownMenuItem render={<Link href="/support" />}>
+            <LifeBuoy aria-hidden />
+            {t("Yordam va qo'llab-quvvatlash")}</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => void signOut()}>
             <LogOut aria-hidden />

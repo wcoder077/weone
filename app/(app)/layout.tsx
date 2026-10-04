@@ -41,7 +41,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
               <PageFade>{children}</PageFade>
             </SwipeNavigation>
           </main>
-          <MobileTabBar username={me.username} />
+          <MobileTabBar me={me} />
           <NavigationTracker />
           <PushPrompt />
         </BarsVisibilityProvider>

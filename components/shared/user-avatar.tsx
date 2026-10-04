@@ -5,6 +5,7 @@ import { DEFAULT_AVATAR } from "@/lib/url";
 import { cn } from "@/lib/utils";
 
 const SIZES = {
+  xs: "size-6 text-[10px]",
   sm: "size-8 text-[12px]",
   md: "size-10 text-[13px]",
   lg: "size-12 text-[15px]",
@@ -22,6 +23,7 @@ export function UserAvatar({
   url,
   size = "md",
   userId,
+  preview = true,
   className,
 }: {
   name: string;
@@ -29,6 +31,8 @@ export function UserAvatar({
   size?: keyof typeof SIZES;
   /** Shows the green "online" dot while this user is online. */
   userId?: string;
+  /** A real photo opens large on press-and-hold. Off where holding already does something else (the profile tab). */
+  preview?: boolean;
   className?: string;
 }) {
   const avatar = (
@@ -40,8 +44,7 @@ export function UserAvatar({
   );
   return (
     <span className={cn("relative inline-flex shrink-0", className)}>
-      {/* A real photo opens large on press-and-hold. */}
-      {url ? (
+      {url && preview ? (
         <AvatarPreview url={url} name={name}>
           {avatar}
         </AvatarPreview>
