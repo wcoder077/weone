@@ -8,6 +8,7 @@ import { PostBody } from "./post-body";
 import { PostActions } from "./post-actions";
 import { PostMediaView } from "./post-media-view";
 import { PostMoreMenu } from "./post-more-menu";
+import { SharePostButton } from "./share-post-button";
 import { PostViews } from "./post-views";
 import { getT } from "@/lib/i18n/server";
 
@@ -46,6 +47,7 @@ export async function PostCard({ post, isMine, expanded = false }: { post: FeedP
           <MessageCircle className="size-5" aria-hidden />
           <span className="tabular-nums">{formatCount(post.commentCount)}</span>
         </Link>
+        <SharePostButton postId={post.id} author={post.author.full_name} body={post.body} />
         <span className="ml-auto">
           <PostMoreMenu postId={post.id} />
         </span>
