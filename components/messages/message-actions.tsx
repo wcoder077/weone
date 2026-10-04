@@ -13,6 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { REACTION_EMOJIS } from "@/lib/reactions";
+import { cn } from "@/lib/utils";
 import { useT } from "@/components/i18n/i18n-provider";
 
 // Edit/delete handlers, passed only for my own messages.
@@ -28,12 +30,15 @@ type Props = {
   menuOpen: boolean;
   onMenuOpenChange: (open: boolean) => void;
   onReply?: () => void;
+  /** The reaction row at the top of the menu; `myReaction` is highlighted, picking it again takes it back. */
+  onReact?: (emoji: string | null) => void;
+  myReaction?: string;
   own?: OwnMessageHandlers;
 };
 
 // Message menu: reply, copy, and for my own messages edit (sheet) and delete (confirmation).
 // Opened from the hover button on desktop or by long-press on the bubble (see useLongPress).
-export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, onReply, own }: Props) {
+export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, onReply, onReact, myReaction, own }: Props) {
   const t = useT();
   const [dialog, setDialog] = useState<"edit" | "delete" | null>(null);
   const [deleting, startDelete] = useTransition();
@@ -67,6 +72,28 @@ export function MessageActions({ messageId, body, menuOpen, onMenuOpenChange, on
           <MoreHorizontal className="size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
+          {onReact ? (
+            <div role="group" aria-label={t("Reaksiya")} className="flex gap-0.5 px-1 py-1">
+              {REACTION_EMOJIS.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  onClick={() => {
+                    onReact(emoji === myReaction ? null : emoji);
+                    onMenuOpenChange(false);
+                  }}
+                  aria-pressed={emoji === myReaction}
+                  aria-label={emoji}
+                  className={cn(
+                    "hover:bg-surface focus-visible:ring-ring/50 inline-flex size-9 items-center justify-center rounded-full text-[20px] outline-none focus-visible:ring-3",
+                    emoji === myReaction && "bg-primary/15",
+                  )}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          ) : null}
           {onReply ? (
             <DropdownMenuItem onClick={onReply}>
               <Reply aria-hidden />

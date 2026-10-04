@@ -535,12 +535,56 @@ export type Database = {
           },
         ]
       }
+      message_reactions: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          emoji: string
+          message_id: string
+          user_id: string
+        }
+        Insert: {
+          emoji: string
+          message_id: string
+        }
+        Update: {
+          emoji?: string
+        }
+        Relationships: []
+      }
+      post_media: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          path: string
+          position: number
+          post_id: string
+        }
+        Insert: {
+          name: string
+          path: string
+          position: number
+          post_id: string
+        }
+        Update: Record<string, never>
+        Relationships: [
+          {
+            foreignKeyName: "post_media_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_comments: {
         Row: {
           author_id: string
           body: string
           created_at: string
           id: string
+          parent_id: string | null
           post_id: string
         }
         Insert: {
@@ -548,6 +592,7 @@ export type Database = {
           body: string
           created_at?: string
           id?: string
+          parent_id?: string | null
           post_id: string
         }
         Update: {
@@ -1150,6 +1195,8 @@ export type Database = {
         Returns: undefined
       }
       send_test_push: { Args: Record<string, never>; Returns: undefined }
+      remove_connection: { Args: { p_connection_id: string }; Returns: undefined }
+      reconnect_request: { Args: { p_connection_id: string }; Returns: undefined }
       start_conversation: { Args: { other_user: string }; Returns: string }
       update_connection_request: {
         Args: { p_body: string; p_connection_id: string; p_image_path?: string }

@@ -33,7 +33,7 @@ export async function PostCard({ post, isMine, expanded = false }: { post: FeedP
       </header>
 
       {post.body ? <PostBody body={post.body} expanded={expanded} /> : null}
-      {post.media ? <PostMediaView media={post.media} /> : null}
+      {post.media ? <PostMediaView media={post.media} more={post.moreMedia} /> : null}
       {post.original ? <EmbeddedOriginal original={post.original} /> : null}
 
       <footer className="-mx-2 -mb-2 flex items-center">
@@ -77,7 +77,7 @@ async function EmbeddedOriginal({ original }: { original: EmbeddedPost }) {
         </time>
       </Link>
       {original.body ? <PostBody body={original.body} small /> : null}
-      {original.media ? <PostMediaView media={original.media} /> : null}
+      {original.media ? <PostMediaView media={original.media} more={original.moreMedia} /> : null}
     </div>
   );
 }

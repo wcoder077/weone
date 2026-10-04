@@ -111,6 +111,33 @@ export async function cancelConnectionRequest(connectionId: string): Promise<Act
   return { message: "So'rov bekor qilindi" };
 }
 
+// Ends an accepted connection. The row stays ("removed"): the chat history is kept on both sides, but
+// nobody can write in it until the two connect again.
+export async function removeConnection(connectionId: string): Promise<ActionState> {
+  await requireUserId();
+  if (!idSchema.safeParse(connectionId).success) return { error: FAILED };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("remove_connection", { p_connection_id: connectionId });
+  if (error) return { error: error.code === "P0002" ? "Bog'lanish allaqachon uzilgan." : FAILED };
+
+  refresh();
+  return { message: "Bog'lanish uzildi" };
+}
+
+// After a removal either side can ask again; the other person accepts or rejects as with any request.
+export async function reconnect(connectionId: string): Promise<ActionState> {
+  await requireUserId();
+  if (!idSchema.safeParse(connectionId).success) return { error: FAILED };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("reconnect_request", { p_connection_id: connectionId });
+  if (error) return { error: error.code === "P0002" ? requestError("P0002") : FAILED };
+
+  refresh();
+  return { message: "So'rov yuborildi" };
+}
+
 export async function respondConnectionRequest(connectionId: string, accept: boolean): Promise<ActionState> {
   await requireUserId();
   if (!idSchema.safeParse(connectionId).success) return { error: FAILED };

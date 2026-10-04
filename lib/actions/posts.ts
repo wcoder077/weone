@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 import { requireUserId } from "@/lib/auth";
-import { POST_MEDIA_BUCKET } from "@/lib/post-media";
+import { POST_MAX_PHOTOS, POST_MEDIA_BUCKET } from "@/lib/post-media";
 import { createClient } from "@/lib/supabase/server";
 import { commentSchema, postBodySchema, postCaptionSchema } from "@/lib/validation/post";
 import { insertError, POST_LIMIT_TEXT } from "@/lib/rate-limit";
@@ -16,35 +16,54 @@ const FAILED = "Saqlab bo'lmadi. Qayta urinib ko'ring.";
 // the database re-checks the path shape and that the object exists.
 export type PostMediaInput = { path: string; name: string; kind: "image" | "video" };
 
-export async function createPost(body: string, media?: PostMediaInput): Promise<ActionState> {
+const mediaItemSchema = (userId: string) =>
+  z.object({
+    path: z.string().regex(new RegExp(`^${userId}/[0-9a-f-]{36}\\.[a-z0-9]{1,5}$`)),
+    name: z.string().trim().min(1).max(120),
+    kind: z.enum(["image", "video"]),
+  });
+
+// The first file is the post's cover (columns on `posts`, as before); further photos are rows of `post_media`.
+export async function createPost(body: string, media: PostMediaInput[] = []): Promise<ActionState> {
   const userId = await requireUserId();
   const text = postCaptionSchema.safeParse(body);
   if (!text.success) return { error: text.error.issues[0]?.message ?? FAILED };
-  if (!text.data && !media) return { error: "Post bo'sh bo'lmasin" };
+  if (!text.data && media.length === 0) return { error: "Post bo'sh bo'lmasin" };
 
-  const mediaFields = media
-    ? z
-        .object({
-          path: z.string().regex(new RegExp(`^${userId}/[0-9a-f-]{36}\\.[a-z0-9]{1,5}$`)),
-          name: z.string().trim().min(1).max(120),
-          kind: z.enum(["image", "video"]),
-        })
-        .safeParse(media)
-    : null;
-  if (mediaFields && !mediaFields.success) return { error: FAILED };
+  const files = z.array(mediaItemSchema(userId)).max(POST_MAX_PHOTOS).safeParse(media);
+  if (!files.success) return { error: FAILED };
+  const [cover, ...extras] = files.data;
+  if (extras.length > 0 && (cover.kind !== "image" || extras.some((file) => file.kind !== "image"))) {
+    return { error: "Bir nechta fayl faqat rasm bo'lishi mumkin." };
+  }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("posts").insert({
-    author_id: userId,
-    body: text.data,
-    ...(mediaFields?.success
-      ? { media_path: mediaFields.data.path, media_name: mediaFields.data.name, media_type: mediaFields.data.kind }
-      : {}),
-  });
+  // Don't leave unused uploads behind if the post could not be saved.
+  const discardUploads = () => supabase.storage.from(POST_MEDIA_BUCKET).remove(files.data.map((file) => file.path));
+
+  const { data: post, error } = await supabase
+    .from("posts")
+    .insert({
+      author_id: userId,
+      body: text.data,
+      ...(cover ? { media_path: cover.path, media_name: cover.name, media_type: cover.kind } : {}),
+    })
+    .select("id")
+    .single();
   if (error) {
-    // Don't leave an unused upload behind.
-    if (mediaFields?.success) await supabase.storage.from(POST_MEDIA_BUCKET).remove([mediaFields.data.path]);
+    if (files.data.length > 0) await discardUploads();
     return { error: insertError(error, FAILED, POST_LIMIT_TEXT) };
+  }
+
+  if (extras.length > 0) {
+    const { error: extrasError } = await supabase
+      .from("post_media")
+      .insert(extras.map((file, index) => ({ post_id: post.id, position: index + 1, path: file.path, name: file.name })));
+    if (extrasError) {
+      await supabase.from("posts").delete().eq("id", post.id);
+      await discardUploads();
+      return { error: FAILED };
+    }
   }
 
   refresh();
@@ -99,6 +118,8 @@ export async function deletePost(postId: string): Promise<ActionState> {
   if (!idSchema.safeParse(postId).success) return { error: FAILED };
 
   const supabase = await createClient();
+  // The extra photos disappear with the post row (cascade), so note their files first.
+  const { data: extras } = await supabase.from("post_media").select("path").eq("post_id", postId);
   const { data, error } = await supabase
     .from("posts")
     .delete()
@@ -107,8 +128,8 @@ export async function deletePost(postId: string): Promise<ActionState> {
     .select("id, media_path");
   if (error || data.length === 0) return { error: "O'chirib bo'lmadi." };
 
-  // The post is gone; remove its photo/video too.
-  const paths = data.flatMap((p) => (p.media_path ? [p.media_path] : []));
+  // The post is gone; remove its photos/video too.
+  const paths = [...data.flatMap((p) => (p.media_path ? [p.media_path] : [])), ...(extras ?? []).map((row) => row.path)];
   if (paths.length) await supabase.storage.from(POST_MEDIA_BUCKET).remove(paths);
 
   refresh();
@@ -141,18 +162,21 @@ export async function toggleLike(postId: string): Promise<LikeResult> {
   return { liked, count: data?.like_count ?? 0 };
 }
 
-export async function addComment(postId: string, body: string): Promise<ActionState> {
+// `parentId`: a reply to a top-level comment of the same post (the database allows one level only).
+export async function addComment(postId: string, body: string, parentId?: string): Promise<ActionState> {
   const userId = await requireUserId();
   const parsed = commentSchema.safeParse(body);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? FAILED };
-  if (!idSchema.safeParse(postId).success) return { error: FAILED };
+  if (!idSchema.safeParse(postId).success || (parentId !== undefined && !idSchema.safeParse(parentId).success)) return { error: FAILED };
 
   const supabase = await createClient();
-  const { error } = await supabase.from("post_comments").insert({ post_id: postId, author_id: userId, body: parsed.data });
+  const { error } = await supabase
+    .from("post_comments")
+    .insert({ post_id: postId, author_id: userId, body: parsed.data, parent_id: parentId ?? null });
   if (error) return { error: insertError(error, "Izohni yuborib bo'lmadi.") };
 
   refresh();
-  return { message: "Izoh qo'shildi" };
+  return { message: parentId ? "Javob qo'shildi" : "Izoh qo'shildi" };
 }
 
 // RLS: the commenter or the post's author.

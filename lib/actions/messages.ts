@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { z } from "zod";
+import { isReactionEmoji } from "@/lib/reactions";
 import { requireUserId } from "@/lib/auth";
 import { ATTACHMENT_BUCKET, ATTACHMENT_KINDS, ATTACHMENT_MAX_BYTES, ATTACHMENTS_ENABLED } from "@/lib/attachments";
 import { toChatMessage, type ChatMessage } from "@/lib/queries/messages";
@@ -194,4 +195,30 @@ export async function setConversationPinned(conversationId: string, pinned: bool
 export async function hideConversation(conversationId: string) {
   const now = new Date().toISOString();
   return updateMySettings(conversationId, { hidden_at: now, last_read_at: now, pinned_at: null });
+}
+
+// One reaction per person per message; `null` takes it back. RLS: members of the chat only.
+export async function reactToMessage(messageId: string, emoji: string | null): Promise<{ error?: string }> {
+  const userId = await requireUserId();
+  const FAILED = "Reaksiyani saqlab bo'lmadi.";
+  if (!idSchema.safeParse(messageId).success || (emoji !== null && !isReactionEmoji(emoji))) return { error: FAILED };
+
+  const supabase = await createClient();
+  if (emoji === null) {
+    const { error } = await supabase.from("message_reactions").delete().eq("message_id", messageId).eq("user_id", userId);
+    return error ? { error: FAILED } : {};
+  }
+
+  // Change my reaction if I have one, otherwise add it (not an upsert: its conflict clause would rewrite message_id).
+  const { data, error } = await supabase
+    .from("message_reactions")
+    .update({ emoji })
+    .eq("message_id", messageId)
+    .eq("user_id", userId)
+    .select("message_id");
+  if (error) return { error: FAILED };
+  if (data.length > 0) return {};
+
+  const { error: insertError } = await supabase.from("message_reactions").insert({ message_id: messageId, emoji });
+  return insertError ? { error: insertError.message === "rate_limited" ? "Juda tez. Biroz kutib, qayta urinib ko'ring." : FAILED } : {};
 }

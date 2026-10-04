@@ -5,7 +5,7 @@ import { z } from "zod";
 import { BackLink } from "@/components/shared/back-link";
 import { RetryErrorState } from "@/components/shared/retry-error-state";
 import { CommentForm } from "@/components/posts/comment-form";
-import { CommentItem } from "@/components/posts/comment-item";
+import { CommentThread, type CommentThreadItem } from "@/components/posts/comment-item";
 import { PostCard } from "@/components/posts/post-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireUserId } from "@/lib/auth";
@@ -58,11 +58,20 @@ async function Comments({ postId, postAuthorId, userId }: { postId: string; post
   }
   if (comments.length === 0) return <p className="text-muted text-[14px]">{t("Hali izoh yo'q. Birinchi bo'lib yozing.")}</p>;
 
+  // Top-level comments oldest first, each with its replies (also oldest first) underneath.
+  const itemOf = (comment: (typeof comments)[number]): CommentThreadItem => ({
+    comment,
+    canDelete: comment.author.id === userId || postAuthorId === userId,
+  });
+  const repliesOf = (parentId: string) => comments.filter((c) => c.parentId === parentId).map(itemOf);
+
   return (
-    <ul className="flex flex-col gap-4">
-      {comments.map((c) => (
-        <CommentItem key={c.id} comment={c} canDelete={c.author.id === userId || postAuthorId === userId} />
-      ))}
+    <ul className="flex flex-col gap-5">
+      {comments
+        .filter((c) => c.parentId === null)
+        .map((c) => (
+          <CommentThread key={c.id} postId={postId} item={itemOf(c)} replies={repliesOf(c.id)} />
+        ))}
     </ul>
   );
 }

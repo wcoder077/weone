@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ChevronDown, MessageCircle, Pencil, UserPlus, X } from "lucide-react";
+import { ChevronDown, MessageCircle, Pencil, UserMinus, UserPlus, X } from "lucide-react";
 import { toast } from "@/lib/toast";
-import { cancelConnectionRequest, openConversation, respondConnectionRequest } from "@/lib/actions/connections";
+import { cancelConnectionRequest, openConversation, reconnect, removeConnection, respondConnectionRequest } from "@/lib/actions/connections";
 import type { ActionState } from "@/lib/actions/types";
 import type { ConnectionState } from "@/lib/queries/social";
+import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -32,7 +33,7 @@ export function ConnectButton({
   className?: string;
 }) {
   const t = useT();
-  const [dialog, setDialog] = useState<"compose" | "edit" | "review" | null>(null);
+  const [dialog, setDialog] = useState<"compose" | "edit" | "review" | "remove" | null>(null);
   const [pending, startTransition] = useTransition();
   const run = (fn: () => Promise<ActionState>) =>
     startTransition(async () => {
@@ -111,9 +112,56 @@ export function ConnectButton({
 
     case "connected":
       return (
-        <Button className={className} disabled={pending} onClick={() => run(() => openConversation(userId))}>
-          <MessageCircle data-icon="inline-start" />
-          {t("Xabar yozish")}</Button>
+        <>
+          <span className={cn("flex gap-2", className)}>
+            <Button className="flex-1" disabled={pending} onClick={() => run(() => openConversation(userId))}>
+              <MessageCircle data-icon="inline-start" />
+              {t("Xabar yozish")}</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                disabled={pending}
+                aria-label={t("Bog'lanish amallari")}
+                render={<Button variant="outline" size="icon" />}
+              >
+                <ChevronDown />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-52">
+                <DropdownMenuItem variant="destructive" onClick={() => setDialog("remove")}>
+                  <UserMinus aria-hidden />
+                  {t("Bog'lanishni uzish")}</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </span>
+          <ResponsiveDialog
+            open={dialog === "remove"}
+            onOpenChange={close}
+            title={t("Bog'lanishni uzasizmi?")}
+            description={t("{name} bilan yozishuv tarixi saqlanadi, lekin yangi xabar yozib bo'lmaydi. Keyin qayta bog'lanish mumkin.", { name })}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" size="lg" onClick={() => setDialog(null)}>
+                {t("Bekor qilish")}</Button>
+              <Button
+                variant="destructive"
+                size="lg"
+                disabled={pending}
+                onClick={() => {
+                  setDialog(null);
+                  run(() => removeConnection(connection.connectionId));
+                }}
+              >
+                {t("Uzish")}
+              </Button>
+            </div>
+          </ResponsiveDialog>
+        </>
+      );
+
+    case "removed":
+      return (
+        <Button variant="outline" className={className} disabled={pending} onClick={() => run(() => reconnect(connection.connectionId))}>
+          <UserPlus data-icon="inline-start" />
+          {t("Qayta bog'lanish")}</Button>
       );
 
     case "rejected":
