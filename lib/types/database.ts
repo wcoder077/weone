@@ -861,6 +861,39 @@ export type Database = {
           },
         ]
       }
+      project_team_space: {
+        Row: {
+          chat_url: string | null
+          meeting_url: string | null
+          next_meeting_at: string | null
+          pinned_notice: string | null
+          pinned_notice_updated_at: string | null
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          chat_url?: string | null
+          meeting_url?: string | null
+          next_meeting_at?: string | null
+          pinned_notice?: string | null
+          project_id: string
+        }
+        Update: {
+          chat_url?: string | null
+          meeting_url?: string | null
+          next_meeting_at?: string | null
+          pinned_notice?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_team_space_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           category: string | null
@@ -1138,6 +1171,7 @@ export type Database = {
         Args: { p_addressee: string; p_body: string; p_image_path?: string }
         Returns: string
       }
+      is_project_member: { Args: { p_project_id: string }; Returns: boolean }
       is_admin: { Args: Record<string, never>; Returns: boolean }
       push_drop: { Args: { p_endpoints: string[]; p_secret: string }; Returns: number }
       save_push_subscription: {

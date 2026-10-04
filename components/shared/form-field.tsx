@@ -10,18 +10,22 @@ type FormFieldProps = {
   label: string;
   hint?: ReactNode;
   errors?: string[];
+  required?: boolean;
   className?: string;
   children: ReactNode;
 };
 
 // Label + control + hint/error. The control must use the same `id`
 // and `aria-describedby={`${id}-desc`}`.
-export function FormField({ id, label, hint, errors, className, children }: FormFieldProps) {
+export function FormField({ id, label, hint, errors, required, className, children }: FormFieldProps) {
   const t = useT();
   const error = errors?.[0];
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <Label htmlFor={id}>{t(label)}</Label>
+      <Label htmlFor={id}>
+        {t(label)}
+        {required ? <span aria-hidden className="text-danger"> *</span> : null}
+      </Label>
       {children}
       {error || hint ? (
         <p id={`${id}-desc`} className={cn("text-[13px]", error ? "text-danger" : "text-muted")}>

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireUserId } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { requireSupabaseEnv } from "@/lib/supabase/env";
+import { writeTeamSpace } from "@/lib/team-space-write";
 import { joinRequestSchema, projectSchema, slugify, type RoleInput } from "@/lib/validation/project";
 import { fieldErrorsOf, type ActionState } from "./types";
 
@@ -29,8 +30,7 @@ function parseProjectForm(formData: FormData) {
     status: formData.get("status"),
     city: formData.get("city") ?? "",
     is_online: formData.get("is_online") === "on",
-    github_url: formData.get("github_url") ?? "",
-    demo_url: formData.get("demo_url") ?? "",
+    chat_url: formData.get("chat_url") ?? "",
     logo_url: formData.get("logo_url") ?? "",
     skill_ids: formData.getAll("skill_ids"),
     roles,
@@ -95,6 +95,10 @@ async function syncRoles(supabase: Supabase, projectId: string, roles: RoleInput
   return null;
 }
 
+// The Telegram group link lives in the team space, which only members can read.
+const syncChatUrl = (supabase: Supabase, projectId: string, chatUrl: string | null) =>
+  writeTeamSpace(supabase, projectId, { chat_url: chatUrl });
+
 function isOwnLogo(url: string, projectId: string) {
   const { url: base } = requireSupabaseEnv();
   return url.startsWith(`${base}/storage/v1/object/public/project-logos/${projectId}/`);
@@ -105,7 +109,7 @@ export async function createProject(_prev: ActionState, formData: FormData): Pro
   const parsed = parseProjectForm(formData);
   if (!parsed.success) return fieldErrorsOf(parsed.error);
 
-  const { skill_ids, roles, ...fields } = parsed.data;
+  const { skill_ids, roles, chat_url, ...fields } = parsed.data;
   const supabase = await createClient();
   const { data: project, error } = await supabase
     .from("projects")
@@ -120,7 +124,10 @@ export async function createProject(_prev: ActionState, formData: FormData): Pro
     .single();
   if (error) return { error: SAVE_FAILED };
 
-  const linkError = (await syncStack(supabase, project.id, skill_ids)) ?? (await syncRoles(supabase, project.id, roles));
+  const linkError =
+    (await syncStack(supabase, project.id, skill_ids)) ??
+    (await syncRoles(supabase, project.id, roles)) ??
+    (await syncChatUrl(supabase, project.id, chat_url));
   if (linkError) return { error: SAVE_FAILED };
 
   redirect(`/projects/${project.slug}`);
@@ -136,7 +143,7 @@ export async function updateProject(_prev: ActionState, formData: FormData): Pro
     return { fieldErrors: { logo_url: ["Logoni qayta yuklang"] } };
   }
 
-  const { skill_ids, roles, ...fields } = parsed.data;
+  const { skill_ids, roles, chat_url, ...fields } = parsed.data;
   const supabase = await createClient();
   const { data: project, error } = await supabase
     .from("projects")
@@ -147,7 +154,10 @@ export async function updateProject(_prev: ActionState, formData: FormData): Pro
     .single();
   if (error) return { error: SAVE_FAILED };
 
-  const linkError = (await syncStack(supabase, project.id, skill_ids)) ?? (await syncRoles(supabase, project.id, roles));
+  const linkError =
+    (await syncStack(supabase, project.id, skill_ids)) ??
+    (await syncRoles(supabase, project.id, roles)) ??
+    (await syncChatUrl(supabase, project.id, chat_url));
   if (linkError) return { error: SAVE_FAILED };
 
   redirect(`/projects/${project.slug}`);

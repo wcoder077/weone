@@ -2,6 +2,7 @@ import { LinkifiedText } from "@/components/shared/linkified-text";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { JoinDialog } from "@/components/projects/join-dialog";
+import { ConnectedTeamSpace } from "@/components/projects/team-space-connected";
 import {
   CancelRequestButton,
   DecideRequestButtons,
@@ -19,6 +20,8 @@ import { requireUserId } from "@/lib/auth";
 import { memberRoleLabel } from "@/lib/constants";
 import { formatMonth } from "@/lib/format";
 import { getJoinRequests, getProject, type ProjectDetails } from "@/lib/queries/projects";
+import { getTeamSpace } from "@/lib/queries/team-space";
+import type { ViewerRole } from "@/lib/team-space";
 import { createClient } from "@/lib/supabase/server";
 import { BackLink } from "@/components/shared/back-link";
 import { getT } from "@/lib/i18n/server";
@@ -51,6 +54,9 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
   const pendingForOwner = isOwner ? requests.filter((r) => r.status === "pending") : [];
   const canAsk = !isMember && !myPending;
   const roleOptions = openRoles.map((r) => ({ id: r.id, title: r.title }));
+  // The team space is read only for members; for everyone else the database returns nothing.
+  const viewerRole: ViewerRole = isOwner ? "founder" : isMember ? "member" : "guest";
+  const space = viewerRole === "guest" ? null : await getTeamSpace(project.id).catch(() => null);
 
   return (
     <div className="flex flex-col gap-6">
@@ -72,6 +78,8 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           </span>
         ) : null}
       </ProjectHeader>
+
+      <ConnectedTeamSpace projectId={project.id} space={space} viewerRole={viewerRole} />
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="flex flex-col gap-6">
@@ -216,14 +224,6 @@ async function ProjectHeader({ project, children }: { project: ProjectDetails; c
           {project.owner ? (
             <Link href={`/u/${project.owner.username}`} className="hover:text-text whitespace-nowrap">
               {t("{name} tomonidan", { name: project.owner.full_name })}</Link>
-          ) : null}
-          {project.github_url ? (
-            <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-text">
-              {t("· GitHub")}</a>
-          ) : null}
-          {project.demo_url ? (
-            <a href={project.demo_url} target="_blank" rel="noopener noreferrer" className="hover:text-text">
-              {t("· Demo")}</a>
           ) : null}
         </p>
       </div>
