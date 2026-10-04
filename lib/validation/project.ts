@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PROJECT_STATUS_VALUES } from "@/lib/constants";
+import { optionalTelegramUrl } from "@/lib/team-space";
 
 const optionalText = (max: number) =>
   z
@@ -7,12 +8,6 @@ const optionalText = (max: number) =>
     .trim()
     .max(max, `Ko'pi bilan ${max} ta belgi`)
     .transform((v) => v || null);
-
-const optionalHttpsUrl = z
-  .string()
-  .trim()
-  .refine((v) => v === "" || (/^https:\/\//.test(v) && z.url().safeParse(v).success), "https:// bilan boshlanuvchi havola kiriting")
-  .transform((v) => v || null);
 
 export const roleSchema = z.object({
   id: z.guid().nullable(),
@@ -25,14 +20,14 @@ export type RoleInput = z.infer<typeof roleSchema>;
 
 export const projectSchema = z.object({
   name: z.string().trim().min(1, "Loyiha nomini kiriting").max(80, "Juda uzun"),
-  tagline: optionalText(140),
+  tagline: z.string().trim().min(1, "Loyihani bir jumlada tushuntiring").max(140, "Juda uzun"),
   description: optionalText(3000),
-  category: optionalText(40),
+  category: z.string().trim().min(1, "Sohani kiriting").max(40, "Juda uzun"),
   status: z.enum(PROJECT_STATUS_VALUES),
   city: optionalText(60),
   is_online: z.boolean(),
-  github_url: optionalHttpsUrl,
-  demo_url: optionalHttpsUrl,
+  // The group link is stored in the team space (members only), not on the project row.
+  chat_url: optionalTelegramUrl,
   logo_url: z.union([z.literal(""), z.url()]).transform((v) => v || null),
   skill_ids: z.array(z.guid()).max(15, "Ko'pi bilan 15 ta texnologiya"),
   roles: z.array(roleSchema).max(10, "Ko'pi bilan 10 ta rol"),

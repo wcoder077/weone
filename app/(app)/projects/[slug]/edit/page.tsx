@@ -4,6 +4,7 @@ import { ProjectForm } from "@/components/projects/project-form";
 import { requireUserId } from "@/lib/auth";
 import { getProject, getProjectCategories } from "@/lib/queries/projects";
 import { getAllSkills } from "@/lib/queries/skills";
+import { getTeamSpace } from "@/lib/queries/team-space";
 import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata() {
@@ -22,6 +23,7 @@ export default async function EditProjectPage({ params }: PageProps<"/projects/[
   ]);
   if (!project) notFound();
   if (project.owner_id !== userId) redirect(`/projects/${slug}`);
+  const space = await getTeamSpace(project.id).catch(() => null);
 
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6">
@@ -33,6 +35,7 @@ export default async function EditProjectPage({ params }: PageProps<"/projects/[
           categories={categories}
           initial={{
             ...project,
+            chat_url: space?.chatUrl ?? null,
             skill_ids: project.project_skills.map((s) => s.skill_id),
             roles: project.project_roles.map((r) => ({
               id: r.id,
