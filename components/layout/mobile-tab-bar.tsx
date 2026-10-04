@@ -6,11 +6,14 @@ import { cn } from "@/lib/utils";
 import { useBarsVisibility } from "./bars-visibility";
 import { UnreadBadge } from "@/components/shared/unread-badge";
 import { LinkPending } from "./link-pending";
+import { ProfileTab } from "./profile-tab";
+import type { Me } from "./types";
 import { useUnreadMessages } from "./unread-messages";
 import { isActive, isConversationPath, navItems } from "./nav-items";
 import { useT } from "@/components/i18n/i18n-provider";
 
-export function MobileTabBar({ username }: { username: string }) {
+export function MobileTabBar({ me }: { me: Me }) {
+  const username = me.username;
   const t = useT();
   const pathname = usePathname();
   const { hidden, revealOnKeyboardFocus } = useBarsVisibility();
@@ -45,6 +48,7 @@ export function MobileTabBar({ username }: { username: string }) {
       {navItems.map(({ href: itemHref, label, icon: Icon }) => {
         const href = itemHref === "/profile" ? `/u/${username}` : itemHref;
         const active = isActive(pathname, href);
+        if (itemHref === "/profile") return <ProfileTab key={href} me={me} href={href} active={active} />;
         return (
           <Link
             key={href}

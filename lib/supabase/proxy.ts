@@ -16,6 +16,7 @@ const PROTECTED_PREFIXES = [
   "/profile",
   "/u",
   "/settings",
+  "/support",
   "/onboarding",
 ];
 // Signed-in users skip these. /reset-password is NOT here: the recovery link signs the user in.

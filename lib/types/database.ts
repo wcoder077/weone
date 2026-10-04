@@ -1022,6 +1022,34 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          created_at: string
+          handled_at: string | null
+          handled_by: string | null
+          id: string
+          image_path: string | null
+          message: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          image_path?: string | null
+          message: string
+        }
+        Update: {
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_skills: {
         Row: {
           level: string
@@ -1188,6 +1216,7 @@ export type Database = {
         Args: { p_addressee: string; p_body: string; p_image_path?: string }
         Returns: string
       }
+      is_admin: { Args: Record<string, never>; Returns: boolean }
       is_project_member: { Args: { p_project_id: string }; Returns: boolean }
       push_drop: { Args: { p_endpoints: string[]; p_secret: string }; Returns: number }
       save_push_subscription: {

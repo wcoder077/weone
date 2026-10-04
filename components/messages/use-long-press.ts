@@ -8,7 +8,7 @@ const MOVE_TOLERANCE_PX = 10;
 // Touch/pen hold → `onLongPress`. Scrolling cancels it (pointercancel / movement).
 // The context-menu event (Android long-press, desktop right-click) opens the same
 // action instead of the browser's native menu.
-export function useLongPress(onLongPress: () => void) {
+export function useLongPress(onLongPress: () => void, holdMs = HOLD_MS) {
   const timer = useRef<number | null>(null);
   const origin = useRef<{ x: number; y: number } | null>(null);
 
@@ -26,7 +26,7 @@ export function useLongPress(onLongPress: () => void) {
       timer.current = window.setTimeout(() => {
         timer.current = null;
         onLongPress();
-      }, HOLD_MS);
+      }, holdMs);
     },
     onPointerMove(e: PointerEvent) {
       const start = origin.current;
