@@ -87,12 +87,20 @@ create policy "message_reactions: remove own"
   on public.message_reactions for delete to authenticated
   using (user_id = (select auth.uid()));
 
-insert into public.rate_limits (table_name, max_rows, time_window)
-values ('message_reactions', 60, '1 minute')
-on conflict (table_name) do nothing;
+-- At most 60 reactions per minute per person. This uses the rate limit tables of migration 24,
+-- so it is added only where they exist (without them nothing else here depends on it).
+do $$
+begin
+  if to_regclass('public.rate_limits') is not null and to_regprocedure('public.enforce_rate_limit()') is not null then
+    insert into public.rate_limits (table_name, max_rows, time_window)
+    values ('message_reactions', 60, '1 minute')
+    on conflict (table_name) do nothing;
 
-create trigger message_reactions_rate_limit before insert on public.message_reactions
-  for each row execute function public.enforce_rate_limit('user_id');
+    create trigger message_reactions_rate_limit before insert on public.message_reactions
+      for each row execute function public.enforce_rate_limit('user_id');
+  end if;
+end;
+$$;
 
 alter publication supabase_realtime add table public.message_reactions;
 
