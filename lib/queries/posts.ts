@@ -7,7 +7,7 @@ export const FEED_PAGE = 20;
 const RANK_POOL = 100;
 
 const AUTHOR = "author:profiles!posts_author_id_fkey(id, username, full_name, avatar_url, headline)";
-const POST_FIELDS = `id, body, created_at, edited_at, media_path, media_type, media_name, repost_of, like_count, comment_count, view_count, repost_count, ${AUTHOR}`;
+const POST_FIELDS = `id, body, created_at, edited_at, media_path, media_type, media_name, repost_of, like_count, comment_count, view_count, repost_count, post_media(position, path, name), ${AUTHOR}`;
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 type PostRow = {
@@ -23,6 +23,7 @@ type PostRow = {
   comment_count: number;
   view_count: number;
   repost_count: number;
+  post_media: { position: number; path: string; name: string }[];
   author: { id: string; username: string; full_name: string; avatar_url: string | null; headline: string | null } | null;
 };
 
@@ -36,6 +37,8 @@ export type EmbeddedPost = {
   createdAt: string;
   author: PostAuthor;
   media: PostMedia | null;
+  // More photos of the same post (a carousel), after `media`.
+  moreMedia: PostMedia[];
 };
 
 export type FeedPost = {
@@ -45,6 +48,7 @@ export type FeedPost = {
   editedAt: string | null;
   author: PostAuthor;
   media: PostMedia | null;
+  moreMedia: PostMedia[];
   original: EmbeddedPost | null;
   likeCount: number;
   commentCount: number;
@@ -73,13 +77,22 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
   const originals = new Map((originalsRes.data ?? []).map((o) => [o.id, o]));
   const liked = new Set((likesRes.data ?? []).map((l) => l.post_id));
 
-  const paths = [...rows, ...originals.values()].flatMap((p) => (p.media_path ? [p.media_path] : []));
+  const paths = [...rows, ...originals.values()].flatMap((p) => [...(p.media_path ? [p.media_path] : []), ...p.post_media.map((m) => m.path)]);
   const urls = mediaUrls(supabase, paths);
 
   function mediaOf(p: PostRow): PostMedia | null {
     const kind = p.media_type === "image" || p.media_type === "video" ? p.media_type : null;
     const url = p.media_path ? urls.get(p.media_path) : undefined;
     return url && kind && p.media_name ? { url, kind, name: p.media_name } : null;
+  }
+
+  function moreMediaOf(p: PostRow): PostMedia[] {
+    return p.post_media
+      .toSorted((a, b) => a.position - b.position)
+      .flatMap((m) => {
+        const url = urls.get(m.path);
+        return url ? [{ url, kind: "image" as const, name: m.name }] : [];
+      });
   }
 
   return rows.flatMap((r) => {
@@ -93,8 +106,16 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
         editedAt: r.edited_at,
         author: r.author,
         media: mediaOf(r),
+        moreMedia: moreMediaOf(r),
         original: original?.author
-          ? { id: original.id, body: original.body, createdAt: original.created_at, author: original.author, media: mediaOf(original) }
+          ? {
+              id: original.id,
+              body: original.body,
+              createdAt: original.created_at,
+              author: original.author,
+              media: mediaOf(original),
+              moreMedia: moreMediaOf(original),
+            }
           : null,
         likeCount: r.like_count,
         commentCount: r.comment_count,
@@ -204,6 +225,7 @@ export type PostComment = {
   id: string;
   body: string;
   createdAt: string;
+  parentId: string | null;
   author: { id: string; username: string; full_name: string; avatar_url: string | null };
 };
 
@@ -212,7 +234,7 @@ export async function getComments(postId: string): Promise<PostComment[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("post_comments")
-    .select("id, body, created_at, author_id")
+    .select("id, body, created_at, author_id, parent_id")
     .eq("post_id", postId)
     .order("created_at", { ascending: true })
     .limit(200);
@@ -228,6 +250,6 @@ export async function getComments(postId: string): Promise<PostComment[]> {
 
   return data.flatMap((c) => {
     const author = byId.get(c.author_id);
-    return author ? [{ id: c.id, body: c.body, createdAt: c.created_at, author }] : [];
+    return author ? [{ id: c.id, body: c.body, createdAt: c.created_at, parentId: c.parent_id, author }] : [];
   });
 }

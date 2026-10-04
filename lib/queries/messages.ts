@@ -2,6 +2,7 @@ import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { messagePreview } from "@/lib/message-preview";
 import { readStatus } from "@/lib/read-status";
 import { getT } from "@/lib/i18n/server";
+import type { ChatReaction } from "@/lib/reactions";
 import { signedUrls } from "@/lib/signed-urls";
 import { createClient } from "@/lib/supabase/server";
 
@@ -86,7 +87,7 @@ const MESSAGE_FIELDS =
 export async function getConversation(conversationId: string, userId: string) {
   const t = await getT();
   const supabase = await createClient();
-  const [members, messages, conversation] = await Promise.all([
+  const [members, messages, conversation, reactions] = await Promise.all([
     supabase
       .from("conversation_members")
       .select(`user_id, hidden_at, last_read_at, profiles(${PROFILE_FIELDS}, headline)`)
@@ -102,9 +103,17 @@ export async function getConversation(conversationId: string, userId: string) {
       .select("connections(id, status, requester_id)")
       .eq("id", conversationId)
       .maybeSingle(),
+    supabase.from("message_reactions").select("message_id, user_id, emoji").eq("conversation_id", conversationId),
   ]);
   if (members.error) throw members.error;
   if (messages.error) throw messages.error;
+  // Reactions are a bonus: if they fail to load, the chat still opens.
+  const reactionsByMessage = new Map<string, ChatReaction[]>();
+  for (const row of reactions.data ?? []) {
+    const list = reactionsByMessage.get(row.message_id) ?? [];
+    list.push({ userId: row.user_id, emoji: row.emoji });
+    reactionsByMessage.set(row.message_id, list);
+  }
   const mine = members.data.find((m) => m.user_id === userId);
   if (!mine) return null;
   // "Deleted for me": older messages are gone from my side only.
@@ -146,6 +155,7 @@ export async function getConversation(conversationId: string, userId: string) {
       .map((m) => ({
         ...toChatMessage(m, m.attachment_path ? attachmentUrls.get(m.attachment_path) : undefined, replyOf(m.reply_to)),
         imageUrl: m.image_path ? (imageUrls.get(m.image_path) ?? null) : null,
+        reactions: reactionsByMessage.get(m.id) ?? [],
       })),
   };
 }
@@ -189,6 +199,7 @@ export function toChatMessage(row: MessageRow, attachmentUrl?: string, replyTo: 
     imageUrl: null as string | null,
     attachment,
     replyTo,
+    reactions: [] as ChatReaction[],
   };
 }
 

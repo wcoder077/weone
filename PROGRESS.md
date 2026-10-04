@@ -321,3 +321,8 @@
 ## Share under posts + chat background
 - Posts: a share button sits in the post footer (system share sheet via Web Share API on phones, copy link elsewhere); "Havolani nusxalash" stays in the "…" menu.
 - Chat: a palette button in the chat header opens "Chat foni": five soft tints, any colour (colour input), doodle pattern on/off, reset. Kept on the device in localStorage (`lib/chat-background.ts`, `components/messages/use-chat-background.ts`); tints are mixed into the theme surface so text stays readable in both themes. No database changes.
+## Replies, chat reactions, ending a connection, photo carousel (migration 30)
+- Comment replies: `post_comments.parent_id` (one level, enforced by a trigger); the post page shows threads, replying to a reply answers in the same thread with an `@username` prefix. No notifications for replies yet.
+- Chat reactions: `message_reactions` (one per person per message, six emojis, members only, Realtime). Long-press / "…" menu has the emoji row; chips under the bubble toggle your own reaction.
+- Ending a connection: `connections.status = 'removed'` (via `remove_connection`), the chat history stays on both sides, nobody can write (`conversation_is_open` needs 'accepted'); "Qayta bog'lanish" (`reconnect_request`) sends a normal request again. Accepted connections can no longer be deleted by clients.
+- Carousel: the first photo/video stays in `posts.media_*`; extra photos (up to 9 more) live in `post_media`; the composer takes several photos at once; the post shows a swipeable carousel (counter, dots, arrows for mouse).

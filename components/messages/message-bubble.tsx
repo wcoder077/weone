@@ -9,6 +9,7 @@ import type { ReadStatus } from "@/lib/read-status";
 import { cn } from "@/lib/utils";
 import { ImageLightbox } from "@/components/shared/image-lightbox";
 import { AttachmentView } from "./attachment-view";
+import { groupReactions } from "@/lib/reactions";
 import { MessageActions } from "./message-actions";
 import { useLongPress } from "./use-long-press";
 import { useT } from "@/components/i18n/i18n-provider";
@@ -39,6 +40,8 @@ export function MessageBubble({
   editing,
   status,
   onReply,
+  onReact,
+  meId,
   replyName,
 }: {
   message: ChatMessage;
@@ -47,6 +50,9 @@ export function MessageBubble({
   /** Own messages only: ✓ sent, ✓✓ read by the other person. */
   status?: ReadStatus;
   onReply?: () => void;
+  /** Pass in an open chat: the menu gets a reaction row and the chips under the bubble toggle my reaction. */
+  onReact?: (emoji: string | null) => void;
+  meId?: string;
   /** Who wrote the quoted message ("Siz" or the other person's name). */
   replyName?: string;
 }) {
@@ -57,7 +63,9 @@ export function MessageBubble({
   const iconRef = useRef<HTMLSpanElement>(null);
   // My messages (right side) swipe left, the other person's swipe right.
   const swipeHandlers = useSwipeToReply(bubbleRef, iconRef, mine ? -1 : 1, onReply);
-  const hasMenu = Boolean(onReply || editing);
+  const hasMenu = Boolean(onReply || editing || onReact);
+  const reactionGroups = meId ? groupReactions(message.reactions, meId) : [];
+  const myReaction = reactionGroups.find((group) => group.mine)?.emoji;
   const actions = hasMenu ? (
     <MessageActions
       messageId={message.id}
@@ -65,6 +73,8 @@ export function MessageBubble({
       menuOpen={menuOpen}
       onMenuOpenChange={setMenuOpen}
       onReply={onReply}
+      onReact={onReact}
+      myReaction={myReaction}
       own={
         editing
           ? {
@@ -141,6 +151,26 @@ export function MessageBubble({
         </div>
         {mine ? null : actions}
       </div>
+      {reactionGroups.length > 0 ? (
+        <div className={cn("flex flex-wrap gap-1 px-1", mine ? "justify-end" : "justify-start")} role="group" aria-label={t("Reaksiyalar")}>
+          {reactionGroups.map((group) => (
+            <button
+              key={group.emoji}
+              type="button"
+              onClick={onReact ? () => onReact(group.mine ? null : group.emoji) : undefined}
+              disabled={!onReact}
+              aria-pressed={group.mine}
+              className={cn(
+                "inline-flex min-h-7 items-center gap-1 rounded-full border px-2 text-[13px] leading-none transition-colors disabled:cursor-default",
+                group.mine ? "border-primary bg-primary/15" : "border-border bg-card",
+              )}
+            >
+              <span>{group.emoji}</span>
+              {group.count > 1 ? <span className="text-muted tabular-nums">{group.count}</span> : null}
+            </button>
+          ))}
+        </div>
+      ) : null}
       <span className="text-muted inline-flex items-center gap-1 px-2 text-[11px]">
         <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>
         {message.editedAt ? t(" · tahrirlangan") : null}

@@ -1,11 +1,14 @@
 import { ATTACHMENT_MAX_BYTES, ATTACHMENT_TYPES, attachmentKindOf, extensionOf, formatBytes } from "@/lib/attachments";
 
-// One photo or video per post. Same size limit and types as chat photos/videos
+// One video, or up to 10 photos, per post (the first photo/video is the cover). Same size limit and types as chat photos/videos
 // (see lib/attachments.ts); the `post-media` bucket enforces the limit in the database.
 export const POST_MEDIA_BUCKET = "post-media";
 // Videos are not compressed in the browser, so they get a tighter limit than photos.
 export const POST_VIDEO_MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 export const POST_MEDIA_ACCEPT = [...ATTACHMENT_TYPES.image, ...ATTACHMENT_TYPES.video].join(",");
+
+// Photos in one post (a carousel). A video always stands alone.
+export const POST_MAX_PHOTOS = 10;
 
 export type PostMediaKind = "image" | "video";
 

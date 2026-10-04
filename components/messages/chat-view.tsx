@@ -5,7 +5,9 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { markConversationRead } from "@/lib/actions/messages";
+import { markConversationRead, reactToMessage } from "@/lib/actions/messages";
+import { isReactionEmoji, withReaction } from "@/lib/reactions";
+import { toast } from "@/lib/toast";
 import { ATTACHMENT_BUCKET, type AttachmentKind } from "@/lib/attachments";
 import { MESSAGES_READ_EVENT } from "@/components/layout/unread-messages";
 import type { ChatMessage, ChatReply } from "@/lib/queries/messages";
@@ -43,6 +45,7 @@ type MessageInsert = {
   attachment_size: number | null;
 };
 
+type ReactionRow = { message_id: string; user_id: string; emoji: string };
 type MessageUpdate = { id: string; body: string; edited_at: string | null };
 
 type Connection = { id: string; status: string; requestedByMe: boolean } | null;
@@ -59,7 +62,9 @@ function replyFrom(m: ChatMessage, t: TFunction): ChatReply {
 // Adds server messages we don't have yet. Messages already on screen stay as they are
 // (a fresh render re-signs attachment links, and swapping them would re-download files).
 function mergeMessages(local: ChatMessage[], server: ChatMessage[]) {
-  const byId = new Map(local.map((m) => [m.id, m]));
+  // Reactions come from the server copy: it is the fresher one after a refresh.
+  const serverById = new Map(server.map((m) => [m.id, m]));
+  const byId = new Map(local.map((m) => [m.id, { ...m, reactions: serverById.get(m.id)?.reactions ?? m.reactions }]));
   for (const m of server) if (!byId.has(m.id)) byId.set(m.id, m);
   return [...byId.values()].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
 }
@@ -67,6 +72,7 @@ function mergeMessages(local: ChatMessage[], server: ChatMessage[]) {
 // Pending chats hold only the request's first message; the footer then shows the
 // request actions instead of a composer (RLS rejects messages until accepted).
 function pendingState(connection: Connection): ConnectionState | null {
+  if (connection?.status === "removed") return { state: "removed", connectionId: connection.id };
   if (connection?.status !== "pending") return null;
   return { state: connection.requestedByMe ? "outgoing" : "incoming", connectionId: connection.id };
 }
@@ -131,11 +137,25 @@ export function ChatView({
     onDeleted: removeMessage,
   };
 
+  // My reaction changes on screen at once; if saving fails, the refresh brings back the real state.
+  function react(messageId: string, emoji: string | null) {
+    setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, reactions: withReaction(m.reactions, meId, emoji) } : m)));
+    void reactToMessage(messageId, emoji).then((result) => {
+      if (result.error) {
+        toast.error(result.error);
+        router.refresh();
+      }
+    });
+  }
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages.length]);
 
   useEffect(() => {
+    function setReaction(messageId: string, userId: string, emoji: string | null) {
+      setMessages((prev) => prev.map((m) => (m.id === messageId ? { ...m, reactions: withReaction(m.reactions, userId, emoji) } : m)));
+    }
     // Tells the other person (if they have this chat open) that I've read up to now.
     function announceRead(channel: RealtimeChannel | null) {
       const at = myReadAtRef.current;
@@ -193,6 +213,7 @@ export function ChatView({
                   ? { url: signedUrl, name: row.attachment_name, kind: row.attachment_type as AttachmentKind, size: row.attachment_size }
                   : null,
               replyTo: null,
+              reactions: [],
             };
             // The quoted message is usually already on screen; otherwise a generic quote.
             setMessages((prev) => {
@@ -215,6 +236,23 @@ export function ChatView({
             setMessages((prev) =>
               prev.map((m) => (m.id === row.id ? { ...m, body: row.body, editedAt: row.edited_at } : m)),
             ),
+        )
+        // Reactions of this chat (another person's, or mine from another device).
+        .on<ReactionRow>(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "message_reactions", filter: `conversation_id=eq.${conversationId}` },
+          ({ new: row }) => isReactionEmoji(row.emoji) && setReaction(row.message_id, row.user_id, row.emoji),
+        )
+        .on<ReactionRow>(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "message_reactions", filter: `conversation_id=eq.${conversationId}` },
+          ({ new: row }) => isReactionEmoji(row.emoji) && setReaction(row.message_id, row.user_id, row.emoji),
+        )
+        // Like message deletes: not filterable, only the key columns arrive, unknown messages are ignored.
+        .on<{ message_id: string; user_id: string }>(
+          "postgres_changes",
+          { event: "DELETE", schema: "public", table: "message_reactions" },
+          ({ old }) => old.message_id && old.user_id && setReaction(old.message_id, old.user_id, null),
         )
         // Deletes can't be filtered by column and carry only the id; unknown ids are ignored.
         .on<{ id: string }>(
@@ -303,6 +341,8 @@ export function ChatView({
                     editing={open && mine && !m.imageUrl ? editing : undefined}
                     status={mine ? readStatus(m.createdAt, otherReadAt) : undefined}
                     onReply={open ? () => setReplyingTo(replyFrom(m, t)) : undefined}
+                    onReact={open ? (emoji) => react(m.id, emoji) : undefined}
+                    meId={meId}
                     replyName={m.replyTo ? nameOf(m.replyTo.senderId) : undefined}
                   />
                 )}
@@ -332,7 +372,9 @@ export function ChatView({
               ? t("So'rovingiz hali qabul qilinmagan. Qabul qilinganidan keyin yozishingiz mumkin.")
               : pending?.state === "incoming"
                 ? t("Bog'lanish so'rovini qabul qilsangiz, yozishuv ochiladi.")
-                : t("Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi.")}
+                : pending?.state === "removed"
+                  ? t("Bog'lanish uzilgan. Yozishuv tarixi saqlangan, yozish uchun qayta bog'laning.")
+                  : t("Yozishuv faqat bog'langan maqsaddoshlar bilan ochiladi.")}
           </p>
           {pending && other ? (
             <ConnectButton meId={meId} userId={other.id} name={other.full_name} connection={pending} />

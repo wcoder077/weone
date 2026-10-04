@@ -6,7 +6,7 @@ import { toast } from "@/lib/toast";
 import { formatBytes } from "@/lib/attachments";
 import type { PostMediaInput } from "@/lib/actions/posts";
 import type { ActionState } from "@/lib/actions/types";
-import { POST_MEDIA_ACCEPT, POST_MEDIA_BUCKET, postMediaKindOf, postMediaPath, postMediaProblem, type PostMediaKind } from "@/lib/post-media";
+import { POST_MAX_PHOTOS, POST_MEDIA_ACCEPT, POST_MEDIA_BUCKET, postMediaKindOf, postMediaPath, postMediaProblem, type PostMediaKind } from "@/lib/post-media";
 import { PHOTO_MAX_SIDE, shrinkImage } from "@/lib/image";
 import { createClient } from "@/lib/supabase/client";
 import { graphemeLength } from "@/lib/text";
@@ -17,10 +17,10 @@ import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/i18n/i18n-provider";
 
-type Staged = { file: File; kind: PostMediaKind; previewUrl: string | null };
+type Staged = { id: string; file: File; kind: PostMediaKind; previewUrl: string | null };
 
 // Text area + emoji + live "x/500" counter; used to create, edit and repost posts.
-// Pass `media` (the signed-in user's id) to allow one photo or video, `allowEmpty` when the text is optional.
+// Pass `media` (the signed-in user's id) to allow one video or up to 10 photos, `allowEmpty` when the text is optional.
 export function PostEditor({
   id,
   initial = "",
@@ -35,7 +35,7 @@ export function PostEditor({
   id: string;
   initial?: string;
   submitLabel: string;
-  onSubmit: (body: string, media?: PostMediaInput) => Promise<ActionState>;
+  onSubmit: (body: string, media?: PostMediaInput[]) => Promise<ActionState>;
   onDone?: () => void;
   autoFocus?: boolean;
   media?: { userId: string };
@@ -44,60 +44,75 @@ export function PostEditor({
 }) {
   const t = useT();
   const [body, setBody] = useState(initial);
-  const [staged, setStaged] = useState<Staged | null>(null);
+  const [staged, setStaged] = useState<Staged[]>([]);
   const [preparing, setPreparing] = useState(false);
   const [pending, startTransition] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const count = graphemeLength(body.trim());
-  const invalid = preparing || count > POST_MAX || (count === 0 && !staged && !allowEmpty);
+  const invalid = preparing || count > POST_MAX || (count === 0 && staged.length === 0 && !allowEmpty);
 
-  // Free the thumbnail's object URL when it is replaced, removed or the editor closes.
+  // Free the thumbnails' object URLs when they are replaced, removed or the editor closes.
   useEffect(() => {
-    const url = staged?.previewUrl;
-    return () => {
-      if (url) URL.revokeObjectURL(url);
-    };
+    const urls = staged.flatMap((item) => (item.previewUrl ? [item.previewUrl] : []));
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
   }, [staged]);
 
   // Photos are shrunk in the browser first (WebP, ≤ 1600 px), then checked against the limit.
-  async function stage(picked: File) {
-    setPreparing(true);
+  async function prepare(picked: File): Promise<Staged | null> {
     const file = postMediaKindOf(picked.type) === "image" ? await shrinkImage(picked, PHOTO_MAX_SIDE) : picked;
-    setPreparing(false);
     const problem = postMediaProblem(file);
     const kind = postMediaKindOf(file.type);
     if (problem || !kind) {
       toast.error(problem ?? "Faqat rasm yoki video yuborish mumkin");
-      return;
+      return null;
     }
-    setStaged({ file, kind, previewUrl: kind === "image" ? URL.createObjectURL(file) : null });
+    return { id: crypto.randomUUID(), file, kind, previewUrl: kind === "image" ? URL.createObjectURL(file) : null };
   }
 
+  // Photos add up to a carousel (max 10); a video stands alone and replaces whatever was chosen.
+  async function stage(picked: File[]) {
+    setPreparing(true);
+    const prepared = (await Promise.all(picked.map(prepare))).filter((item): item is Staged => item !== null);
+    setPreparing(false);
+    if (prepared.length === 0) return;
+    const video = prepared.find((item) => item.kind === "video");
+    if (video) {
+      setStaged([video]);
+      return;
+    }
+    const room = POST_MAX_PHOTOS - staged.filter((item) => item.kind === "image").length;
+    if (prepared.length > room) toast.error(`Ko'pi bilan ${POST_MAX_PHOTOS} ta rasm`);
+    setStaged((current) => [...current.filter((item) => item.kind === "image"), ...prepared.slice(0, Math.max(0, room))]);
+  }
 
   function submit() {
     if (invalid || pending) return;
     startTransition(async () => {
-      let uploaded: PostMediaInput | undefined;
-      if (staged && media) {
-        const path = postMediaPath(media.userId, staged.file.type);
-        const { error } = await createClient()
-          .storage.from(POST_MEDIA_BUCKET)
-          .upload(path, staged.file, { contentType: staged.file.type, cacheControl: IMMUTABLE_CACHE });
-        if (error) {
-          toast.error("Faylni yuklab bo'lmadi. Qayta urinib ko'ring.");
-          return;
+      const uploaded: PostMediaInput[] = [];
+      if (media) {
+        for (const item of staged) {
+          const path = postMediaPath(media.userId, item.file.type);
+          const { error } = await createClient()
+            .storage.from(POST_MEDIA_BUCKET)
+            .upload(path, item.file, { contentType: item.file.type, cacheControl: IMMUTABLE_CACHE });
+          if (error) {
+            // Take back the files that already went up.
+            if (uploaded.length > 0) await createClient().storage.from(POST_MEDIA_BUCKET).remove(uploaded.map((file) => file.path));
+            toast.error("Faylni yuklab bo'lmadi. Qayta urinib ko'ring.");
+            return;
+          }
+          uploaded.push({ path, name: item.file.name, kind: item.kind });
         }
-        uploaded = { path, name: staged.file.name, kind: staged.kind };
       }
-      const result = await onSubmit(body, uploaded);
+      const result = await onSubmit(body, uploaded.length > 0 ? uploaded : undefined);
       if (result?.error) {
         toast.error(result.error);
         return;
       }
       if (result?.message) toast.success(result.message);
       setBody("");
-      setStaged(null);
+      setStaged([]);
       onDone?.();
     });
   }
@@ -124,7 +139,13 @@ export function PostEditor({
         aria-invalid={count > POST_MAX}
         className="border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive field-sizing-content min-h-24 w-full resize-none rounded-2xl border px-4 py-3 text-base leading-[1.6] outline-none focus-visible:ring-3"
       />
-      {staged ? <StagedPreview staged={staged} disabled={pending} onRemove={() => setStaged(null)} /> : null}
+      {staged.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          {staged.map((item) => (
+            <StagedPreview key={item.id} staged={item} disabled={pending} onRemove={() => setStaged((current) => current.filter((other) => other.id !== item.id))} />
+          ))}
+        </div>
+      ) : null}
       <div className="flex items-center gap-1">
         <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, body, emoji, setBody)} />
         {media ? (
@@ -142,13 +163,14 @@ export function PostEditor({
               ref={fileRef}
               type="file"
               accept={POST_MEDIA_ACCEPT}
+              multiple
               className="hidden"
               tabIndex={-1}
               aria-hidden
               onChange={(e) => {
-                const file = e.target.files?.[0];
+                const files = [...(e.target.files ?? [])];
                 e.target.value = ""; // the same file can be picked again
-                if (file) void stage(file);
+                if (files.length > 0) void stage(files);
               }}
             />
           </>
@@ -157,7 +179,7 @@ export function PostEditor({
           <CharCounter id={`${id}-count`} count={count} max={POST_MAX} />
         </span>
         <Button type="submit" disabled={invalid || pending}>
-          {preparing ? t("Tayyorlanmoqda…") : pending ? (staged ? t("Yuklanmoqda…") : t("Saqlanmoqda…")) : submitLabel}
+          {preparing ? t("Tayyorlanmoqda…") : pending ? (staged.length > 0 ? t("Yuklanmoqda…") : t("Saqlanmoqda…")) : submitLabel}
         </Button>
       </div>
     </form>

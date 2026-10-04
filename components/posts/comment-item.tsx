@@ -3,7 +3,7 @@
 import { LinkifiedText } from "@/components/shared/linkified-text";
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { CornerDownRight, Trash2 } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { deleteComment } from "@/lib/actions/posts";
 import { formatRelative } from "@/lib/format";
@@ -12,9 +12,41 @@ import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/i18n/i18n-provider";
+import { CommentForm } from "./comment-form";
 
-// `canDelete`: the commenter or the post's author (RLS checks it again).
-export function CommentItem({ comment, canDelete }: { comment: PostComment; canDelete: boolean }) {
+export type CommentThreadItem = { comment: PostComment; canDelete: boolean };
+
+// A top-level comment with its replies underneath (one level, indented). `canDelete`: the commenter
+// or the post's author (RLS checks it again). Replying to a reply answers in the same thread.
+export function CommentThread({ postId, item, replies }: { postId: string; item: CommentThreadItem; replies: CommentThreadItem[] }) {
+  const [replyingTo, setReplyingTo] = useState<PostComment | null>(null);
+  const root = item.comment;
+
+  return (
+    <li className="flex flex-col gap-3">
+      <CommentRow item={item} onReply={() => setReplyingTo(root)} />
+      {replies.length > 0 || replyingTo ? (
+        <div className="border-border ml-4 flex flex-col gap-3 border-l pl-4 sm:ml-5">
+          {replies.map((reply) => (
+            <CommentRow key={reply.comment.id} item={reply} onReply={() => setReplyingTo(reply.comment)} />
+          ))}
+          {replyingTo ? (
+            <CommentForm
+              key={replyingTo.id}
+              postId={postId}
+              parentId={root.id}
+              initial={replyingTo.id === root.id ? "" : `@${replyingTo.author.username} `}
+              autoFocus
+              onDone={() => setReplyingTo(null)}
+            />
+          ) : null}
+        </div>
+      ) : null}
+    </li>
+  );
+}
+
+function CommentRow({ item: { comment, canDelete }, onReply }: { item: CommentThreadItem; onReply: () => void }) {
   const t = useT();
   const [confirming, setConfirming] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -28,7 +60,7 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
   }
 
   return (
-    <li className="flex items-start gap-3">
+    <div className="flex items-start gap-3">
       <Link href={`/u/${comment.author.username}`} className="shrink-0" aria-label={comment.author.full_name}>
         <UserAvatar name={comment.author.full_name} url={comment.author.avatar_url} size="sm" userId={comment.author.id} />
       </Link>
@@ -42,6 +74,14 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
           </time>
         </p>
         <p className="max-w-[65ch] text-[15px] leading-[1.6] break-words whitespace-pre-wrap select-text"><LinkifiedText text={comment.body} /></p>
+        <button
+          type="button"
+          onClick={onReply}
+          className="text-muted hover:text-text -my-2 inline-flex min-h-11 items-center gap-1.5 self-start text-[13px] font-medium"
+        >
+          <CornerDownRight className="size-3.5" aria-hidden />
+          {t("Javob berish")}
+        </button>
       </div>
       {canDelete ? (
         <>
@@ -69,6 +109,6 @@ export function CommentItem({ comment, canDelete }: { comment: PostComment; canD
           </ResponsiveDialog>
         </>
       ) : null}
-    </li>
+    </div>
   );
 }

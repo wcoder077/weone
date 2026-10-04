@@ -10,9 +10,22 @@ import { EmojiPicker, insertAtCursor } from "@/components/shared/emoji-picker";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/i18n/i18n-provider";
 
-export function CommentForm({ postId }: { postId: string }) {
+export function CommentForm({
+  postId,
+  parentId,
+  initial = "",
+  autoFocus = false,
+  onDone,
+}: {
+  postId: string;
+  parentId?: string;
+  initial?: string;
+  autoFocus?: boolean;
+  onDone?: () => void;
+}) {
   const t = useT();
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(initial);
+  const inputId = `comment-input-${parentId ?? "new"}`;
   const [pending, startTransition] = useTransition();
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const count = graphemeLength(body.trim());
@@ -21,12 +34,13 @@ export function CommentForm({ postId }: { postId: string }) {
   function submit() {
     if (invalid || pending) return;
     startTransition(async () => {
-      const result = await addComment(postId, body);
+      const result = await addComment(postId, body, parentId);
       if (result?.error) {
         toast.error(result.error);
         return;
       }
       setBody("");
+      onDone?.();
     });
   }
 
@@ -40,20 +54,21 @@ export function CommentForm({ postId }: { postId: string }) {
     >
       <div className="border-input bg-input/30 focus-within:border-ring focus-within:ring-ring/50 flex min-w-0 flex-1 items-end rounded-3xl border focus-within:ring-3">
         <EmojiPicker onPick={(emoji) => insertAtCursor(fieldRef.current, body, emoji, setBody)} />
-        <label htmlFor="comment-input" className="sr-only">
-          {t("Izoh")}</label>
+        <label htmlFor={inputId} className="sr-only">
+          {parentId ? t("Javob") : t("Izoh")}</label>
         <textarea
-          id="comment-input"
+          id={inputId}
           ref={fieldRef}
+          autoFocus={autoFocus}
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={1}
-          placeholder={t("Izoh yozing…")}
+          placeholder={parentId ? t("Javob yozing…") : t("Izoh yozing…")}
           aria-invalid={count > COMMENT_MAX}
           className="field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 pr-4 text-[15px] leading-snug outline-none"
         />
       </div>
-      <Button type="submit" size="icon" aria-label={t("Izohni yuborish")} disabled={invalid || pending}>
+      <Button type="submit" size="icon" aria-label={parentId ? t("Javobni yuborish") : t("Izohni yuborish")} disabled={invalid || pending}>
         <Send />
       </Button>
     </form>

@@ -6,7 +6,9 @@ export type ConnectionState =
   | { state: "outgoing"; connectionId: string }
   | { state: "incoming"; connectionId: string }
   | { state: "connected"; connectionId: string }
-  | { state: "rejected"; connectionId: string; byMe: boolean };
+  | { state: "rejected"; connectionId: string; byMe: boolean }
+  // Was connected once and ended: the chat history stays, either side can ask again.
+  | { state: "removed"; connectionId: string };
 
 // The viewer's connection state with every user they have a request with.
 // RLS returns pending/rejected rows only to their two sides.
@@ -27,7 +29,9 @@ export const getRelationships = cache(async (viewerId: string) => {
         ? { state: "connected", connectionId: c.id }
         : c.status === "rejected"
           ? { state: "rejected", connectionId: c.id, byMe: !outgoing }
-          : { state: outgoing ? "outgoing" : "incoming", connectionId: c.id };
+          : c.status === "removed"
+            ? { state: "removed", connectionId: c.id }
+            : { state: outgoing ? "outgoing" : "incoming", connectionId: c.id };
     byUser.set(other, state);
   }
 
