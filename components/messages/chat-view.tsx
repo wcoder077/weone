@@ -16,10 +16,13 @@ import { formatDay } from "@/lib/format";
 import { readStatus } from "@/lib/read-status";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import { ConnectButton } from "@/components/social/connect-button";
+import { chatBackgroundStyle } from "@/lib/chat-background";
+import { ChatBackgroundPicker } from "./chat-background-picker";
 import { ChatComposer } from "./chat-composer";
 import { InviteCard } from "./invite-card";
 import { InviteToProject } from "./invite-to-project";
 import { DaySeparator, MessageBubble } from "./message-bubble";
+import { useChatBackground } from "./use-chat-background";
 import { useVisualViewportFit } from "./use-visual-viewport-fit";
 import { useT } from "@/components/i18n/i18n-provider";
 import type { TFunction } from "@/lib/i18n/core";
@@ -106,6 +109,7 @@ export function ChatView({
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollToEnd = useCallback(() => bottomRef.current?.scrollIntoView({ block: "end" }), []);
   useVisualViewportFit(rootRef, scrollToEnd);
+  const [chatBackground] = useChatBackground();
   const open = connection?.status === "accepted";
   const pending = pendingState(connection);
 
@@ -265,6 +269,7 @@ export function ChatView({
         ) : (
           <span className="flex-1 font-semibold">{t("Suhbat")}</span>
         )}
+        <ChatBackgroundPicker />
         {open ? <InviteToProject conversationId={conversationId} projects={myProjects} onSent={append} /> : null}
       </header>
 
@@ -272,6 +277,7 @@ export function ChatView({
           sideways drag must move the bubble, never the whole list. */}
       <div
         className="chat-surface flex min-h-0 flex-1 touch-pan-y flex-col gap-2 overflow-x-hidden overflow-y-auto overscroll-contain px-3 py-4 sm:px-6"
+        style={chatBackgroundStyle(chatBackground)}
         aria-live="polite"
       >
         {messages.length === 0 ? (
