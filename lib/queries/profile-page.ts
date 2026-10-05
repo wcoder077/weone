@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { PROFILE_COLUMNS } from "@/lib/db-columns";
 import { createClient } from "@/lib/supabase/server";
 
 // Everything the /u/[username] page shows. Returns null for an unknown username.
@@ -7,7 +8,7 @@ export const getProfilePage = cache(async (username: string) => {
 
   const { data: profile, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PROFILE_COLUMNS)
     .eq("username", username)
     .maybeSingle();
   if (error) throw error;

@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { PROJECT_COLUMNS } from "@/lib/db-columns";
 import { createClient } from "@/lib/supabase/server";
 
 const CARD_SELECT = `
@@ -125,7 +126,7 @@ export const getProject = cache(async (slug: string) => {
   const { data, error } = await supabase
     .from("projects")
     .select(
-      `*,
+      `${PROJECT_COLUMNS},
       owner:profiles!projects_owner_id_fkey(id, username, full_name, avatar_url),
       project_skills(skill_id, skills(name)),
       project_members(user_id, role, created_at, profiles(username, full_name, avatar_url, headline)),
