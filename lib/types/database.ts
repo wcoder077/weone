@@ -552,6 +552,15 @@ export type Database = {
         }
         Relationships: []
       }
+      user_presence: {
+        Row: {
+          last_seen_at: string
+          user_id: string
+        }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
       post_media: {
         Row: {
           created_at: string
@@ -1224,6 +1233,7 @@ export type Database = {
         Returns: undefined
       }
       send_test_push: { Args: Record<string, never>; Returns: undefined }
+      touch_last_seen: { Args: Record<string, never>; Returns: undefined }
       remove_connection: { Args: { p_connection_id: string }; Returns: undefined }
       reconnect_request: { Args: { p_connection_id: string }; Returns: undefined }
       start_conversation: { Args: { other_user: string }; Returns: string }

@@ -381,6 +381,7 @@ export const ru: Dictionary = {
   "Ovozsiz": "Без звука",
   "Ovozsiz qilindi": "Звук отключён",
   "Ovozsiz qilish": "Отключить звук",
+  "Oxirgi marta: {time}": "Был(а) в сети {time}",
   "Oxirgi {n} ta voqea ko'rsatilgan.": "Показано последних событий: {n}.",
   "Oxirgi {n} tasi ko'rsatilgan.": "Показаны последние: {n}.",
   "Parol": "Пароль",

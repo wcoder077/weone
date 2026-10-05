@@ -333,3 +333,9 @@
 - The "Tavsiya" feed ranks a light list (id, time, counts) of the newest 100 posts and loads full rows only for the 20 picked (about 2-3x fewer bytes per visit).
 - `select("*")` on profiles and projects replaced by explicit column lists (`lib/db-columns.ts`) so the large generated `search` vectors are not sent on every request.
 - Next: read the Egress breakdown by source in Supabase (Settings > Usage) before changing more.
+
+## Last seen in chats (migration 31)
+- New `user_presence (user_id, last_seen_at)` table, readable only by the user and their accepted connections (RLS). Kept out of `profiles`, which everyone can read.
+- Only `touch_last_seen()` writes it, with the database clock (at most once per 30 s). The app calls it on open, on hide/show and every 3 minutes while visible.
+- Chat header shows "Onlayn" or "Oxirgi marta: 5 daqiqa oldin" under the name for accepted connections; otherwise the headline as before. Someone who goes offline while the chat is open switches to "hozirgina" without a reload (from Realtime Presence).
+- Not built: a setting to hide one's last seen (simplest option first).

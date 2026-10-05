@@ -381,6 +381,7 @@ export const en: Dictionary = {
   "Ovozsiz": "Muted",
   "Ovozsiz qilindi": "Muted",
   "Ovozsiz qilish": "Mute",
+  "Oxirgi marta: {time}": "Last seen {time}",
   "Oxirgi {n} ta voqea ko'rsatilgan.": "Showing the latest {n} events.",
   "Oxirgi {n} tasi ko'rsatilgan.": "Showing the latest {n}.",
   "Parol": "Password",
