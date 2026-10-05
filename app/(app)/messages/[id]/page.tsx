@@ -27,6 +27,7 @@ export default async function ConversationPage({ params }: PageProps<"/messages/
       other={conversation.other}
       initialMessages={conversation.messages}
       otherReadAt={conversation.otherReadAt}
+      otherLastSeenAt={conversation.otherLastSeenAt}
       myProjects={myProjects}
       myProjectIds={myProjects.map((p) => p.id)}
       connection={conversation.connection}

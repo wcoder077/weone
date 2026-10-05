@@ -25,6 +25,7 @@ import { InviteCard } from "./invite-card";
 import { InviteToProject } from "./invite-to-project";
 import { DaySeparator, MessageBubble } from "./message-bubble";
 import { useChatBackground } from "./use-chat-background";
+import { useLastSeenLabel } from "./use-last-seen";
 import { useVisualViewportFit } from "./use-visual-viewport-fit";
 import { useT } from "@/components/i18n/i18n-provider";
 import type { TFunction } from "@/lib/i18n/core";
@@ -83,6 +84,7 @@ export function ChatView({
   other,
   initialMessages,
   otherReadAt: initialOtherReadAt,
+  otherLastSeenAt,
   myProjects,
   myProjectIds,
   connection,
@@ -92,6 +94,7 @@ export function ChatView({
   other: Person | null;
   initialMessages: ChatMessage[];
   otherReadAt: string | null;
+  otherLastSeenAt: string | null;
   myProjects: { id: string; name: string }[];
   myProjectIds: string[];
   connection: Connection;
@@ -117,6 +120,8 @@ export function ChatView({
   useVisualViewportFit(rootRef, scrollToEnd);
   const [chatBackground] = useChatBackground();
   const open = connection?.status === "accepted";
+  // "Onlayn" / "Oxirgi marta: ..." under the name, for accepted connections only.
+  const status = useLastSeenLabel(open ? other?.id : undefined, otherLastSeenAt);
   const pending = pendingState(connection);
 
   // Adds a message once, whether it came from our own send or from Realtime.
@@ -301,7 +306,9 @@ export function ChatView({
             <UserAvatar name={other.full_name} url={other.avatar_url} userId={other.id} />
             <span className="flex min-w-0 flex-col">
               <span className="truncate font-semibold">{other.full_name}</span>
-              {other.headline ? <span className="text-muted truncate text-[13px]">{other.headline}</span> : null}
+              {status || other.headline ? (
+                <span className="text-muted truncate text-[13px]">{status || other.headline}</span>
+              ) : null}
             </span>
           </Link>
         ) : (

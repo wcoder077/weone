@@ -122,9 +122,16 @@ export async function getConversation(conversationId: string, userId: string) {
   // First-message images and attachments are private: signed links, reused while fresh.
   const imagePaths = visible.flatMap((m) => (m.image_path ? [m.image_path] : []));
   const attachmentPaths = visible.flatMap((m) => (m.attachment_path ? [m.attachment_path] : []));
-  const [imageUrls, attachmentUrls] = await Promise.all([
+  const connection = conversation.data?.connections ?? null;
+  const other = members.data.find((m) => m.user_id !== userId);
+  // Last seen is shown to accepted connections only (also enforced by RLS).
+  const showLastSeen = Boolean(other && connection?.status === "accepted");
+  const [imageUrls, attachmentUrls, presence] = await Promise.all([
     imagePaths.length ? signedUrls(supabase, "message-images", imagePaths) : new Map<string, string>(),
     attachmentPaths.length ? signedUrls(supabase, ATTACHMENT_BUCKET, attachmentPaths) : new Map<string, string>(),
+    showLastSeen && other
+      ? supabase.from("user_presence").select("last_seen_at").eq("user_id", other.user_id).maybeSingle()
+      : null,
   ]);
 
   // Quoted messages for replies; older ones outside the loaded page are fetched once.
@@ -141,11 +148,11 @@ export async function getConversation(conversationId: string, userId: string) {
     return q ? { id: q.id, senderId: q.sender_id, preview: messagePreview(q, t) } : null;
   };
 
-  const connection = conversation.data?.connections ?? null;
-  const other = members.data.find((m) => m.user_id !== userId);
   return {
     other: other?.profiles ? { id: other.user_id, ...other.profiles } : null,
     otherReadAt: other?.last_read_at ?? null,
+    // A bonus like reactions: if it fails to load, the header simply shows the headline.
+    otherLastSeenAt: presence?.data?.last_seen_at ?? null,
     // Messaging is open only once the connection is accepted (enforced by RLS).
     connection: connection
       ? { id: connection.id, status: connection.status, requestedByMe: connection.requester_id === userId }
