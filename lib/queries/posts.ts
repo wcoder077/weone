@@ -129,17 +129,32 @@ async function hydrate(supabase: Supabase, rows: PostRow[], userId: string): Pro
 
 // Home "Tavsiya" tab: the newest posts, picked and ordered by lib/feed-rank.ts.
 // `newest` is what the feed marker remembers as "seen".
+// Ranking only needs a few small columns of the newest posts; the full rows (text, author, photos)
+// are loaded for the 20 that were picked. Loading all 100 in full on every visit wasted most of the traffic.
 export async function getRecommendedFeed(userId: string, seenAt?: string) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("posts")
-    .select(POST_FIELDS)
+    .select("id, created_at, author_id, like_count, comment_count, view_count")
     .order("created_at", { ascending: false })
     .limit(RANK_POOL);
   if (error) throw error;
 
-  const rows = rankRecommended(data, { limit: FEED_PAGE, seenAt });
-  return { posts: await hydrate(supabase, rows, userId), newest: data[0]?.created_at };
+  const picked = rankRecommended(
+    data.map((row) => ({ ...row, author: { id: row.author_id } })),
+    { limit: FEED_PAGE, seenAt },
+  );
+  if (picked.length === 0) return { posts: [], newest: data[0]?.created_at };
+
+  const { data: rows, error: rowsError } = await supabase
+    .from("posts")
+    .select(POST_FIELDS)
+    .in("id", picked.map((post) => post.id));
+  if (rowsError) throw rowsError;
+
+  const order = new Map(picked.map((post, index) => [post.id, index]));
+  const ordered = rows.toSorted((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  return { posts: await hydrate(supabase, ordered, userId), newest: data[0]?.created_at };
 }
 
 // Home "Do'stlar" tab: posts of the people the viewer is connected with, newest first.

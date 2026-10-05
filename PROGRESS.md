@@ -329,3 +329,7 @@
 ## Profile tab with menu + Help page
 - Phone: the avatar left the top bar (only the bell stays); the last tab of the bottom bar is now your own photo (`components/layout/profile-tab.tsx`). Tap opens the profile; holding it (600 ms) opens `ProfileMenu`: help, theme, then Settings and Log out as the last two rows. Log out asks "tasdiqlaysizmi?" with a 5 second countdown (sign-out when it ends, or "Hoziroq chiqish", or cancel). The desktop avatar menu stays and also gets "Yordam".
 - Help page `/support` is back (note up to 100 words + optional screenshot, honeypot, own ticket history) with migration 28 (`support_tickets`, `admins`, `is_admin`, bucket `support-images`; the ticket limit only where `rate_limits` exists). The admin panel (commit 6671bdb) is still held back; until then tickets are read in the Supabase Table Editor.
+## Less traffic from the database (Supabase free plan: egress 4.58 / 5 GB with ~100 users)
+- The "Tavsiya" feed ranks a light list (id, time, counts) of the newest 100 posts and loads full rows only for the 20 picked (about 2-3x fewer bytes per visit).
+- `select("*")` on profiles and projects replaced by explicit column lists (`lib/db-columns.ts`) so the large generated `search` vectors are not sent on every request.
+- Next: read the Egress breakdown by source in Supabase (Settings > Usage) before changing more.
